@@ -1,9 +1,9 @@
 import React from 'react'
 import {Stack, Typography} from '@mui/material'
-import { FcLike } from "react-icons/fc";
-import { FaComments } from "react-icons/fa";
+import { AiOutlineLike } from "react-icons/ai";
+import { FaRegCommentDots } from "react-icons/fa6";
 import { AiOutlineRetweet } from "react-icons/ai";
-import { IoShare } from "react-icons/io5";
+import { PiShareFat } from "react-icons/pi";
 
 
 
@@ -22,16 +22,16 @@ function PostTwo() {
                     >description will look like this</Typography>
                 </Stack>
                 <img src="/black clover.webp" alt="" loading='lazy'
-                width={'400px'} height={'auto'} />
+                width={'auto'} height={'280px'} />
 
                 <Stack flexDirection={'column'} gap={1}>
                     <Stack flexDirection={'row'} 
                     gap={2} 
                     m={1}>
-                        <FcLike size={30}/>
-                        <FaComments size={30} />
+                        <AiOutlineLike size={30}/>
+                        <FaRegCommentDots size={30} />
                 <AiOutlineRetweet size={30}/>
-                <IoShare size={30}/>
+                <PiShareFat  size={30}/>
 
                     </Stack>
                     <Stack flexDirection={'row'}
@@ -39,10 +39,10 @@ function PostTwo() {
                     position={'relative'}
                     top={-3}
                     left={4}>
-                        <Typography variant='caption' fontSize={'1rem'} color='gray'>
+                        <Typography variant='caption' fontSize={'0.9rem'} color='gray'>
                             2 Likes .
                         </Typography>
-                        <Typography variant='caption' fontSize={'1rem'} color='gray'>
+                        <Typography variant='caption' fontSize={'0.9rem'} color='gray'>
                             1 comment {' '}
                         </Typography>
                     </Stack>
