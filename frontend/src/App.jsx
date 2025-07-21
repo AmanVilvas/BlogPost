@@ -8,6 +8,10 @@ import Register from "./pages/Protected/Register"
 import './index.css'
 import ProtectedLayout from "./pages/Protected/ProtectedLayout"
 import { Box } from "@mui/material"
+import ProfileLayout from './pages/Protected/profile/ProfileLayout'
+import Threads from './pages/Protected/profile/Threads'
+import Replies from './pages/Protected/profile/Replies'
+import Reposts from './pages/Protected/profile/Reposts'
 
 
   const App = ()=>{
@@ -25,7 +29,11 @@ import { Box } from "@mui/material"
       <Route path="/search" element={<Search />} />
       <Route path="/Liked" element={<h1>Liked</h1>} />
       <Route path="/Edit" element={<h1>Edit</h1>} />
-      <Route path="/Profile" element={<h1>Profile</h1>} /> 
+      <Route path="/profile" element={<ProfileLayout />} >
+        <Route exact path = "threads/:id" element={<Threads />} />
+        <Route exact path = "replies/:id" element={<Replies />} />
+        <Route exact path = "reposts/:id" element={<Reposts />} />
+      </Route> 
       
       </Route>
     

@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Thread() {
+function Threads() {
     return (
         <div>
 
@@ -8,4 +8,4 @@ function Thread() {
     )
 }
 
-export default Thread
+export default Threads
