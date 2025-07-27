@@ -10,7 +10,7 @@ function Post() {
         <div>
             <Stack
                 flexDirection={'row'}
-                justifyContent={'space-between'}
+                justifyContent={'center'}
                 borderBottom={'1px grey solid'}
                 p={3}
                 mx={'auto'}
@@ -20,7 +20,7 @@ function Post() {
                         boxShadow: '5px 5px 5px grey'
                     },
                     transition: 'all ease-in-out .3s'
-
+                    
                 }}
             >
                 
@@ -40,8 +40,8 @@ function Post() {
                     variant={'caption'}
                     color={'GrayText'}
                     fontSize={'1rem'}
-                    // position={'relative'}
-                    // top={2}
+                    position={'relative'}
+                    top={2} 
                     >
                         24h
                     </Typography>

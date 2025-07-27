@@ -16,18 +16,23 @@ function Navbar() {
         <Link to={'/'}>
             <IoMdHome size={28} />
         </Link>
+        
         <Link to={'/Search'}>
         <IoSearch size={28}/>
         </Link>
+
         <Link to={'/Liked'}>
         <FaRegHeart size={28}/>
         </Link>
+        
         <Link to={'/Edit'}>
         <FaEdit size={28}/>
         </Link>
-        <Link to={'/Profile'}>
-        <CgProfile size={28}/>
+
+        <Link to={'/profile/threads/1'}>
+        <CgProfile size={28}/>  
         </Link>
+
         </Stack>
     )
 }

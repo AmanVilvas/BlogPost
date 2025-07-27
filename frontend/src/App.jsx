@@ -4,7 +4,7 @@ import Header from "./components/common/Header"
 import Error from "./pages/Error"
 import Home from "./pages/Protected/Home"
 import Search from "./pages/Protected/Search"
-import Register from "./pages/Protected/Register"
+import Register from "./pages/Register"
 import './index.css'
 import ProtectedLayout from "./pages/Protected/ProtectedLayout"
 import { Box } from "@mui/material"
@@ -12,7 +12,7 @@ import ProfileLayout from './pages/Protected/profile/ProfileLayout'
 import Threads from './pages/Protected/profile/Threads'
 import Replies from './pages/Protected/profile/Replies'
 import Reposts from './pages/Protected/profile/Reposts'
-
+import SinglePost from "./pages/Protected/SInglePost"
 
   const App = ()=>{
 
@@ -25,7 +25,7 @@ import Reposts from './pages/Protected/profile/Reposts'
       <Route exact path='/' element={<ProtectedLayout />}>
       
       <Route path="/" element={<Home />} />
-      <Route path="/post/:id" element={<h1>Single Post</h1>} />
+      <Route path="/post/:id" element={<SinglePost />} />
       <Route path="/search" element={<Search />} />
       <Route path="/Liked" element={<h1>Liked</h1>} />
       <Route path="/Edit" element={<h1>Edit</h1>} />
@@ -36,7 +36,7 @@ import Reposts from './pages/Protected/profile/Reposts'
       </Route> 
       
       </Route>
-    
+      <Route path="/Register" element={<Register />} />
       <Route path="*" element={<Error />} /> 
 
     </Routes>
