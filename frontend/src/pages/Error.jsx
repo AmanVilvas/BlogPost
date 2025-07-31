@@ -1,8 +1,9 @@
 import { Stack, Typography, Button } from '@mui/material'
 import React from 'react'
-
+import { useNavigate } from 'react-router-dom'
 
 function Error() {
+    const navaigate = useNavigate()
     return (
         <div>
             <Stack
@@ -39,7 +40,9 @@ function Error() {
                                 bgcolor: "black"
                                 
                             }
-                        }}  >Back to Home</Button>
+                        }}
+                        onClick={()=>navaigate(-1)}
+                        >Go back</Button>
                 </Stack>
             </Stack>
         </div>

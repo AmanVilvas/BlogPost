@@ -46,7 +46,7 @@ function PostOne() {
                 sx={{
                     border: '0.1rem solid blue',
                     width:'0px',
-                    height: 700 ? '0px' : _500 ? '250px' : _400 ? '200px' : '150px'
+                    height: 700 ? '330px' : _500 ? '290px' : _400 ? '240px' : _300 ? '200px' : '150px'
                 }}
                 ></Stepper>
                 <AvatarGroup total={4} sx={{

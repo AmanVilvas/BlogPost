@@ -1,9 +1,10 @@
 import React from 'react'
-import {Stack, Typography, useMediaQuery} from '@mui/material'
+import { Stack, Typography, useMediaQuery } from '@mui/material'
 import { AiOutlineLike } from "react-icons/ai";
 import { FaRegCommentDots } from "react-icons/fa6";
 import { AiOutlineRetweet } from "react-icons/ai";
 import { PiShareFat } from "react-icons/pi";
+import { Link } from 'react-router-dom';
 
 
 
@@ -19,35 +20,37 @@ function PostTwo() {
                 <Stack flexDirection={'column'} gap={1}>
                     <Stack flexDirection={'column'}></Stack>
                     <Typography variant='h6'
-                    fontWeight={'bold'}
-                    fontSize={_300 ? '1rem' : '0.8rem'}
+                        fontWeight={'bold'}
+                        fontSize={_300 ? '1rem' : '0.8rem'}
                     >Aman Sharma</Typography>
-                    <Typography variant='h5'
-                    fontSize={_700 ? '1.4em' : _400 ? '1.2rem' : _300 ? '1rem' : '.8rem'}
-                    >description will look like this</Typography>
+                    <Link to={'/post/2'}>
+                        <Typography variant='h5'
+                            fontSize={_700 ? '1.4em' : _400 ? '1.2rem' : _300 ? '1rem' : '.8rem'} color='black'
+                        >description will look like this</Typography>
+                    </Link>
                 </Stack>
                 <img src="/black clover.webp" alt="" loading='lazy'
-                width={'auto'} height={_700 ? '280px' : _500 ? '250px' : _400 ? '200px' : '150px'} />
+                    width={'auto'} height={_700 ? '280px' : _500 ? '250px' : _400 ? '200px' : '150px'} />
 
                 <Stack flexDirection={'column'} gap={1}>
-                    <Stack flexDirection={'row'} 
-                    gap={2} 
-                    m={1}>
-                        <AiOutlineLike size={_700 ? 28 : _300 ? 25 : 22}/>
+                    <Stack flexDirection={'row'}
+                        gap={2}
+                        m={1}>
+                        <AiOutlineLike size={_700 ? 28 : _300 ? 25 : 22} />
                         <FaRegCommentDots size={_700 ? 28 : _300 ? 25 : 22} />
-                <AiOutlineRetweet size={_700 ? 28 : _300 ? 25 : 22}/>
-                <PiShareFat  size={_700 ? 28 : _300 ? 25 : 22}/>
+                        <AiOutlineRetweet size={_700 ? 28 : _300 ? 25 : 22} />
+                        <PiShareFat size={_700 ? 28 : _300 ? 25 : 22} />
 
                     </Stack>
                     <Stack flexDirection={'row'}
-                    gap={1}
-                    position={'relative'}
-                    top={-3}
-                    left={4}>
-                        <Typography variant='caption' fontSize={'0.9rem'} color='gray'>
+                        gap={1}
+                        position={'relative'}
+                        top={-3}
+                        left={4}>
+                        <Typography variant='caption' fontSize={_700 ? '0.9rem' : '.7rem'} color='gray'>
                             2 Likes .
                         </Typography>
-                        <Typography variant='caption' fontSize={'0.9rem'} color='gray'>
+                        <Typography variant='caption' fontSize={_700 ? '0.9rem' : '.7rem'} color='gray'>
                             1 comment {' '}
                         </Typography>
                     </Stack>

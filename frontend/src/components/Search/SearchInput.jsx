@@ -1,10 +1,13 @@
 import React from 'react'
-import { InputAdornment, Stack, TextField } from '@mui/material'
+import { InputAdornment, Stack, TextField, useMediaQuery } from '@mui/material'
 import { CiSearch } from "react-icons/ci";
 
 
 
 function SearchInput() {
+
+    const _700 = useMediaQuery("(min-width:700px)")
+
     return (
         <Stack>
             <TextField

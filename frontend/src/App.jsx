@@ -16,13 +16,16 @@ import SinglePost from "./pages/Protected/SInglePost"
 
   const App = ()=>{
 
+    const data = 1
+
   return(<>
 
     <Box minHeight={'100vh'}>
   <BrowserRouter>
 
     <Routes>
-      <Route exact path='/' element={<ProtectedLayout />}>
+      {
+        data ? <Route exact path='/' element={<ProtectedLayout />}>
       
       <Route path="/" element={<Home />} />
       <Route path="/post/:id" element={<SinglePost />} />
@@ -35,8 +38,11 @@ import SinglePost from "./pages/Protected/SInglePost"
         <Route exact path = "reposts/:id" element={<Reposts />} />
       </Route> 
       
-      </Route>
-      <Route path="/Register" element={<Register />} />
+      </Route>   
+        :  
+      <Route path="/" element={<Register />} />
+      }
+      
       <Route path="*" element={<Error />} /> 
 
     </Routes>
