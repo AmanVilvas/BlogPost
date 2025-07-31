@@ -1,13 +1,14 @@
 import React from 'react'
-import { Stack } from '@mui/material'
+import { Stack, useMediaQuery } from '@mui/material'
 import Comments from '../../../components/home/post/Comments'
 
 
 function Replies() {
+  const _700 = useMediaQuery('(min-width:700px)')
   return (
     <div>
       <Stack flexDirection={'column'} gap={2}
-        width={'800px'} mx={'auto'}>
+        width={ _700 ? '800px' : '90%'} mx={'auto'}>
         
       <Comments />
 

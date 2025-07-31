@@ -1,11 +1,13 @@
 import React from 'react'
-import { Stack } from '@mui/material'
+import { Stack, useMediaQuery } from '@mui/material'
 import Posts from '../../../components/home/Post'
 
 function Threads() {
+  const _700 = useMediaQuery('(min-width:700px)')
+
     return (
         <Stack flexDirection={'column'} gap={2}
-        mb={10} width={'800px'} mx={'auto'} >
+        mb={10} width={_700 ? '800px' : '90%'} mx={'auto'} >
          <Posts />
          <Posts />
          <Posts />
@@ -14,3 +16,4 @@ function Threads() {
 }
 
 export default Threads
+// 3:32:20

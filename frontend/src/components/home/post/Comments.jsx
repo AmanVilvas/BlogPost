@@ -1,8 +1,10 @@
 import React from 'react'
-import { Avatar, Stack, Typography } from '@mui/material'
+import { useMediaQuery, Avatar, Stack, Typography } from '@mui/material'
 import {IoIosMore} from 'react-icons/io'
 
 function Comments() {
+    const _700 = useMediaQuery('(min-width:700px)')
+ 
     return (
         <div>
         <Stack flexDirection={'row'}
@@ -11,7 +13,7 @@ function Comments() {
         borderBottom={'1px solid gray'} 
         mx={'auto'} width={'90%'}
         >
-            <Stack flexDirection={'row'} gap={2}>
+            <Stack flexDirection={'row'} gap={_700 ? 2 : 1}>
             <Avatar src='' alt='' />
             <Stack flexDirection={'column'}>
                 <Typography variant='h5'fontWeight={'bold'} fontSize={'.9rem'} >Aman Sharma</Typography>
@@ -20,7 +22,7 @@ function Comments() {
             </Stack>
             <Stack flexDirection={'row'} gap={1} alignItems={'center'} color={'grey'}>
                 <p>24d</p>
-                <IoIosMore size={28} />
+                <IoIosMore size={_700 ? 28 : 20} />
             </Stack>
         </Stack>
         </div>

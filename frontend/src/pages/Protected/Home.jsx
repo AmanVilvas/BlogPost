@@ -1,5 +1,5 @@
 import React from 'react'
-import { Stack } from '@mui/material'
+import { Stack, Button } from '@mui/material'
 import Input from '../../components/home/Input'
 import Post from '../../components/home/Post'
 
@@ -15,6 +15,9 @@ function Home() {
             <Post /> 
             <Post />  
         </Stack>
+        <Button size='large'  sx={{
+        mx:85, my:5, p:3, textDecoration:'underline', 
+        }} >Load More</Button>
         </div>
     )
 }

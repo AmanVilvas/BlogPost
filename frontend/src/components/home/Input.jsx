@@ -1,10 +1,13 @@
 import React from 'react'
-import { Stack, Typography, Avatar, Button } from '@mui/material'
+import { Stack, Typography, Avatar, Button, useMediaQuery } from '@mui/material'
 
 function Input() {
+    const _700 = useMediaQuery('(min-width:700px)')
+
     return (
         <div>
-            <Stack
+        {
+            _700 ? <Stack
             flexDirection={'row'}
             alignItems={'center'}
             justifyContent={'space-between'}
@@ -29,7 +32,10 @@ function Input() {
                  }   
                 }}
                 >Post</Button>
-            </Stack>
+            </Stack> 
+            :
+                null
+        }
         </div>
     )
 }

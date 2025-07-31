@@ -1,8 +1,10 @@
-import { Button, Stack, TextField, Typography } from "@mui/material"
+import { Button, Stack, TextField, Typography, useMediaQuery } from "@mui/material"
 import { useState  } from "react"
 
 
 const Register = ()=>{
+
+    const _700 = useMediaQuery("(min-width:700px)")
 
     const [login, setLogin] = useState(false)
     const [email, setEmail] = useState('')
@@ -28,18 +30,18 @@ const Register = ()=>{
     justifyContent={"center"}
     alignItems={"center"}
     flexDirection={"row"}
-    sx={{
-        backgroundImage:'url("public/threads-logo-black-background-vector_1017-45262.webp")',
+    sx={
+        _700 ? {backgroundImage:'url("public/woodcuts_14.jpg")',
         backgroundRepeat: 'no-repeat',
-        backgroundSize: '5% '
-    }}
+        backgroundSize: '100% 200px'} : null
+    }
 >
-        <Stack flexDirection={'column'} width={'50%'} 
-        gap={1.5} mt={5}
+        <Stack flexDirection={'column'} width={_700 ? '50%' : '90%'} 
+        gap={1.5} mt={_700 ? 20 : 0}
         >
         <Typography variant="h2" 
         alignSelf={'center'}
-        fontSize={'1.5rem'}
+        fontSize={_700 ? '1.5rem' : '1rem'}
         >{ login ? "Login with email" : "Register with email" }
         </Typography>
         {
@@ -77,7 +79,7 @@ const Register = ()=>{
         
         }</Button>
 
-        <Typography variant="subtitle1" alignSelf={'center'}
+        <Typography variant="subtitle1" alignSelf={'center'}fontSize={_700 ? '1.2rem' : '1rem'}
         >
         {login ? "first time here?" : "Already have an account" }<span className={"login-link"} onClick={toggleLogin}> {
             login ? "Sign up" : "Login"
