@@ -2,6 +2,8 @@ import React from 'react'
 import { Outlet } from 'react-router-dom'
 import { Stack, useMediaQuery } from '@mui/material'
 import Header from '../../components/common/Header'
+import AddPost from '../../components/modals/AddPost'
+
 
 function ProtectedLayout() {
     const _700 = useMediaQuery("(min-width:700px)")
@@ -15,6 +17,7 @@ function ProtectedLayout() {
         overflow={'hidden'}
         >
         <Header />
+        <AddPost />
         <Outlet />
         </Stack>
     )
