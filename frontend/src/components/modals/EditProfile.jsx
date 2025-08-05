@@ -1,11 +1,17 @@
 import { Dialog, Box, DialogTitle, DialogContent, Stack, Avatar, Button, Input, Typography, useMediaQuery } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
 import { RxCross2 } from 'react-icons'
 
-
+// 4:24:26
 
 function EditProfile() {
     const _700 = useMediaQuery("(min-width:700px)")
+    const [pic, setPic] = useState()
+    const [bio, setBio] = useState()
+
+    const imgRef = useRef()
+
+
     return (
         <div>
         <Dialog open={true} onClose={handleClose}
