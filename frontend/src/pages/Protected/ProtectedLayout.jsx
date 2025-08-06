@@ -3,6 +3,8 @@ import { Outlet } from 'react-router-dom'
 import { Stack, useMediaQuery } from '@mui/material'
 import Header from '../../components/common/Header'
 import AddPost from '../../components/modals/AddPost'
+import EditProfile from '../../components/modals/EditProfile'
+import MainMenu from '../../components/menu/MainMenu'
 
 
 function ProtectedLayout() {
@@ -17,7 +19,9 @@ function ProtectedLayout() {
         overflow={'hidden'}
         >
         <Header />
-        <AddPost />
+        {/* <AddPost /> */}
+        {/* <EditProfile /> */}
+        <MainMenu />
         <Outlet />
         </Stack>
     )
