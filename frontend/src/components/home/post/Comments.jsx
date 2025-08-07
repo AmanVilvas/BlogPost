@@ -2,9 +2,12 @@ import React from 'react'
 import { useMediaQuery, Avatar, Stack, Typography } from '@mui/material'
 import {IoIosMore} from 'react-icons/io'
 
+
 function Comments() {
     const _700 = useMediaQuery('(min-width:700px)')
- 
+    const handleDeleteComment = ()=>{}
+    const handleClose = ()=>{}
+
     return (
         <div>
         <Stack flexDirection={'row'}
@@ -25,6 +28,11 @@ function Comments() {
                 <IoIosMore size={_700 ? 28 : 20} />
             </Stack>
         </Stack>
+        <Menu anchorEl={""} open={true}
+                onClose={handleClose} 
+                anchorOrigin={{vertical:'bottom', horizontal:'right'}}
+                  transformOrigin={{vertical: 'top',horizontal: 'right' }}  ></Menu>
+                  <MenuItem onClick={handleDeleteComment}>Delete</MenuItem>
         </div>
     )
 }

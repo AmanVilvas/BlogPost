@@ -23,7 +23,7 @@ function PostTwo() {
                         fontWeight={'bold'}
                         fontSize={_300 ? '1rem' : '0.8rem'}
                     >Aman Sharma</Typography>
-                    <Link to={'/post/2'}>
+                    <Link to={'/post/2'} className='link' >
                         <Typography variant='h5'
                             fontSize={_700 ? '1.4em' : _400 ? '1.2rem' : _300 ? '1rem' : '.8rem'} color='black'
                         >description will look like this</Typography>
