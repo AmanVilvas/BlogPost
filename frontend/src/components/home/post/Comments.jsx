@@ -1,12 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useMediaQuery, Avatar, Stack, Typography } from '@mui/material'
-import {IoIosMore} from 'react-icons/io'
-
+import { IoIosMore } from 'react-icons/io'
+import { Menu, MenuItem } from '@mui/material'
+import { MdDeleteOutline } from 'react-icons/md'
 
 function Comments() {
     const _700 = useMediaQuery('(min-width:700px)')
-    const handleDeleteComment = ()=>{}
-    const handleClose = ()=>{}
+    const [menuAnchorEl, setMenuAnchorEl] = useState(null)
+
+    const handleOpenMenu = (event) => {
+        setMenuAnchorEl(event.currentTarget)
+    }
+
+    const handleClose = () => {
+        setMenuAnchorEl(null)
+    }
+
+    const handleDeleteComment = () => {
+        // TODO: implement delete
+        handleClose()
+    }
 
     return (
         <div>
@@ -25,14 +38,25 @@ function Comments() {
             </Stack>
             <Stack flexDirection={'row'} gap={1} alignItems={'center'} color={'grey'}>
                 <p>24d</p>
-                <IoIosMore size={_700 ? 28 : 20} />
+                <IoIosMore
+                  size={_700 ? 28 : 20}
+                  onClick={handleOpenMenu}
+                  style={{ cursor: 'pointer' }}
+                />
             </Stack>
         </Stack>
-        <Menu anchorEl={""} open={true}
-                onClose={handleClose} 
-                anchorOrigin={{vertical:'bottom', horizontal:'right'}}
-                  transformOrigin={{vertical: 'top',horizontal: 'right' }}  ></Menu>
-                  <MenuItem onClick={handleDeleteComment}>Delete</MenuItem>
+        <Menu
+          anchorEl={menuAnchorEl}
+          open={Boolean(menuAnchorEl)}
+          onClose={handleClose}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        >
+          <MenuItem onClick={handleDeleteComment} sx={{ color: 'error.main' }}>
+            <MdDeleteOutline size={18} style={{ marginRight: 8 }} />
+            Delete
+          </MenuItem>
+        </Menu>
         </div>
     )
 }

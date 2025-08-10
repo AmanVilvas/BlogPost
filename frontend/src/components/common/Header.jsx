@@ -1,13 +1,26 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Stack, useMediaQuery,Grid  } from '@mui/material'
 import Navbar from './Navbar'
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoMenu } from "react-icons/io5";
+import MainMenu from '../menu/MainMenu'
 
 
 
 function Header() {
+    const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+
+    const handleOpenMenu = (event) => {
+        setMenuAnchorEl(event.currentTarget);
+    };
+
+    const handleCloseMenu = () => {
+        setMenuAnchorEl(null);
+    };
     const _700 = useMediaQuery('(min-width:700px )')
+    // const _300 = useMediaQuery('(min-width:300px)')
+    const _500 = useMediaQuery('(min-width:500px)')
+
     return (
         <>
        { _700 ? <Stack flexDirection={"row"}
@@ -22,18 +35,20 @@ function Header() {
             width={45}
             height={45}/>
 
-            <Stack
+            { _700 ? <Stack
             justifyContent={'center'} 
             width={'500px'}
             bgcolor={'AliceBlue'}
             color={'black'}
             zIndex={2}
-            height={'70px'}>
+            height={'70px'}
+            >
                 <Navbar />
-                <IoMenu size={36} color='grey' className='image-icon' />
             </Stack>
+            : " "}
                 
-            <GiHamburgerMenu size={28} className='menuIcon' color='grey' />
+            <GiHamburgerMenu size={28} className='menuIcon' color='grey' onClick={handleOpenMenu}
+             style={{ cursor: 'pointer' }} />
  {/* 3:34 */}
         </Stack>    :  (
             <>
@@ -49,11 +64,18 @@ function Header() {
                 <Grid item xs={6} >
                 <img src="public\thread-black.png" alt="logo" width={60} height={35} />
                 </Grid>
-               <IoMenu size={36} className='image-icon' color='grey' />
+               <IoMenu size={36} className='image-icon' color='grey' onClick={handleOpenMenu} 
+                style={{ cursor: 'pointer' }}/>
                 </Grid>
             </Stack>
             </>
         )}
+        <MainMenu
+          anchorEl={menuAnchorEl}
+          open={Boolean(menuAnchorEl)}
+          onClose={handleCloseMenu}
+
+        />
         </>
         
     )
