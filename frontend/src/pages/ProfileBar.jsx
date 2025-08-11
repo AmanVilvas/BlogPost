@@ -32,7 +32,13 @@ function ProfileBar() {
           borderRadius: '10px',
           p:2,
           height:40,
-          backgroundColor: 'blue'
+          backgroundColor: 'grey',
+          marginRight: '15px',
+
+          "&:hover": {
+            backgroundColor: 'blue',
+            color: 'white'
+          }
         }}
         >
           Follow

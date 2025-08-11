@@ -6,7 +6,7 @@ import { useState, useRef } from 'react'
 
 
 
-function AddPost() {
+function AddPost({ open = false, onClose = () => {} }) {
     const _700 = useMediaQuery('(min-width:700px)')
     const _500 = useMediaQuery('(min-width:500px)')
     const _300 = useMediaQuery('(min-width:300px)')
@@ -17,10 +17,11 @@ function AddPost() {
 
 
     const handlePost = ()=>{
-        
+        onClose()
     }
 
     const handleClose = ()=>{
+        onClose()
     }
     const handleMediaRef = ()=>{
     mediaRef.current.click()
@@ -30,7 +31,7 @@ function AddPost() {
 
     return (
         <div>
-            <Dialog open={true} onClose={handleClose} 
+            <Dialog open={open} onClose={handleClose} 
             fullScreen={_700 ? false : true} fullWidth
             >
                 <Box position={'absolute'} top={20} right={20} onClick={handleClose} >

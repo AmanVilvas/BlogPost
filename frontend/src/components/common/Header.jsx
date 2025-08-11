@@ -31,9 +31,11 @@ function Header() {
         top={0}
         py={1}
         >
-            <img src='public\threads-logo-black-background-vector_1017-45262.webp' alt='logo' 
-            width={45}
-            height={45}/>
+            <img
+              src='public\\logo-bgremoved.png'
+              alt='logo'
+              style={{ height: 45, width: 'auto', objectFit: 'contain' }}
+            />
 
             { _700 ? <Stack
             justifyContent={'center'} 
@@ -57,12 +59,15 @@ function Header() {
             border={.01} borderColor={'grey'}
             zIndex={2}
             >
-                <Navbar />
                 <Grid container alignItems={'center'} 
-                height={60} p={1} justifyContent={'space-evenly'} >
+                height={36} p={1} justifyContent={'space-evenly'} >
                 
                 <Grid item xs={6} >
-                <img src="public\thread-black.png" alt="logo" width={60} height={35} />
+                <img
+                  src="public\\logo-bgremoved.png"
+                  alt="logo"
+                  style={{ height: 35, width: 'auto', objectFit: 'contain' }}
+                />
                 </Grid>
                <IoMenu size={36} className='image-icon' color='grey' onClick={handleOpenMenu} 
                 style={{ cursor: 'pointer' }}/>

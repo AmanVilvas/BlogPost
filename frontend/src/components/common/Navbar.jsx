@@ -5,9 +5,15 @@ import { FaRegHeart, FaEdit } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { Link } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
+import { useState } from 'react';
+import AddPost from '../../components/modals/AddPost'
 
 function Navbar() {
     const _300 = useMediaQuery('(min-width:300px)')
+    const [isAddOpen, setIsAddOpen] = useState(false)
+
+    const handleOpenAdd = () => setIsAddOpen(true)
+    const handleCloseAdd = () => setIsAddOpen(false)
 
     return (
         <Stack
@@ -29,12 +35,13 @@ function Navbar() {
 
                 <FaRegHeart size={_300 ? 32 : 24} color='black' />
 
-                <FaEdit size={_300 ? 32 : 24} color='black' className='image-icon' />
+                <FaEdit size={_300 ? 32 : 24} color='black' className='image-icon' onClick={handleOpenAdd} style={{ cursor: 'pointer' }} />
 
             <Link to={'/profile/threads/1'}>
                 <CgProfile size={_300 ? 32 : 24} color='black' />
             </Link>
 
+            <AddPost open={isAddOpen} onClose={handleCloseAdd} />
         </Stack>
     )
 }
