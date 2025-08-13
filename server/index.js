@@ -1,6 +1,7 @@
 const express = require('express')
 const dotenv = require('dotenv')
 const connectDB = require('./config/db')
+const router = require('./routes')
 
 
 dotenv.config()
@@ -8,9 +9,11 @@ dotenv.config()
 const app = express()
 connectDB()
 
-app.get('/', (req,res)=>{
-    res.send("dummy route")
-})
+
+app.use(express.json())
+app.use("/api", router)
+
+
 const port = process.env.PORT
 app.listen(port, ()=>{
     console.log(`server is alive at ${port}`);
