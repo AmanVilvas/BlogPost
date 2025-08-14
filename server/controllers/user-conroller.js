@@ -167,4 +167,62 @@ exports.userDetails = async ( req, res )=>{
     }
 }
 
+exports.followUser = async (req, res)=>{
+    try{
+        const { id } = req.params
+        if(!id){
+            return res.status(400).json({
+            msg:"id is required"
+        })
+        }
+        const userExists = await User.findOne(id)
+        if(!userExists){
+            return res.status(400).json({
+            msg:"username not found"
+        })
+        //check in followers array if our id exists means we are already following the user id
+        //if we follows them then unfollow and vice verse
+        }
+
+        if(userExists.followers.includes(req.user._id)){
+            await User.findByIdAndUpdate(
+                userExists._id,{
+                    $pullc: {followers: req.user._id},
+                },
+                {new: true}
+            );
+            return res.status(200).json({
+                msg:`you have unfollowed ${userExists.userName}`
+            //we have unfollowed them
+            
+            })
+        }
+
+        //if already follows the push the user id to followers array
+
+        if(userExists.followers.includes(req.user._id)){
+            await User.findByIdAndUpdate(
+                userExists._id,{
+                    $push: {followers: req.user._id},
+                },
+                {new: true}
+            );
+            return res.status(200).json({
+                msg:`you are following ${userExists.userName}`
+                //you have followed the user
+            })
+        }
+
+
+
+        }
+    
+    catch(err){
+        res.status(400).json({
+            msg:"username is required", err: err.message
+        })
+    }
+}
+
+
 //1:42
