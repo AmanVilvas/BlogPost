@@ -84,7 +84,7 @@ try{
             msg: ' email and password are required to login'
         })
     }
-    const userExists = await User.findOne({email})
+    const userExists = await User.findOne({ email })
     // console.log(userExists)
     if(!userExists){
         return res.status(400).json({
@@ -141,7 +141,7 @@ exports.userDetails = async ( req, res )=>{
         })
         }
 
-        const user = await  User.findById(id)
+        const user = await  User.findById( id )
         .select("-password")
         .populate('followers')
         .populate({
@@ -175,7 +175,7 @@ exports.followUser = async (req, res)=>{
             msg:"id is required"
         })
         }
-        const userExists = await User.findOne(id)
+        const userExists = await User.findById(id)
         if(!userExists){
             return res.status(400).json({
             msg:"username not found"
@@ -187,8 +187,9 @@ exports.followUser = async (req, res)=>{
         if(userExists.followers.includes(req.user._id)){
             await User.findByIdAndUpdate(
                 userExists._id,{
-                    $pullc: {followers: req.user._id},
+                    $pull: {followers: req.user._id},
                 },
+                //new will update the list of followers in the document like saving the docs
                 {new: true}
             );
             return res.status(200).json({
@@ -200,7 +201,7 @@ exports.followUser = async (req, res)=>{
 
         //if already follows the push the user id to followers array
 
-        if(userExists.followers.includes(req.user._id)){
+        else{
             await User.findByIdAndUpdate(
                 userExists._id,{
                     $push: {followers: req.user._id},
