@@ -1,5 +1,5 @@
 const express = require('express')
-const { signin, login, userDetails, followUser } = require('./controllers/user-conroller')
+const { signin, login, userDetails, followUser, updateProfile } = require('./controllers/user-conroller')
 const  auth  = require('./middleware/auth')
 
 
@@ -9,10 +9,11 @@ const router = express.Router()
     router.post('/signin', signin)
     router.post('/login', login)
 
-    router.get('/user:id', userDetails)
+    router.get('/user:id', auth, userDetails)
     
     //to check follower of some user
     router.put('/user/follow/:id', auth, followUser)
+    router.put('/update', auth, updateProfile)
 
     // const protected = async(req, res)=>{
     //     res.status(200).json({
