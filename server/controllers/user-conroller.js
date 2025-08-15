@@ -295,3 +295,52 @@ exports.updateProfile = async (req, res) => {
         })
     }
 }
+
+exports.searchUser = async(req,res) =>{
+    try{
+        const {query} = req.params
+        const users = await User.find({
+            $or: [
+                {userName: { $regex: query, $options:'i'}},
+                {email: { $regex: query, $options:'i'}}
+            ]
+        })
+        res.status(200).json({msg: 'searched', users})
+    }catch(err){
+        return res.status(400).json({
+            msg:"Error in searching!! ", err: err.message
+        })
+    }
+}
+exports.logout = async(req,res) =>{
+    try{
+        res.cookie('token', "",{
+            maxAge: Date.now(),
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true
+        })
+        res.status(201).json({
+            msg:'logged out successfully'
+        })
+    }catch(err){
+        return res.status(400).json({
+            msg:"Error in logout!! ", err: err.message
+        })
+    }
+}
+exports.myInfo = async (req,res)=>{
+    try{
+        res.status(200).json({
+            me: req.user
+        })
+    }catch(err){
+        res.status(400).json({
+            msg:"info cant be found", err: err.message
+        })
+    }
+}
+
+
+
+
