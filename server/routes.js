@@ -1,6 +1,7 @@
 const express = require('express')
 const { signin, login, userDetails, followUser, updateProfile, searchUser, logout, myInfo } = require('./controllers/user-conroller')
 const  auth  = require('./middleware/auth')
+const { addPost, allPosts } = require('./controllers/post-controller')
 
 
 
@@ -17,6 +18,10 @@ const router = express.Router()
     router.get('/users/search/:query', auth, searchUser)
     router.post('/logout', auth, logout)
     router.get('/me', auth, myInfo)
+
+    router.post('/post', auth, addPost)
+    router.get('/post', auth, allPosts)
+
     // const protected = async(req, res)=>{
     //     res.status(200).json({
     //         msg: ' Access done! '

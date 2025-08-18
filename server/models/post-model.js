@@ -4,7 +4,7 @@ const postSchema = new mongoose.Schema({
 
     admin: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        ref: 'User'
 
     },
     text: {
@@ -18,7 +18,7 @@ const postSchema = new mongoose.Schema({
     },
     likes: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        ref: 'User'
     }],
     comments: [{
         type: mongoose.Schema.Types.ObjectId,
