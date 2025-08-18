@@ -1,7 +1,7 @@
 const express = require('express')
 const { signin, login, userDetails, followUser, updateProfile, searchUser, logout, myInfo } = require('./controllers/user-conroller')
 const  auth  = require('./middleware/auth')
-const { addPost, allPosts } = require('./controllers/post-controller')
+const { addPost, allPosts, deletePost } = require('./controllers/post-controller')
 
 
 
@@ -21,6 +21,7 @@ const router = express.Router()
 
     router.post('/post', auth, addPost)
     router.get('/post', auth, allPosts)
+    router.delete('/post/:id', auth, deletePost)
 
     // const protected = async(req, res)=>{
     //     res.status(200).json({

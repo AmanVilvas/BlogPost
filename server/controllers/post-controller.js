@@ -81,9 +81,27 @@ exports.allPosts = async(req,res)=>{
                 model: 'User'
             }
         })
-    res.status(200).json({msg: "posts fetched successfuly", 
-        post
-    })
+    
+
+    if (post.length === 0) {
+            return res.status(200).json({
+                msg: "No posts available",
+                post: []
+            });
+        }
+
+       // otherwise send posts and stop execution
+        return res.status(200).json({
+            msg: "Posts fetched successfully",
+            post,
+            count: post.length
+        });
+
+    // if(post){
+    //     res.json({
+    //         msg: "no posst available"
+    //     })
+    // }
     }catch(err){
         res.status(400).json({
             msg:"no more post", err: err.message
@@ -91,4 +109,57 @@ exports.allPosts = async(req,res)=>{
     }
 }
 
+exports.deletePost = async (req,res) =>{
+    try{
+        const { id } = req.params
+        //id-- post id that need to be deleted
+        if(!id){
+            return res.status(400).json({
+                msg: " ID is required!"
+            })
+        }
+        const postExist = await Post.findById(id)
+        if(!postExist){
+            return res.status(400).json({
+                msg: "post doesnt exists"
+            })
+        }
+        const userId = req.user._id.toString()
+        const adminId = postExist.admin._id.toString()
 
+        if(userId !== adminId){
+            return res.status(400).json({
+                msg: "only admin of the post can delete the post!"
+            })        }
+        if(postExist.media){
+            await cloudinary.uploader.destroy(postExist.public_id,
+                (error, result)=>{
+                    console.log({error, result})
+                }
+            )
+        }
+        //deleting all the comments fronm the post
+        await Comment.deleteMany({ _id: {$in: postExist.comments } })
+
+        await User.updateMany({
+            $or: [{threads: id}, {resposts: id}, {replies: id} ],
+        },{
+            $pull: {
+                threads: id,
+                reposts: id,
+                replies: id
+            }
+        },
+        { new: true }
+    )
+
+    await Post.findByIdAndDelete(id)
+    res.status(200).json({
+        msg: "post deleted successfully"
+    })
+    } catch(err){
+        return res.status(400).json({
+            msg: "Error in deletePost! ", err: err.message
+        })
+    }
+}
