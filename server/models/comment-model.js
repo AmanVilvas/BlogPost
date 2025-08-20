@@ -5,7 +5,7 @@ const commentschema = new mongoose.Schema({
     admin: {
 //jisne comment kiya hai uski id
         type: mongoose.Types.ObjectId,
-        ref: 'user'
+        ref: 'User'
     },
     //jin post par comment kiya 
     post: {
