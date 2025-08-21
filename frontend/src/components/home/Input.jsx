@@ -1,7 +1,15 @@
 import React from 'react'
 import { Stack, Typography, Avatar, Button, useMediaQuery } from '@mui/material'
+import { useDispatch } from 'react-redux'
+import { addPostModel } from '../../redux/slice'
 
 function Input() {
+
+const dispatch = useDispatch()
+const handleAddPost = () =>{
+    dispatch(addPostModel(true))
+}
+
     const _700 = useMediaQuery('(min-width:700px)')
 
     return (
@@ -17,6 +25,7 @@ function Input() {
             borderBottom={'2px solid gray'}
             my={5}
             mx={'auto'}
+            onClick={handleAddPost}
             >
                 <Stack flexDirection={'row'} alignSelf={'center'} gap={2}>
                     <Avatar src="" alt="AJ" />

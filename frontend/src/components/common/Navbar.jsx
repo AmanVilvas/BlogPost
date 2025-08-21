@@ -7,13 +7,20 @@ import { Link } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import { useState } from 'react';
 import AddPost from '../../components/modals/AddPost'
+import { useDispatch, useSelector } from 'react-redux';
+import { addPostModel } from '../../redux/slice';
+
 
 function Navbar() {
     const _300 = useMediaQuery('(min-width:300px)')
-    const [isAddOpen, setIsAddOpen] = useState(false)
+    // const [isAddOpen, setIsAddOpen] = useState(false)
+    const dispatch = useDispatch()
 
-    const handleOpenAdd = () => setIsAddOpen(true)
-    const handleCloseAdd = () => setIsAddOpen(false)
+    //dispatch is used to call the function of reducer to give some result/output
+
+    const handleAddPost = () => {
+        dispatch(addPostModel(true))
+    }
 
     return (
         <Stack
@@ -35,13 +42,13 @@ function Navbar() {
 
                 <FaRegHeart size={_300 ? 32 : 24} color='black' />
 
-                <FaEdit size={_300 ? 32 : 24} color='black' className='image-icon' onClick={handleOpenAdd} style={{ cursor: 'pointer' }} />
+                <FaEdit size={_300 ? 32 : 24} color='black' className='image-icon' onClick={handleAddPost} style={{ cursor: 'pointer' }} />
 
             <Link to={'/profile/threads/1'}>
                 <CgProfile size={_300 ? 32 : 24} color='black' />
             </Link>
 
-            <AddPost open={isAddOpen} onClose={handleCloseAdd} />
+            {/* <AddPost open={isAddOpen} onClose={handleCloseAdd} /> */}
         </Stack>
     )
 }

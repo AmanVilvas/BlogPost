@@ -3,10 +3,16 @@ import { Dialog, DialogContent, DialogTitle, useMediaQuery, Stack, Button, Box, 
 import { RxCross2 } from 'react-icons/rx'
 import { FaImages } from 'react-icons/fa'
 import { useState, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { addPostModel } from '../../redux/slice'
 
 
 
-function AddPost({ open = false, onClose = () => {} }) {
+function AddPost() {
+
+    const { openAddPostModel } = useSelector((state) => state.service)
+
+
     const _700 = useMediaQuery('(min-width:700px)')
     const _500 = useMediaQuery('(min-width:500px)')
     const _300 = useMediaQuery('(min-width:300px)')
@@ -16,12 +22,10 @@ function AddPost({ open = false, onClose = () => {} }) {
     const mediaRef = useRef()
 
 
-    const handlePost = ()=>{
-        onClose()
-    }
-
+    const dispatch = useDispatch()
+    const handlePost = () =>{}
     const handleClose = ()=>{
-        onClose()
+        dispatch(addPostModel(false))
     }
     const handleMediaRef = ()=>{
     mediaRef.current.click()
@@ -31,11 +35,12 @@ function AddPost({ open = false, onClose = () => {} }) {
 
     return (
         <div>
-            <Dialog open={open} onClose={handleClose} 
+            <Dialog open={openAddPostModel} onClose={handleClose} 
             fullScreen={_700 ? false : true} fullWidth
             >
-                <Box position={'absolute'} top={20} right={20} onClick={handleClose} >
-                    <RxCross2  size={28} className='image-icon' />
+                <Box position={'absolute'} top={20} right={20}  >
+                    <RxCross2  size={28} className='image-icon'
+                    onClick={handleClose} />
                 </Box>
                 <DialogTitle textAlign={'center'} mb={5} >
                     New thread... 
@@ -87,7 +92,7 @@ function AddPost({ open = false, onClose = () => {} }) {
                     bgcolor:'blue', color:'white'
                     }
                 }} 
-                onClick={handlePost}
+                
                 >Post</Button>
                     </Stack>
 
