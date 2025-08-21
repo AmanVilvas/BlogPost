@@ -2,6 +2,8 @@ import React from 'react'
 import { Stack, Typography, Chip, Avatar, Button, useMediaQuery } from '@mui/material'
 import { FaInstagram } from "react-icons/fa6";
 import { Link, Outlet } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { EditProfileModel } from '../../../redux/slice';
 
 function ProfileLayout() {
   const _300 = useMediaQuery('(min-width:300px)')
@@ -9,6 +11,14 @@ function ProfileLayout() {
   const _700 = useMediaQuery('(min-width:700px)')
 
   const containerWidth = _700 ? '800px' : _660 ? '600px' : '90%'
+
+  const dispatcher = useDispatch()
+
+  const handleOpenEditProfile = ()=>{
+    dispatcher(EditProfileModel(true))
+  }
+console.log(EditProfileModel);
+
 
   return (
     <Stack flexDirection={'column'} alignItems={'center'}>
@@ -63,6 +73,7 @@ function ProfileLayout() {
             borderRadius: '12px',
             mt: 1
           }}
+        onClick={handleOpenEditProfile}
         >
           Edit profile
         </Button>

@@ -1,10 +1,18 @@
 import { Dialog, Box, DialogTitle, DialogContent, Stack, Avatar, Button, Input, Typography, useMediaQuery } from '@mui/material'
 import React, { useState, useRef } from 'react'
 import { RxCross2 } from 'react-icons/rx'
+import { useDispatch, useSelector } from 'react-redux'
+import { EditProfileModel } from '../../redux/slice'
 
 // 4:24:26
 
 function EditProfile() {
+
+    const { openEditProfileModel } = useSelector(state => state.service)
+    const dispatch = useDispatch()
+
+    
+
     const _700 = useMediaQuery("(min-width:700px)")
     const [pic, setPic] = useState()
     const [bio, setBio] = useState()
@@ -16,6 +24,7 @@ function EditProfile() {
     }
 
     const handleClose = ()=>{
+        dispatch(EditProfileModel(false))
 
     }
 
@@ -25,7 +34,7 @@ function EditProfile() {
 
     return (
         <div>
-        <Dialog open={true} onClose={handleClose}
+        <Dialog open={ openEditProfileModel } onClose={handleClose}
             fullWidth fullScreen={_700 ? false : true}
         >
             <Box position={'absolute'} 

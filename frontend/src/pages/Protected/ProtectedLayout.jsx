@@ -20,7 +20,7 @@ function ProtectedLayout() {
         >
         <Header />
         <AddPost />
-        {/* <EditProfile /> */}
+        <EditProfile />
         <MainMenu />
         <Outlet />
         </Stack>
