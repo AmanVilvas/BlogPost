@@ -17,7 +17,7 @@ function ProfileLayout() {
   const handleOpenEditProfile = ()=>{
     dispatcher(EditProfileModel(true))
   }
-console.log(EditProfileModel);
+// console.log(EditProfileModel);
 
 
   return (

@@ -2,7 +2,8 @@ import React from 'react'
 import { Button, Stack, TextField, Typography } from '@mui/material'
 import Post from '../../components/home/Post'
 import Comments from '../../components/home/post/Comments'
-
+import { useSelector } from 'react-redux'
+import { useState } from 'react'
 function SinglePost() {
     const[comment, setComment] = useState('')
 

@@ -15,6 +15,7 @@ function Navbar() {
     const _300 = useMediaQuery('(min-width:300px)')
     // const [isAddOpen, setIsAddOpen] = useState(false)
     const dispatch = useDispatch()
+    const {darkMode} = useSelector((state) => state.service)
 
     //dispatch is used to call the function of reducer to give some result/output
 
@@ -30,22 +31,22 @@ function Navbar() {
             justifyContent={'space-around'}
         >
             <FiArrowLeft size={_300 ? 32 : 24 } 
-            color='black'
+            color={darkMode ? 'white' : 'black'}
             />
             <Link to={'/'} className='link'>
-                <IoMdHome size={_300 ? 32 : 24} color='black' />
+                <IoMdHome size={_300 ? 32 : 24} color={darkMode ? 'white' : 'black'} />
             </Link>
 
             <Link to={'/Search'}>
-                <IoSearch size={_300 ? 32 : 24} color='black' />
+                <IoSearch size={_300 ? 32 : 24} color={darkMode ? 'white' : 'black'} />
             </Link>
 
-                <FaRegHeart size={_300 ? 32 : 24} color='black' />
+                <FaRegHeart size={_300 ? 32 : 24} color={darkMode ? 'white' : 'black'} />
 
-                <FaEdit size={_300 ? 32 : 24} color='black' className='image-icon' onClick={handleAddPost} style={{ cursor: 'pointer' }} />
+                <FaEdit size={_300 ? 32 : 24} color={darkMode ? 'white' : 'black'} className='image-icon' onClick={handleAddPost} style={{ cursor: 'pointer' }} />
 
             <Link to={'/profile/threads/1'}>
-                <CgProfile size={_300 ? 32 : 24} color='black' />
+                <CgProfile size={_300 ? 32 : 24} color={darkMode ? 'white' : 'black'} />
             </Link>
 
             {/* <AddPost open={isAddOpen} onClose={handleCloseAdd} /> */}

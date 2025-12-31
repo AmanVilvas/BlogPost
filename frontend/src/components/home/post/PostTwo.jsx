@@ -5,11 +5,14 @@ import { FaRegCommentDots } from "react-icons/fa6";
 import { AiOutlineRetweet } from "react-icons/ai";
 import { PiShareFat } from "react-icons/pi";
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux'
 
 
 
 function PostTwo() {
 
+
+    const {darkMode} = useSelector(state=>state.service)
     const _700 = useMediaQuery("(min-width:700px)")
     const _300 = useMediaQuery("(min-width:300px)")
     const _400 = useMediaQuery("(min-width:400px)")
@@ -25,7 +28,7 @@ function PostTwo() {
                     >Aman Sharma</Typography>
                     <Link to={'/post/2'} className='link' >
                         <Typography variant='h5'
-                            fontSize={_700 ? '1.4em' : _400 ? '1.2rem' : _300 ? '1rem' : '.8rem'} color='black'
+                            fontSize={_700 ? '1.4em' : _400 ? '1.2rem' : _300 ? '1rem' : '.8rem'} color={darkMode ? 'white' : 'black'}
                         >description will look like this</Typography>
                     </Link>
                 </Stack>
@@ -47,10 +50,10 @@ function PostTwo() {
                         position={'relative'}
                         top={-3}
                         left={4}>
-                        <Typography variant='caption' fontSize={_700 ? '0.9rem' : '.7rem'} color='gray'>
+                        <Typography variant='caption' fontSize={_700 ? '0.9rem' : '.7rem'} color={darkMode ? 'white' : 'gray'}>
                             2 Likes .
                         </Typography>
-                        <Typography variant='caption' fontSize={_700 ? '0.9rem' : '.7rem'} color='gray'>
+                        <Typography variant='caption' fontSize={_700 ? '0.9rem' : '.7rem'} color={darkMode ? 'white' : 'gray'}>
                             1 comment {' '}
                         </Typography>
                     </Stack>

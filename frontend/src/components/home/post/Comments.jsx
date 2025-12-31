@@ -3,11 +3,12 @@ import { useMediaQuery, Avatar, Stack, Typography } from '@mui/material'
 import { IoIosMore } from 'react-icons/io'
 import { Menu, MenuItem } from '@mui/material'
 import { MdDeleteOutline } from 'react-icons/md'
+import { useSelector } from 'react-redux'
 
 function Comments() {
     const _700 = useMediaQuery('(min-width:700px)')
     const [menuAnchorEl, setMenuAnchorEl] = useState(null)
-
+const {darkMode} = useSelector(state=>state.service)
     const handleOpenMenu = (event) => {
         setMenuAnchorEl(event.currentTarget)
     }
@@ -26,7 +27,7 @@ function Comments() {
         <Stack flexDirection={'row'}
         justifyContent={'space-between'}
         px={2} pb={4}
-        borderBottom={'1px solid gray'} 
+        borderBottom={darkMode ? '1px solid white' : '1px solid gray'} 
         mx={'auto'} width={'90%'}
         >
             <Stack flexDirection={'row'} gap={_700 ? 2 : 1}>
@@ -36,7 +37,7 @@ function Comments() {
                 <Typography variant='subtitle2'>This is my comment.</Typography>
             </Stack>
             </Stack>
-            <Stack flexDirection={'row'} gap={1} alignItems={'center'} color={'grey'}>
+            <Stack flexDirection={'row'} gap={1} alignItems={'center'} color={darkMode ? 'white' : 'grey'}>
                 <p>24d</p>
                 <IoIosMore
                   size={_700 ? 28 : 20}

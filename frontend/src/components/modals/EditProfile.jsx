@@ -40,7 +40,7 @@ function EditProfile() {
             <Box position={'absolute'} 
                 top={20} right={20} onClick={handleClose}
             >
-                <RxCross2 size={28} />
+                <RxCross2 size={28}  className='image-icon' />
             </Box>
             <DialogTitle textAlign={'center'} mb={5}>
                 Edit Profile

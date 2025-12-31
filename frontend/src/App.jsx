@@ -1,31 +1,83 @@
 // import Loader from "./components/common/Loader"
 import {BrowserRouter, Routes, Route} from "react-router-dom"
-import Header from "./components/common/Header"
 import Error from "./pages/Error"
 import Home from "./pages/Protected/Home"
 import Search from "./pages/Protected/Search"
 import Register from "./pages/Register"
 import './index.css'
 import ProtectedLayout from "./pages/Protected/ProtectedLayout"
-import { Box } from "@mui/material"
+import { Box, CssBaseline } from "@mui/material"
+import { ThemeProvider, createTheme } from "@mui/material/styles"
 import ProfileLayout from './pages/Protected/profile/ProfileLayout'
 import Threads from './pages/Protected/profile/Threads'
 import Replies from './pages/Protected/profile/Replies'
 import Reposts from './pages/Protected/profile/Reposts'
 import SinglePost from "./pages/Protected/SInglePost"
+import { useSelector } from 'react-redux'
+import { useEffect, useMemo } from "react"
+import { useMyInfoQuery } from "./redux/service"
+
 
   const App = ()=>{
 
-    const data = 1
+    const { data, error, isLoading } = useMyInfoQuery()
+    const {darkMode} = useSelector(state=>state.service)
+
+    const theme = useMemo(() => {
+      return createTheme({
+        palette: {
+          mode: darkMode ? 'dark' : 'light',
+          background: {
+            default: darkMode ? '#000000' : '#ffffff',
+            paper: darkMode ? '#0b0b0b' : '#ffffff',
+          },
+        },
+      })
+    }, [darkMode])
+
+    useEffect(() => {
+      const root = document.documentElement
+      if (darkMode) {
+        root.classList.add('dark')
+      } else {
+        root.classList.remove('dark')
+      }
+    }, [darkMode])
+    
+    console.log('MyInfo Query State:', { 
+      isAuthenticated: !!data,
+      isLoading, 
+      hasError: !!error 
+    })
+    
+    if (error) {
+      console.error('Authentication Error:', error)
+      if (error.data) {
+        console.error('Error details:', error.data)
+      }
+      if (error.status) {
+        console.error('Error status:', error.status)
+      }
+    }
 
   return(<>
 
-    <Box minHeight={'100vh'}>
-  <BrowserRouter>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box 
+        minHeight={'100vh'}
+        sx={{
+          bgcolor: 'background.default',
+          color: 'text.primary',
+          transition: 'background-color 0.3s ease, color 0.3s ease'
+        }}
+      >
+    <BrowserRouter>
 
     <Routes>
       {
-        data ? <Route exact path='/' element={<ProtectedLayout />}>
+       
+        !error && !isLoading ? <Route exact path='/' element={<ProtectedLayout />}>
       
       <Route path="/" element={<Home />} />
       <Route path="/post/:id" element={<SinglePost />} />
@@ -49,7 +101,8 @@ import SinglePost from "./pages/Protected/SInglePost"
 
   </BrowserRouter>
 
-      </Box> 
+        </Box>
+      </ThemeProvider>
 
   </>
   )

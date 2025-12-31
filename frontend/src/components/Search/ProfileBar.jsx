@@ -1,11 +1,12 @@
 import { useMediaQuery, Avatar, Button, Stack, Typography } from '@mui/material'
+import { useSelector } from 'react-redux'
 
 
 
 function ProfileBar() {
       
   const _700 = useMediaQuery("(min-width:700px)")
-
+const {darkMode} = useSelector(state=>state.service)
   return (
     <div>
       <Stack flexDirection={'row'}
@@ -20,24 +21,24 @@ function ProfileBar() {
             <Typography variant='h6' fontWeight={'bold'} fontSize={_700 ? '1rem' : '.8rem'}>
               Aman Sharma
             </Typography>
-            <Typography variant='caption' fontSize={_700 ? '1rem' : '.8rem'} color='grey'>User info</Typography>
+            <Typography variant='caption' fontSize={_700 ? '1rem' : '.8rem'} color={darkMode ? 'white' : 'grey'}>User info</Typography>
             <Typography variant='caption' fontSize={_700 ? '1rem' : '.8rem'} >3 followers</Typography>
           </Stack>
         </Stack>
 
         <Button size='medium'
         sx={{
-          border: '1px solid grey',
-          color: 'white',
+          border: darkMode ? '1px solid white' : '1px solid grey',
+          color: darkMode ? 'black' : 'white',
           borderRadius: '10px',
           p:2,
           height:40,
-          backgroundColor: 'grey',
+          backgroundColor: darkMode ? 'white' : 'grey',
           marginRight: '15px',
 
           "&:hover": {
-            backgroundColor: 'blue',
-            color: 'white'
+            backgroundColor: darkMode ? 'blue' : 'white',
+            color: darkMode ? 'white' : 'black'
           }
         }}
         >

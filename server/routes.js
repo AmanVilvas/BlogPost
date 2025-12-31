@@ -11,7 +11,7 @@ const router = express.Router()
     router.post('/signin', signin)
     router.post('/login', login)
 
-    router.get('/user:id', auth, userDetails)
+    router.get('/user/:id', auth, userDetails)
     
     //to check follower of some user
     router.put('/user/follow/:id', auth, followUser)

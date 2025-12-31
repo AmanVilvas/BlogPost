@@ -1,5 +1,5 @@
 import SearchInput from '../../components/Search/SearchInput'
-import ProfileBar from '../ProfileBar'
+import ProfileBar from '../../components/Search/ProfileBar'
 import React from 'react'
 import { Stack } from '@mui/material'
 

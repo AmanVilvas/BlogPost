@@ -24,7 +24,7 @@ exports.signin = async (req, res)=>{
 
 
     if(!hashedPassword){
-        return res.status(400)({ msg : 'problem with bcyrpt '})
+        return res.status(400).json({ msg : 'problem with bcyrpt '})
     }
 
     const user = new User({
@@ -45,23 +45,43 @@ exports.signin = async (req, res)=>{
     //till now users details are saved successfully where all details are correct and password is hashed..
 
 
+    // Debug logging
+    console.log('JWT_SECRET exists (signin):', !!process.env.JWT_SECRET)
+    
+    if(!process.env.JWT_SECRET) {
+        return res.status(500).json({
+            msg: 'Server configuration error: JWT_SECRET is not defined'
+        })
+    }
+    
     const accessToken = jwt.sign( { token: result._id }, process.env.JWT_SECRET, {
          expiresIn: "7d" 
         })
 
       if(!accessToken){
         return res.status(400).json({
-            msg: 'jwt why??? ! '
+            msg: 'Failed to generate JWT token'
         })
     }
 //server side cookie/ cookie--- now jwt token is done so we will store that in a cookie to keep it more secure and we cant even change it using the browserrr
 
+    const isProd = process.env.NODE_ENV === 'production'
+    // Updated cookie settings for better cross-domain handling
     res.cookie('token', accessToken, {
-        maxAge: 1000*60*60*24*7,
+        maxAge: 1000*60*60*24*7, // 7 days
         httpOnly: true,
-        sameSite: 'none',
-        secure: true
-    } )
+        path: '/',
+        sameSite: isProd ? 'none' : 'lax',
+        secure: isProd || req.secure || req.headers['x-forwarded-proto'] === 'https'
+    })
+    
+    // Debug log the cookie being set
+    console.log('Setting cookie in signin:', {
+        token: 'JWT_TOKEN_SET',
+        maxAge: '7 days',
+        secure: isProd || req.secure || req.headers['x-forwarded-proto'] === 'https',
+        sameSite: isProd ? 'none' : 'lax'
+    })
 
         res.status(200).json({
             msg: `Hey ${result.userName} whats up? Welcome to the club!  `
@@ -97,6 +117,15 @@ try{
             msg: 'passeword is incorrect'
         })
     }
+    // Debug logging
+    console.log('JWT_SECRET exists (login):', !!process.env.JWT_SECRET)
+    
+    if(!process.env.JWT_SECRET) {
+        return res.status(500).json({
+            msg: 'Server configuration error: JWT_SECRET is not defined'
+        })
+    }
+    
     const accessToken = jwt.sign({
         token: userExists._id},
         process.env.JWT_SECRET,
@@ -105,14 +134,25 @@ try{
 
     if(!accessToken){
          return res.status(400).json({
-            msg: 'failed to create the token'
+            msg: 'Failed to generate JWT token'
         })
     }
+    const isProd = process.env.NODE_ENV === 'production'
+    // Updated cookie settings for better cross-domain handling
     res.cookie("token", accessToken, {
-        maxAge: 1000*60*60*24*7,
+        maxAge: 1000*60*60*24*7, // 7 days
         httpOnly: true,
-        secure: true,
-        sameSite: 'none'
+        path: '/',
+        sameSite: isProd ? 'none' : 'lax',
+        secure: isProd || req.secure || req.headers['x-forwarded-proto'] === 'https'
+    })
+    
+    // Debug log the cookie being set
+    console.log('Setting cookie in login:', {
+        token: 'JWT_TOKEN_SET',
+        maxAge: '7 days',
+        secure: isProd || req.secure || req.headers['x-forwarded-proto'] === 'https',
+        sameSite: isProd ? 'none' : 'lax'
     })
 
     res.status(200).json({
@@ -314,12 +354,18 @@ exports.searchUser = async(req,res) =>{
 }
 exports.logout = async(req,res) =>{
     try{
+        const isProd = process.env.NODE_ENV === 'production'
+        // Clear the cookie properly
         res.cookie('token', "",{
-            maxAge: Date.now(),
+            maxAge: 0, // Expire immediately
             httpOnly: true,
-            sameSite: 'none',
-            secure: true
+            path: '/',
+            sameSite: isProd ? 'none' : 'lax',
+            secure: isProd || req.secure || req.headers['x-forwarded-proto'] === 'https'
         })
+        
+        console.log('Clearing cookie in logout')
+        
         res.status(201).json({
             msg:'logged out successfully'
         })
