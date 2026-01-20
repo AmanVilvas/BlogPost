@@ -94,6 +94,22 @@ export const serviceApi = createApi({
                 method: "GET"
             }
         }),
+        addPost: builder.mutation({
+            query: (data) => ({
+                url: `post`,
+                method: "POST",
+                body: data, 
+            }),
+            invalidateTags: ["Post"],
+            async onQueryStarted(paramas, {dispatch, queryFulfilled}){
+                try{
+                    const {data} = await queryFulfilled
+                    dispatch(addSingle)
+                }catch(err){
+                console.log(err);
+            }    
+            }
+        }),
         allPosts: builder.query({
             query: (page)=>({
              url: `posts?page=${page}`,
@@ -115,7 +131,22 @@ export const serviceApi = createApi({
                     
                 }
             }
-        }),  
+        }),
+        deletePost: builder.mutation({
+            query: (id) =>({
+                url: `post/{$id}`,
+                method: 'DELETE'
+            }),
+            async onQueryStarted(parmas, {dispatch, queryFulfilled}){
+                try{
+                    const {data} await queryFulfilled
+                    dispatch()
+                }else(err){
+                    console.log(err);
+                    
+                }
+            }
+        }),
         followUser: builder.mutation({
             query: (id)=>({
                 url: `user/folow/$id`,
@@ -125,9 +156,9 @@ export const serviceApi = createApi({
                 type:"User", id
             }],
         }) 
-        2:10
+        // 2:10
 
     })
 });
 
-export const { useSigninMutation, useLoginMutation, useMyInfoQuery, useLogoutMeMutation, useUserDetailsQuery, useAllPostsQuery, useSearchUsersQuery } = serviceApi
+export const { useSigninMutation, useLoginMutation, useMyInfoQuery, useLogoutMeMutation, useUserDetailsQuery, useAllPostsQuery, useSearchUsersQuery, useFollowUserMutation  } = serviceApi

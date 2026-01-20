@@ -25,7 +25,8 @@ export const serviceSlice = createSlice({
         darkMode: getInitialDarkMode(),
         myInfo: null ,
         user:{},
-        allPosts:[]           
+        allPosts:[],
+        addSingle:[]        
     },
     reducers: {
         //to chnage the value inside a state 
@@ -78,12 +79,32 @@ export const serviceSlice = createSlice({
                 });
                 state.allPosts = existingPosts;
             }
+        },
+        addSingle: (state, action)=>{
+            let newArr = [...state.addPosts]
+            let updatedArr = [action.payload.newPost, ...newArr]
+            let uniqueArr = new Set();
+            let uniquePosts = updatedArr.filter((e)=>{
+                if(!uniqueArr.add(e)){
+                    uniqueArr.add(e)
+                    return true
+                }
+                return false
+
+                state.allPosts = [...uniquePosts]
+            })
+        
+        
+        },
+        deletePost: (state, action)=>{
+            let postArr = [...]
         }
-    
     } 
 })
 
-export const { addPostModel, EditProfileModel, toggleMainMenu, toggleMyMenu, toggleColorMode, addMyInfo, addUser, addToAllPost } = serviceSlice.actions
+export const { addPostModel, EditProfileModel, toggleMainMenu, toggleMyMenu, toggleColorMode, addMyInfo, addUser, addToAllPost, addSingle, deletePost } = serviceSlice.actions
 
+
+2:19
 export default serviceSlice.reducer
 
