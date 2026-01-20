@@ -23,7 +23,10 @@ export const serviceSlice = createSlice({
         anchorE1: null,
          anchorE2: null, 
         darkMode: getInitialDarkMode(),
-        myInfo: null },
+        myInfo: null ,
+        user:{},
+        allPosts:[]           
+    },
     reducers: {
         //to chnage the value inside a state 
         addPostModel: (state, action) =>{
@@ -52,12 +55,35 @@ export const serviceSlice = createSlice({
         },
         addMyInfo: (state, action)=>{
             state.myInfo = action.payload.me
+        },
+        addUser:(state, action)=>{
+            state.user = action.payload
+        },
+        addToAllPost: (state, action) =>{
+            const newPostArr = [...action.payload.posts]
+            if(state.allPosts.length === 0){
+                state.allPosts = newPostArr
+                return
+            }else{
+                const existingPosts = [...state.allPosts]
+                newPostArr.forEach((e)=>{
+                    const existingIndex = existingPosts.findIndex((i)=>{
+                        return i._id === e._id
+                    })
+                    if(existingIndex !== -1){
+                        existingPosts[existingIndex] = e;
+                    }else{
+                        existingPosts.push(e)
+                    }
+                });
+                state.allPosts = existingPosts;
+            }
         }
     
     } 
 })
 
-export const { addPostModel, EditProfileModel, toggleMainMenu, toggleMyMenu, toggleColorMode, addMyInfo } = serviceSlice.actions
+export const { addPostModel, EditProfileModel, toggleMainMenu, toggleMyMenu, toggleColorMode, addMyInfo, addUser, addToAllPost } = serviceSlice.actions
 
 export default serviceSlice.reducer
 

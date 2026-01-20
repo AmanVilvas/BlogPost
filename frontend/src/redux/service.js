@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { addMyInfo } from './slice'
+import { addMyInfo, addToAllPost } from './slice'
 
 
 export const serviceApi = createApi({
@@ -69,8 +69,65 @@ export const serviceApi = createApi({
                 method:'POST'
             }),
             invalidatesTags: ['Me']
-        })
+        }),
+        userDetails: builder.query({
+            query: (id) => ({
+                url: `url/${id}`,
+                method:'GET'
+            }),
+            providedTags: (result, error, { id }) => [{
+                type: "User", id
+            }],
+            async onQueryStarted(params, { dispatch, queryFulfilled }){
+                try{
+                    const { data } = await queryFulfilled
+                    dispatch(addUser(data));
+                    // 1:44:25
+                }catch(err){
+                    console.log(err);
+                }
+            }
+        }),
+        searchUsers: builder.query({
+            query: (query)=>{
+                url: `users/search/${query}`
+                method: "GET"
+            }
+        }),
+        allPosts: builder.query({
+            query: (page)=>({
+             url: `posts?page=${page}`,
+                method:'GET'
+            }),
+            providedTags: (result, error, args)=>{
+                return result ? [ ...result.posts.map(({_id}) =>({
+                    type:'Post', id:_id
+                })),
+            {type: 'Post', id:'LIST'}  ] : [{type: 'Post', id:'LIST'}];
+            },
+            async onQueryStarted(params, {dispatch, queryFulfilled}){
+                try{
+                    //we could have done = const result = result.data but did data only by destructringg {}
+                    const {data} = await queryFulfilled
+                    dispatch(addToAllPost(data))
+                }catch(err){
+                    console.log(err);
+                    
+                }
+            }
+        }),  
+        followUser: builder.mutation({
+            query: (id)=>({
+                url: `user/folow/$id`,
+                method:"PUT",
+            }),
+            invalidatesTags:(result, err, {id})=>[{
+                type:"User", id
+            }],
+        }) 
+        2:10
+
     })
 });
 
-export const { useSigninMutation, useLoginMutation, useMyInfoQuery, useLogoutMeMutation } = serviceApi
+export const { useSigninMutation, useLoginMutation, useMyInfoQuery, useLogoutMeMutation, useUserDetailsQuery, useAllPostsQuery, useSearchUsersQuery } = serviceApi

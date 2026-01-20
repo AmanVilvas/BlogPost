@@ -2,21 +2,25 @@ import React from 'react'
 import { Stack, Typography, Chip, Avatar, Button, useMediaQuery } from '@mui/material'
 import { FaInstagram } from "react-icons/fa6";
 import { Link, Outlet } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { EditProfileModel } from '../../../redux/slice';
-
+import { useUserDetailsQuery } from '../../../redux/service';
 function ProfileLayout() {
+
+  const {id} = useParams()
   const _300 = useMediaQuery('(min-width:300px)')
   const _660 = useMediaQuery('(min-width:660px)')
   const _700 = useMediaQuery('(min-width:700px)')
-
+      const dispatch = useDispatch()
+      const {darkMode} = useSelector((state) => state.service)
   const containerWidth = _700 ? '800px' : _660 ? '600px' : '90%'
-
+  const {data: userDetails} = useUserDetailsQuery(id)
   const dispatcher = useDispatch()
 
   const handleOpenEditProfile = ()=>{
     dispatcher(EditProfileModel(true))
   }
+  
 // console.log(EditProfileModel);
 
 
@@ -66,7 +70,7 @@ function ProfileLayout() {
         <Button
           size='medium'
           sx={{
-            color: 'black',
+            color: darkMode ? 'white' : black ,
             width: '100%',
             textAlign: 'center',
             border: '1px solid #d0d0d0',
