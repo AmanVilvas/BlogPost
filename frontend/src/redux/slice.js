@@ -26,7 +26,8 @@ export const serviceSlice = createSlice({
         myInfo: null ,
         user:{},
         allPosts:[],
-        addSingle:[]        
+        addSingle:[],
+        postID: null    
     },
     reducers: {
         //to chnage the value inside a state 
@@ -96,15 +97,17 @@ export const serviceSlice = createSlice({
         
         
         },
-        deletePost: (state, action)=>{
-            let postArr = [...]
+        deleteThePost: (state, action)=>{
+            let postArr = [...state.allPosts]
+            let newArr = postArr.filter((e)=> e._id !== state.postID)
+            state.allPosts = newArr
         }
     } 
 })
 
-export const { addPostModel, EditProfileModel, toggleMainMenu, toggleMyMenu, toggleColorMode, addMyInfo, addUser, addToAllPost, addSingle, deletePost } = serviceSlice.actions
+export const { addPostModel, EditProfileModel, toggleMainMenu, toggleMyMenu, toggleColorMode, addMyInfo, addUser, addToAllPost, addSingle, deleteThePost } = serviceSlice.actions
 
 
-2:19
+// 2:19
 export default serviceSlice.reducer
 
