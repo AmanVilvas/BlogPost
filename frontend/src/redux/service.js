@@ -189,9 +189,26 @@ export const serviceApi = createApi({
       }),
       invalidatesTags: (result, err, { postId }) => [{ type: "Post", id: postId }],
     }),
+
+    // likePost: builder.mutation({
+    //     query:(id) =>({
+    //       url:`post/like/${id}`,
+    //       method: 'PUT'  
+    //     }),
+    //     invalidatesTags:(result, error, {id}) =>[{
+    //       type: 'Post', id
+    //     }]
+    // }),
+
+     
+
   }),
 });
 
+
+
+
+ 
 export const {
   useSigninMutation,
   useLoginMutation,
@@ -211,3 +228,10 @@ export const {
   useDeleteCommentMutation,
 } = serviceApi;
 // 2:30
+
+
+
+
+// n1=1,2
+// n2=3,4
+// n3=1,2 i=2

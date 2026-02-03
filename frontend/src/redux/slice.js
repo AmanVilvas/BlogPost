@@ -27,7 +27,8 @@ export const serviceSlice = createSlice({
         user:{},
         allPosts:[],
         addSingle:[],
-        postID: null    
+        postID: null,
+        searchedUsers: []
     },
     reducers: {
         //to chnage the value inside a state 
@@ -86,26 +87,32 @@ export const serviceSlice = createSlice({
             let updatedArr = [action.payload.newPost, ...newArr]
             let uniqueArr = new Set();
             let uniquePosts = updatedArr.filter((e)=>{
-                if(!uniqueArr.add(e)){
+                if(!uniqueArr.has(e._id)){
                     uniqueArr.add(e)
                     return true
                 }
                 return false
-
-                state.allPosts = [...uniquePosts]
             })
-        
+                state.allPosts = [...uniquePosts]
         
         },
         deleteThePost: (state, action)=>{
             let postArr = [...state.allPosts]
             let newArr = postArr.filter((e)=> e._id !== state.postID)
             state.allPosts = newArr
+        },
+        addPostID: (state,action)=>{
+            state.postID = action.payload;
+        },
+
+        addTOSearchUsers: (state, action) =>{
+            //2:31
+            state.searchedUsers = action.payload 
         }
     } 
 })
 
-export const { addPostModel, EditProfileModel, toggleMainMenu, toggleMyMenu, toggleColorMode, addMyInfo, addUser, addToAllPost, addSingle, deleteThePost } = serviceSlice.actions
+export const { addPostModel, EditProfileModel, toggleMainMenu, toggleMyMenu, toggleColorMode, addMyInfo, addUser, addToAllPost, addSingle, deleteThePost, addTOSearchUsers, addPostID } = serviceSlice.actions
 
 
 // 2:19
