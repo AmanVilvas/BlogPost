@@ -1,6 +1,7 @@
 const User = require("../models/user-model");
 const Post = require("../models/post-model");
 const Comment = require("../models/comment-model");
+const Notification = require("../models/notification-model");
 const mongoose = require("mongoose");
 
 exports.addComment = async (req, res) => {
@@ -41,6 +42,18 @@ exports.addComment = async (req, res) => {
       { $push: { replies: newComment._id } },
       { new: true }
     );
+
+    // CREATE NOTIFICATION FOR REPLY
+    if (req.user._id.toString() !== postExists.admin.toString()) {
+      const newNotif = new Notification({
+        sender: req.user._id,
+        receiver: postExists.admin,
+        type: 'reply',
+        post: postExists._id,
+        comment: newComment._id
+      });
+      await newNotif.save();
+    }
 
     return res.status(201).json({ msg: "Comment added successfully!", comment: newComment });
   } catch (err) {

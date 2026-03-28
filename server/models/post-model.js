@@ -24,6 +24,11 @@ const postSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'comment'
     }],
+    repostOf: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'post'
+    }
+
 
 
 },{timestamps: true})

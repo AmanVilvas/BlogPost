@@ -72,19 +72,30 @@ exports.allPosts = async (req, res) => {
             pageNumber = 1;
         }
 
-                // Exclude stale repost-wrapper docs (no text AND no media)
-        const post = await Post.find({
-            $or: [
-                { text: { $exists: true, $ne: null } },
-                { media: { $exists: true, $ne: null } }
-            ]
-        })
-            .sort({ createdAt: -1 })
-            .skip((pageNumber - 1) * 5)
+        const post = await Post.find({})
+            .sort({
+                createdAt: -1
+                //-1 means newest first and 1 means oldest first
+            }).skip((pageNumber - 1) * 5)
             .limit(5)
-            .populate({ path: "admin", select: "-password" })
-            .populate({ path: "likes", select: "-password" })
-            .populate({ path: "comments", populate: { path: "admin", model: "User" } })
+            .populate({path: 'admin',
+                select: '-password'
+            }).populate({path: 'likes',
+                select: '-password'
+            }).populate({
+                path: 'comments',
+                populate: {
+                    path: 'admin',
+                    model: 'User'
+                }
+            }).populate({
+                path: 'repostOf',
+                populate: [
+                    { path: 'admin', select: '-password' },
+                    { path: 'likes', select: '-password' },
+                    { path: 'comments', populate: { path: 'admin', model: 'User' } }
+                ]
+            })
 
 
         if (post.length === 0) {
@@ -223,67 +234,4 @@ exports.likePost = async (req, res) => {
 };
 //3:32
 
-
-exports.repost = async (req, res) =>{
-    try{
-        const { id } = req.params
-        if(!id){ return res.status(400).json({ msg:"id is required" }) }
-        const post = await Post.findById(id)
-        if(!post){ return res.status(400).json({ msg:"post does not exist" }) }
-
-        const newId = new mongoose.Types.ObjectId(id)
-        const userExist = req.user._id
-        if(!userExist){ return res.status(400).json({ msg:"user does not exist" }) }
-
-        if(req.user.reposts.includes(newId)){
-            await User.findByIdAndUpdate(userExist, { $pull: { reposts: post._id } }, { new: true })
-            return res.status(200).json({ msg: "Repost removed", reposted: false })
-        } else {
-            await User.findByIdAndUpdate(userExist, { $push: { reposts: post._id } }, { new: true });
-            if (req.user._id.toString() !== post.admin.toString()) {
-                const newNotif = new Notification({ sender: req.user._id, receiver: post.admin, type: 'repost', post: post._id });
-                await newNotif.save();
-            }
-            return res.status(200).json({ msg: "Reposted", reposted: true });
-        }
-    }catch (err) {
-        return res.status(500).json({ msg: "problem in repost", err: err.message });
-    }
-}
-
-exports.singlePost = async (req,res) => {
-    try{
-        const { id } = req.params
-        if(!id){
-            return res.status(400).json({
-                msg: "id is required!"
-            })
-        }
-
-        const post = await Post.findById( id ).populate({
-            path: 'admin',
-            select: '-password'
-        }).populate({ path: 'likes', select: '-password'}).populate({
-            path: 'comments', 
-            populate: {
-                path: 'admin',
-            }
-        }).populate({
-            path: 'repostOf',
-            populate: [
-                { path: 'admin', select: '-password' },
-                { path: 'likes', select: '-password' },
-                { path: 'comments', populate: { path: 'admin' } }
-            ]
-        })
-        return res.status(200).json({
-            msg:"post fetched successfully", post
-        })
-
-    }catch(err){
-        return res.status(400).json({
-            msg:"problem with singlePost", err: err.message
-        })
-    }
-}
 

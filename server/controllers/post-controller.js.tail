@@ -1,0 +1,35 @@
+exports.singlePost = async (req,res) => {
+    try{
+        const { id } = req.params
+        if(!id){
+            return res.status(400).json({
+                msg: "id is required!"
+            })
+        }
+
+        const post = await Post.findById( id ).populate({
+            path: 'admin',
+            select: '-password'
+        }).populate({ path: 'likes', select: '-password'}).populate({
+            path: 'comments', 
+            populate: {
+                path: 'admin',
+            }
+        }).populate({
+            path: 'repostOf',
+            populate: [
+                { path: 'admin', select: '-password' },
+                { path: 'likes', select: '-password' },
+                { path: 'comments', populate: { path: 'admin' } }
+            ]
+        })
+        return res.status(200).json({
+            msg:"post fetched successfully", post
+        })
+
+    }catch(err){
+        return res.status(400).json({
+            msg:"problem with singlePost", err: err.message
+        })
+    }
+}
