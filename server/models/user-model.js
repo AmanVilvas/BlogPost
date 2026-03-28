@@ -30,7 +30,8 @@ const userSchema = new mongoose.Schema({
     followers: [{
         type: mongoose.Schema.Types.ObjectId, ref: "User"
     }],
-    post: [{
+    // user's own threads/posts
+    threads: [{
         type: mongoose.Schema.Types.ObjectId, ref: 'post'
     }],
     replies: [{
@@ -40,12 +41,6 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, ref: 'post'
     }]
 
-//32:17
-
-},{timestamps: true})
-
-
-
+}, { timestamps: true })
 
 module.exports = mongoose.model('User', userSchema)
-

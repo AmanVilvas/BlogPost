@@ -5,29 +5,52 @@ import { FaImages } from 'react-icons/fa'
 import { useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { addPostModel } from '../../redux/slice'
+// addPost mutation wired up below
+import { useAddPostMutation } from '../../redux/service'
 
 
 
 function AddPost() {
 
-    const { openAddPostModel } = useSelector((state) => state.service)
+    const { openAddPostModel, myInfo } = useSelector((state) => state.service)
 
 
     const _700 = useMediaQuery('(min-width:700px)')
     const _500 = useMediaQuery('(min-width:500px)')
     const _300 = useMediaQuery('(min-width:300px)')
 
-    const [text, setText] = useState()
+    const [text, setText] = useState('')
     const [media, setMedia] = useState()
     const mediaRef = useRef()
 
+    // API mutation for posting
+    const [addPost, { isLoading }] = useAddPostMutation()
 
     const dispatch = useDispatch()
-    const handlePost = () =>{}
-    const handleClose = ()=>{
+
+    const handlePost = async () => {
+        if (!text && !media) return // nothing to post
+
+        // FormData is required because server uses formidable to handle file uploads
+        const formData = new FormData()
+        if (text) formData.append('text', text)
+        if (media) formData.append('media', media)
+
+        try {
+            await addPost(formData).unwrap()
+            // Close modal and reset form on success
+            setText('')
+            setMedia(null)
+            dispatch(addPostModel(false))
+        } catch (err) {
+            console.error('Post failed:', err)
+        }
+    }
+
+    const handleClose = () => {
         dispatch(addPostModel(false))
     }
-    const handleMediaRef = ()=>{
+    const handleMediaRef = () => {
     mediaRef.current.click()
     }
 
@@ -47,9 +70,10 @@ function AddPost() {
                 </DialogTitle>
                 <DialogContent>
                     <Stack flexDirection={'row'} gap={2} mb={5} >
-                    <Avatar src="" alt="" />
+                    {/* Show logged-in user's profile pic and name */}
+                    <Avatar src={myInfo?.profilePic} alt={myInfo?.userName} />
                     <Stack>
-                        <Typography variant='h6' fontWeight={'bold'} fontSize={'1rem'} >Aman Sharma
+                        <Typography variant='h6' fontWeight={'bold'} fontSize={'1rem'} >{myInfo?.userName}
                         </Typography>
                     <textarea cols={_500 ? 45 : 5} 
                     rows={2} className='text1' 
@@ -86,14 +110,14 @@ function AddPost() {
                 <Typography variant='h6' fontSize={'1rem'} color={'grey'} >
                     Anyone can reply
                 </Typography>
-                <Button size={'large'} sx={{
+                <Button size={'large'} onClick={handlePost} disabled={isLoading} sx={{
                     bgcolor: 'greytext', color:'black', borderRadius: '12px',
                 ":hover" :{
                     bgcolor:'blue', color:'white'
                     }
                 }} 
                 
-                >Post</Button>
+                >{isLoading ? 'Posting...' : 'Post'}</Button>
                     </Stack>
 
                 </DialogContent>

@@ -20,45 +20,29 @@ import { useMyInfoQuery } from "./redux/service"
 
   const App = ()=>{
 
-    const { data, error, isLoading } = useMyInfoQuery()
-    const {darkMode} = useSelector(state=>state.service)
+  const { data, error, isLoading } = useMyInfoQuery()
+  const { darkMode } = useSelector(state => state.service)
 
-    const theme = useMemo(() => {
-      return createTheme({
-        palette: {
-          mode: darkMode ? 'dark' : 'light',
-          background: {
-            default: darkMode ? '#000000' : '#ffffff',
-            paper: darkMode ? '#0b0b0b' : '#ffffff',
-          },
+  const theme = useMemo(() => {
+    return createTheme({
+      palette: {
+        mode: darkMode ? 'dark' : 'light',
+        background: {
+          default: darkMode ? '#000000' : '#ffffff',
+          paper: darkMode ? '#0b0b0b' : '#ffffff',
         },
-      })
-    }, [darkMode])
-
-    useEffect(() => {
-      const root = document.documentElement
-      if (darkMode) {
-        root.classList.add('dark')
-      } else {
-        root.classList.remove('dark')
-      }
-    }, [darkMode])
-    
-    console.log('MyInfo Query State:', { 
-      isAuthenticated: !!data,
-      isLoading, 
-      hasError: !!error 
+      },
     })
-    
-    if (error) {
-      console.error('Authentication Error:', error)
-      if (error.data) {
-        console.error('Error details:', error.data)
-      }
-      if (error.status) {
-        console.error('Error status:', error.status)
-      }
+  }, [darkMode])
+
+  useEffect(() => {
+    const root = document.documentElement
+    if (darkMode) {
+      root.classList.add('dark')
+    } else {
+      root.classList.remove('dark')
     }
+  }, [darkMode])
 
   return(<>
 

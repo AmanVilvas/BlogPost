@@ -23,20 +23,13 @@ const router = express.Router()
     router.post('/post', auth, addPost)
     router.get('/post', auth, allPosts)
     router.delete('/post/:id', auth, deletePost)
-    router.put('/post/:id', auth, likePost)
+    // like a post -- separate path to avoid clash with DELETE /post/:id
+    router.put('/post/like/:id', auth, likePost)
     router.put('/repost/:id', auth, repost)
-    router.get('/getPost/:id', auth, singlePost)
+    // get a single post -- GET /post/:id (Express differentiates GET from DELETE)
+    router.get('/post/:id', auth, singlePost)
     router.post('/comment/:id', auth, addComment)
     router.delete('/comment/:postId/:id', auth, deleteComment)
-
-
-    // const protected = async(req, res)=>{
-    //     res.status(200).json({
-    //         msg: ' Access done! '
-    //     })
-    // }
-
-    // router.get('/demo',auth , protected)
 
 
 module.exports = router

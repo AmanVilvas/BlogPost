@@ -12,7 +12,7 @@ function getInitialDarkMode() {
     }
     return false
 }
-
+// 2;48
 export const serviceSlice = createSlice({
     name: 'service',
     initialState: { 
@@ -21,7 +21,7 @@ export const serviceSlice = createSlice({
         openEditProfileModel: false, 
         openmenu: null, 
         anchorE1: null,
-         anchorE2: null, 
+        anchorE2: null, 
         darkMode: getInitialDarkMode(),
         myInfo: null ,
         user:{},
@@ -57,50 +57,52 @@ export const serviceSlice = createSlice({
             }
         },
         addMyInfo: (state, action)=>{
-            state.myInfo = action.payload.me
+            state.myInfo = action.payload?.me ?? null
         },
         addUser:(state, action)=>{
             state.user = action.payload
         },
-        addToAllPost: (state, action) =>{
-            const newPostArr = [...action.payload.posts]
-            if(state.allPosts.length === 0){
-                state.allPosts = newPostArr
-                return
-            }else{
-                const existingPosts = [...state.allPosts]
-                newPostArr.forEach((e)=>{
-                    const existingIndex = existingPosts.findIndex((i)=>{
-                        return i._id === e._id
-                    })
-                    if(existingIndex !== -1){
-                        existingPosts[existingIndex] = e;
-                    }else{
-                        existingPosts.push(e)
-                    }
-                });
-                state.allPosts = existingPosts;
-            }
-        },
-        addSingle: (state, action)=>{
-            let newArr = [...state.addPosts]
-            let updatedArr = [action.payload.newPost, ...newArr]
-            let uniqueArr = new Set();
-            let uniquePosts = updatedArr.filter((e)=>{
-                if(!uniqueArr.has(e._id)){
-                    uniqueArr.add(e)
-                    return true
-                }
-                return false
-            })
-                state.allPosts = [...uniquePosts]
-        
-        },
-        deleteThePost: (state, action)=>{
-            let postArr = [...state.allPosts]
-            let newArr = postArr.filter((e)=> e._id !== state.postID)
-            state.allPosts = newArr
-        },
+        addToAllPost: (state, action) => {
+        const newPosts =
+        action.payload?.post ||   // { post: [] }
+        action.payload?.data ||    // { data: [] }
+        action.payload ||          // [] directly
+        [];
+
+        if (!Array.isArray(newPosts)) return;
+
+        if (state.allPosts.length < 3) {
+    state.allPosts = newPosts;
+    return;
+  }
+
+  const map = new Map();
+
+  state.allPosts.forEach((p) => map.set(p._id, p));
+  newPosts.forEach((p) => map.set(p._id, p));
+
+  state.allPosts = Array.from(map.values());
+},
+
+        addSingle: (state, action) => {
+  const newPost = action.payload?.newPost;
+  if (!newPost) return;
+
+  const updated = [newPost, ...state.allPosts];
+
+  const seen = new Set();
+  state.allPosts = updated.filter((p) => {
+    if (seen.has(p._id)) return false;
+    seen.add(p._id);
+    return true;
+  });
+},
+
+        deleteThePost: (state, action) => {
+            const id = action.payload;
+            state.allPosts = state.allPosts.filter((p) => p._id !== id);
+},
+
         addPostID: (state,action)=>{
             state.postID = action.payload;
         },

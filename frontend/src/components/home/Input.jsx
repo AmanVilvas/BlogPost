@@ -1,12 +1,13 @@
 import React from 'react'
 import { Stack, Typography, Avatar, Button, useMediaQuery } from '@mui/material'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { addPostModel } from '../../redux/slice'
 
 function Input() {
 
 const dispatch = useDispatch()
-const handleAddPost = () =>{
+const { myInfo } = useSelector(state => state.service)
+const handleAddPost = () => {
     dispatch(addPostModel(true))
 }
 
@@ -28,8 +29,8 @@ const handleAddPost = () =>{
             onClick={handleAddPost}
             >
                 <Stack flexDirection={'row'} alignSelf={'center'} gap={2}>
-                    <Avatar src="" alt="AJ" />
-                    <Typography 
+                    <Avatar src={myInfo?.profilePic || ''} alt={myInfo?.userName} />
+                    <Typography
                     color='gray'
                     mt={1}
                     >Start your thread...</Typography>

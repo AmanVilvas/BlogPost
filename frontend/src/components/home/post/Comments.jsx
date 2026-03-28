@@ -4,11 +4,18 @@ import { IoIosMore } from 'react-icons/io'
 import { Menu, MenuItem } from '@mui/material'
 import { MdDeleteOutline } from 'react-icons/md'
 import { useSelector } from 'react-redux'
+// deleteComment wired up below
+import { useDeleteCommentMutation } from '../../../redux/service'
 
-function Comments() {
+// comment -- the actual comment object from the backend (with .admin, .text, .createdAt)
+// postId -- needed to tell the server which post this comment belongs to
+function Comments({ comment, postId }) {
     const _700 = useMediaQuery('(min-width:700px)')
     const [menuAnchorEl, setMenuAnchorEl] = useState(null)
-const {darkMode} = useSelector(state=>state.service)
+    const { darkMode, myInfo } = useSelector(state => state.service)
+
+    const [deleteComment] = useDeleteCommentMutation()
+
     const handleOpenMenu = (event) => {
         setMenuAnchorEl(event.currentTarget)
     }
@@ -17,10 +24,22 @@ const {darkMode} = useSelector(state=>state.service)
         setMenuAnchorEl(null)
     }
 
-    const handleDeleteComment = () => {
-        // TODO: implement delete
+    const handleDeleteComment = async () => {
         handleClose()
+        try {
+            await deleteComment({ postId, id: comment._id }).unwrap()
+        } catch (err) {
+            console.error('Delete comment failed:', err)
+        }
     }
+
+    // Only show delete option if this comment belongs to the logged-in user
+    const isMyComment = myInfo?._id === comment?.admin?._id
+
+    // Format timestamp
+    const timeAgo = comment?.createdAt
+        ? new Date(comment.createdAt).toLocaleDateString()
+        : ''
 
     return (
         <div>
@@ -31,19 +50,25 @@ const {darkMode} = useSelector(state=>state.service)
         mx={'auto'} width={'90%'}
         >
             <Stack flexDirection={'row'} gap={_700 ? 2 : 1}>
-            <Avatar src='' alt='' />
+            {/* Real commenter avatar */}
+            <Avatar src={comment?.admin?.profilePic} alt={comment?.admin?.userName} />
             <Stack flexDirection={'column'}>
-                <Typography variant='h5'fontWeight={'bold'} fontSize={'.9rem'} >Aman Sharma</Typography>
-                <Typography variant='subtitle2'>This is my comment.</Typography>
+                {/* Real commenter username */}
+                <Typography variant='h5'fontWeight={'bold'} fontSize={'.9rem'} >{comment?.admin?.userName}</Typography>
+                {/* Real comment text */}
+                <Typography variant='subtitle2'>{comment?.text}</Typography>
             </Stack>
             </Stack>
             <Stack flexDirection={'row'} gap={1} alignItems={'center'} color={darkMode ? 'white' : 'grey'}>
-                <p>24d</p>
-                <IoIosMore
-                  size={_700 ? 28 : 20}
-                  onClick={handleOpenMenu}
-                  style={{ cursor: 'pointer' }}
-                />
+                <p>{timeAgo}</p>
+                {/* Only show the 3-dots menu if it's the user's own comment */}
+                {isMyComment && (
+                    <IoIosMore
+                      size={_700 ? 28 : 20}
+                      onClick={handleOpenMenu}
+                      style={{ cursor: 'pointer' }}
+                    />
+                )}
             </Stack>
         </Stack>
         <Menu

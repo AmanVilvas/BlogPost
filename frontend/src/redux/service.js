@@ -6,10 +6,6 @@ export const serviceApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:5000/api",
     credentials: "include",
-    prepareHeaders: (headers) => {
-      headers.set("Content-Type", "application/json");
-      return headers;
-    },
   }),
 
   keepUnusedDataFor: 60 * 60 * 24 * 7,
@@ -103,13 +99,13 @@ export const serviceApi = createApi({
 
     allPosts: builder.query({
       query: (page = 1) => ({
-        url: `posts?page=${page}`,
+        url: `post?page=${page}`,
         method: "GET",
       }),
       providesTags: (result) =>
-        result?.posts
+        result?.post
           ? [
-              ...result.posts.map(({ _id }) => ({ type: "Post", id: _id })),
+              ...result.post.map(({ _id }) => ({ type: "Post", id: _id })),
               { type: "Post", id: "LIST" },
             ]
           : [{ type: "Post", id: "LIST" }],

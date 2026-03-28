@@ -3,33 +3,49 @@ import React, { useState, useRef } from 'react'
 import { RxCross2 } from 'react-icons/rx'
 import { useDispatch, useSelector } from 'react-redux'
 import { EditProfileModel } from '../../redux/slice'
+// updateProfile mutation wired up below
+import { useUpdateProfileMutation } from '../../redux/service'
 
 // 4:24:26
 
 function EditProfile() {
 
-    const { openEditProfileModel } = useSelector(state => state.service)
+    const { openEditProfileModel, myInfo } = useSelector(state => state.service)
     const dispatch = useDispatch()
 
     
 
     const _700 = useMediaQuery("(min-width:700px)")
     const [pic, setPic] = useState()
-    const [bio, setBio] = useState()
+    const [bio, setBio] = useState('')
 
     const imgRef = useRef()
 
-    const handlePhoto = ()=>{
+    // API mutation for updating profile
+    const [updateProfile, { isLoading }] = useUpdateProfileMutation()
+
+    const handlePhoto = () => {
         imgRef.current.click()
     }
 
-    const handleClose = ()=>{
+    const handleClose = () => {
         dispatch(EditProfileModel(false))
 
     }
 
-    const handleUpdate=()=>{
+    const handleUpdate = async () => {
+        // FormData is required because server uses formidable to parse the file
+        const formData = new FormData()
+        if (bio) formData.append('text', bio)
+        if (pic) formData.append('media', pic)
 
+        try {
+            await updateProfile(formData).unwrap()
+            // Close modal on success
+            dispatch(EditProfileModel(false))
+        } catch (err) {
+            console.error('Profile update failed:', err)
+        }
     }
 
     return (
@@ -66,7 +82,8 @@ function EditProfile() {
             fontWeight={'bold'} fontSize={'1.2rem'}
             my={2}>Username</Typography>
 
-            <Input type="text" value={'AmanSharma'} readOnly className='text1' placeholder='' onChange={(e)=>{setBio(e.target.value)}} />
+            {/* Show real user's username (read-only) */}
+            <Input type="text" value={myInfo?.userName || ''} readOnly className='text1' placeholder='' onChange={(e)=>{setBio(e.target.value)}} />
 
                 </Stack>
             <Stack flexDirection={'column'} gap={1}>
@@ -74,14 +91,16 @@ function EditProfile() {
             fontWeight={'bold'} fontSize={'1.2rem'}
             my={2}>Email</Typography>
 
-            <Input type="text" value={'aman@thread.com'} readOnly className='text1'  />
+            {/* Show real user's email (read-only) */}
+            <Input type="text" value={myInfo?.email || ''} readOnly className='text1'  />
             </Stack>
                 <Stack flexDirection={'column'} gap={1}>
                 <Typography variant='subtitle1' 
             fontWeight={'bold'} fontSize={'1.2rem'}
             my={2}>Bio</Typography>
 
-            <Input placeholder='' type="text" value={'write your bio here'}  className='text1'  />
+            {/* Bio is editable */}
+            <Input placeholder='write your bio here' type="text" defaultValue={myInfo?.bio || ''} className='text1' onChange={(e) => setBio(e.target.value)} />
             </Stack>
 
             <Button size='large'
@@ -91,7 +110,8 @@ function EditProfile() {
                 ":hover": { cursor:'pointer', bgcolor:'gray'}
             }}
             onClick={handleUpdate}
-            >{" "}Update{" "}</Button>
+            disabled={isLoading}
+            >{isLoading ? 'Updating...' : ' Update '}</Button>
 
 
             </DialogContent>

@@ -5,169 +5,123 @@ const jwt = require('jsonwebtoken')
 const {formidable} = require('formidable')
 const cloudinary = require('../config/cloudinary')
 
-exports.signin = async (req, res)=>{
+exports.signin = async (req, res) => {
     try {
         const { userName, email, password } = req.body
 
-        if(!userName || !email || !password){
+        if (!userName || !email || !password) {
             return res.status(400).json({
-        msg: 'username, password, email are required'
-        })
-    }
-    const userExists = await User.findOne({email})
-    if(userExists){
-        return res.status(400).json({
-            msg: 'email exists already'
-        })
-    }
-    const hashedPassword = await bcrypt.hash(password, 12)
+                msg: 'username, password, email are required'
+            })
+        }
+        const userExists = await User.findOne({ email })
+        if (userExists) {
+            return res.status(400).json({
+                msg: 'email exists already'
+            })
+        }
+        const hashedPassword = await bcrypt.hash(password, 12)
 
+        if (!hashedPassword) {
+            return res.status(400).json({ msg: 'problem with bcrypt' })
+        }
 
-    if(!hashedPassword){
-        return res.status(400).json({ msg : 'problem with bcyrpt '})
-    }
-
-    const user = new User({
-        userName,
-        email,
-        password: hashedPassword
-        })
-
-    const result = await user.save()
-
-    if(!result){
-        return res.status(400).json({
-            msg: 'user details are not saved yet! '
-        })
-    }
-
-
-    //till now users details are saved successfully where all details are correct and password is hashed..
-
-
-    // Debug logging
-    console.log('JWT_SECRET exists (signin):', !!process.env.JWT_SECRET)
-    
-    if(!process.env.JWT_SECRET) {
-        return res.status(500).json({
-            msg: 'Server configuration error: JWT_SECRET is not defined'
-        })
-    }
-    
-    const accessToken = jwt.sign( { token: result._id }, process.env.JWT_SECRET, {
-         expiresIn: "7d" 
+        const user = new User({
+            userName,
+            email,
+            password: hashedPassword
         })
 
-      if(!accessToken){
-        return res.status(400).json({
-            msg: 'Failed to generate JWT token'
-        })
-    }
-//server side cookie/ cookie--- now jwt token is done so we will store that in a cookie to keep it more secure and we cant even change it using the browserrr
+        const result = await user.save()
 
-    const isProd = process.env.NODE_ENV === 'production'
-    // Updated cookie settings for better cross-domain handling
-    res.cookie('token', accessToken, {
-        maxAge: 1000*60*60*24*7, // 7 days
-        httpOnly: true,
-        path: '/',
-        sameSite: isProd ? 'none' : 'lax',
-        secure: isProd || req.secure || req.headers['x-forwarded-proto'] === 'https'
-    })
-    
-    // Debug log the cookie being set
-    console.log('Setting cookie in signin:', {
-        token: 'JWT_TOKEN_SET',
-        maxAge: '7 days',
-        secure: isProd || req.secure || req.headers['x-forwarded-proto'] === 'https',
-        sameSite: isProd ? 'none' : 'lax'
-    })
+        if (!result) {
+            return res.status(400).json({
+                msg: 'user details are not saved yet!'
+            })
+        }
+
+        if (!process.env.JWT_SECRET) {
+            return res.status(500).json({
+                msg: 'Server configuration error: JWT_SECRET is not defined'
+            })
+        }
+
+        const accessToken = jwt.sign({ token: result._id }, process.env.JWT_SECRET, {
+            expiresIn: "7d"
+        })
+
+        const isProd = process.env.NODE_ENV === 'production'
+        res.cookie('token', accessToken, {
+            maxAge: 1000 * 60 * 60 * 24 * 7,
+            httpOnly: true,
+            path: '/',
+            sameSite: isProd ? 'none' : 'lax',
+            secure: isProd || req.secure || req.headers['x-forwarded-proto'] === 'https'
+        })
 
         res.status(200).json({
-            msg: `Hey ${result.userName} whats up? Welcome to the club!  `
+            msg: `Hey ${result.userName}, welcome to Threads!`
         })
 
     } catch (err) {
         res.status(400).json({
-        msg: 'Error in signin! ', err: err.message
+            msg: 'Error in signin!', err: err.message
         })
     }
 }
 
-exports.login = async(req, res)=>{
+exports.login = async (req, res) => {
+    try {
+        const { email, password } = req.body
+        if (!email || !password) {
+            return res.status(400).json({
+                msg: 'email and password are required to login'
+            })
+        }
+        const userExists = await User.findOne({ email })
+        if (!userExists) {
+            return res.status(400).json({
+                msg: 'user does not exist'
+            })
+        }
+        const passwordMatched = await bcrypt.compare(password, userExists.password)
+        if (!passwordMatched) {
+            return res.status(400).json({
+                msg: 'password is incorrect'
+            })
+        }
 
-try{
-    
-    const { email, password } = req.body
-    if(!email || !password){
-        return res.status(400).json({
-            msg: ' email and password are required to login'
+        if (!process.env.JWT_SECRET) {
+            return res.status(500).json({
+                msg: 'Server configuration error: JWT_SECRET is not defined'
+            })
+        }
+
+        const accessToken = jwt.sign({
+            token: userExists._id },
+            process.env.JWT_SECRET,
+            { expiresIn: '7d' }
+        )
+
+        const isProd = process.env.NODE_ENV === 'production'
+        res.cookie("token", accessToken, {
+            maxAge: 1000 * 60 * 60 * 24 * 7,
+            httpOnly: true,
+            path: '/',
+            sameSite: isProd ? 'none' : 'lax',
+            secure: isProd || req.secure || req.headers['x-forwarded-proto'] === 'https'
+        })
+
+        res.status(200).json({
+            msg: `${userExists.userName} logged in successfully`
+        })
+
+    } catch (err) {
+        res.status(400).json({
+            msg: "login failed",
+            err: err.message
         })
     }
-    const userExists = await User.findOne({ email })
-    // console.log(userExists)
-    if(!userExists){
-        return res.status(400).json({
-            msg: 'user doesnt exists'
-        })
-    }
-    const passwordMatched = await bcrypt.compare(password,userExists.password)
-    if(!passwordMatched){
-         return res.status(400).json({
-            msg: 'passeword is incorrect'
-        })
-    }
-    // Debug logging
-    console.log('JWT_SECRET exists (login):', !!process.env.JWT_SECRET)
-    
-    if(!process.env.JWT_SECRET) {
-        return res.status(500).json({
-            msg: 'Server configuration error: JWT_SECRET is not defined'
-        })
-    }
-    
-    const accessToken = jwt.sign({
-        token: userExists._id},
-        process.env.JWT_SECRET,
-        {expiresIn: '7d'}
-    )
-
-    if(!accessToken){
-         return res.status(400).json({
-            msg: 'Failed to generate JWT token'
-        })
-    }
-    const isProd = process.env.NODE_ENV === 'production'
-    // Updated cookie settings for better cross-domain handling
-    res.cookie("token", accessToken, {
-        maxAge: 1000*60*60*24*7, // 7 days
-        httpOnly: true,
-        path: '/',
-        sameSite: isProd ? 'none' : 'lax',
-        secure: isProd || req.secure || req.headers['x-forwarded-proto'] === 'https'
-    })
-    
-    // Debug log the cookie being set
-    console.log('Setting cookie in login:', {
-        token: 'JWT_TOKEN_SET',
-        maxAge: '7 days',
-        secure: isProd || req.secure || req.headers['x-forwarded-proto'] === 'https',
-        sameSite: isProd ? 'none' : 'lax'
-    })
-
-    res.status(200).json({
-        msg: `${userExists.userName} logged in successfully`
-    })
-
-
-}catch(err){
-    res.status(400).json({
-        msg: "login is failed at beginning", 
-        err: err.message
-    })
-}
-
-
 }
 
 //userDetails--> jis user ki profile mai jaa rahe hai uske meta data
@@ -193,7 +147,8 @@ exports.userDetails = async ( req, res )=>{
         })
         .populate({
             path: 'reposts',
-            populate: [{path: 'likes'}, {path: 'comment'}, {path: 'admin'}]
+            // populate likes, comments and admin of each reposted post
+            populate: [{path: 'likes'}, {path: 'comments'}, {path: 'admin'}]
         })
         res.status(200).json({
             msg:"user details fetched successfully", user

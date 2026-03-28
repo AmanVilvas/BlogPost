@@ -19,11 +19,6 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
-// Debug middleware to log requests
-app.use((req, res, next) => {
-    console.log(`${req.method} ${req.path}`)
-    next()
-})
 app.use(express.json())
 app.use(cookieParser())
 

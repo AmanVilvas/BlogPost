@@ -1,12 +1,9 @@
-// 2:55
-
 const User = require('../models/user-model')
 const Post = require('../models/post-model')
 const Comment = require('../models/comment-model')
 const cloudinary = require('../config/cloudinary')
 const { formidable } = require('formidable')
 const { default: mongoose } = require('mongoose')
-
 
 exports.addPost = async (req, res) => {
     try {
@@ -20,12 +17,16 @@ exports.addPost = async (req, res) => {
             }
             const post = new Post()
             if (fields.text) {
-                //post.text-- db se hai .text--- title aur sab
-                post.text = fields.text
+                // formidable v3 wraps fields in arrays
+                post.text = Array.isArray(fields.text) ? fields.text[0] : fields.text
             }
-            if (fields.media) {
+            if (files.media) {
+                // Handle formidable v3 which wraps files in arrays
+                let fileObj = Array.isArray(files.media) ? files.media[0] : files.media
+                let filePath = fileObj.filepath || fileObj.path
+
                 const uploadedImage = await cloudinary.uploader.upload(
-                    files.media.filepath,
+                    filePath,
                     //file path in my local machine
                     { folder: "Threads_clone/Posts" }
                 )
@@ -103,11 +104,6 @@ exports.allPosts = async (req, res) => {
             count: post.length
         });
 
-        // if(post){
-        //     res.json({
-        //         msg: "no posst available"
-        //     })
-        // }
     } catch (err) {
         res.status(400).json({
             msg: "no more post", err: err.message
@@ -296,37 +292,6 @@ exports.singlePost = async (req,res) => {
         return res.status(200).json({
             msg:"post fetched successfully", post
         })
-
-
-        // if(!post){
-        //     if(!id){
-        //     return res.status(400).json({
-        //         msg: "id is required!"
-        //     })
-        //     }
-        // }
-        // const userId = req.user._id
-        // if(!userId){
-        //     if(!id){
-        //     return res.status(400).json({
-        //         msg: "user not found!"
-        //     })
-        // }
-        // }
-
-        // if(userId === post.admin){
-        //     return res.status(200).json({
-        //         msg:"post fetched successfully", post
-        //     })
-        // }else {
-        //     if(!id){
-        //     return res.status(400).json({
-        //         msg: "you are not authorized!"
-        //     })
-        // }
-        // }
-
-
 
     }catch(err){
         return res.status(400).json({

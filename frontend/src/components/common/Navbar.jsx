@@ -3,25 +3,23 @@ import { IoMdHome } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
 import { FaRegHeart, FaEdit } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
-import { Link } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
-import { useState } from 'react';
-import AddPost from '../../components/modals/AddPost'
 import { useDispatch, useSelector } from 'react-redux';
 import { addPostModel } from '../../redux/slice';
 
-
 function Navbar() {
     const _300 = useMediaQuery('(min-width:300px)')
-    // const [isAddOpen, setIsAddOpen] = useState(false)
     const dispatch = useDispatch()
-    const {darkMode} = useSelector((state) => state.service)
-
-    //dispatch is used to call the function of reducer to give some result/output
+    const navigate = useNavigate()
+    const { darkMode, myInfo } = useSelector((state) => state.service)
 
     const handleAddPost = () => {
         dispatch(addPostModel(true))
     }
+
+    const iconColor = (isActive) =>
+        isActive ? (darkMode ? '#fff' : '#000') : (darkMode ? '#888' : '#aaa')
 
     return (
         <Stack
@@ -30,26 +28,40 @@ function Navbar() {
             alignItems={'center'}
             justifyContent={'space-around'}
         >
-            <FiArrowLeft size={_300 ? 32 : 24 } 
-            color={darkMode ? 'white' : 'black'}
+            <FiArrowLeft
+                size={_300 ? 32 : 24}
+                color={darkMode ? 'white' : 'black'}
+                style={{ cursor: 'pointer' }}
+                onClick={() => navigate(-1)}
             />
-            <Link to={'/'} className='link'>
-                <IoMdHome size={_300 ? 32 : 24} color={darkMode ? 'white' : 'black'} />
-            </Link>
 
-            <Link to={'/Search'}>
-                <IoSearch size={_300 ? 32 : 24} color={darkMode ? 'white' : 'black'} />
-            </Link>
+            <NavLink to={'/'}>
+                {({ isActive }) => (
+                    <IoMdHome size={_300 ? 32 : 24} color={iconColor(isActive)} />
+                )}
+            </NavLink>
 
-                <FaRegHeart size={_300 ? 32 : 24} color={darkMode ? 'white' : 'black'} />
+            <NavLink to={'/search'}>
+                {({ isActive }) => (
+                    <IoSearch size={_300 ? 32 : 24} color={iconColor(isActive)} />
+                )}
+            </NavLink>
 
-                <FaEdit size={_300 ? 32 : 24} color={darkMode ? 'white' : 'black'} className='image-icon' onClick={handleAddPost} style={{ cursor: 'pointer' }} />
+            <FaRegHeart size={_300 ? 32 : 24} color={darkMode ? 'white' : 'black'} />
 
-            <Link to={'/profile/threads/1'}>
-                <CgProfile size={_300 ? 32 : 24} color={darkMode ? 'white' : 'black'} />
-            </Link>
+            <FaEdit
+                size={_300 ? 32 : 24}
+                color={darkMode ? 'white' : 'black'}
+                className='image-icon'
+                onClick={handleAddPost}
+                style={{ cursor: 'pointer' }}
+            />
 
-            {/* <AddPost open={isAddOpen} onClose={handleCloseAdd} /> */}
+            <NavLink to={`/profile/threads/${myInfo?._id}`}>
+                {({ isActive }) => (
+                    <CgProfile size={_300 ? 32 : 24} color={iconColor(isActive)} />
+                )}
+            </NavLink>
         </Stack>
     )
 }
