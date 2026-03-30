@@ -4,7 +4,7 @@ import { addMyInfo, addToAllPost, deleteThePost, addUser } from "./slice";
 export const serviceApi = createApi({
   reducerPath: "serviceApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:5000/api",
+    baseUrl: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
     credentials: "include",
   }),
 

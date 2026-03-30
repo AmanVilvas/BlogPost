@@ -13,7 +13,7 @@ connectDB()
 const isProd = process.env.NODE_ENV === 'production'
 // Enhanced CORS configuration for better cookie handling
 app.use(cors({
-    origin: isProd ? ['https://your-prod-domain.com'] : ['http://localhost:3000', 'http://localhost:5173'],
+    origin: isProd ? [process.env.CLIENT_URL, 'https://blog-post-nu-brown.vercel.app'] : ['http://localhost:3000', 'http://localhost:5173'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -21,6 +21,11 @@ app.use(cors({
 
 app.use(express.json())
 app.use(cookieParser())
+
+// Simple health check route so you don't see "Cannot GET /"
+app.get('/', (req, res) => {
+    res.send('Your backend API is running successfully!')
+})
 
 app.use("/api", router)
 
