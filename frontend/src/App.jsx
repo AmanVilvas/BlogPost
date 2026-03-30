@@ -12,7 +12,7 @@ import ProfileLayout from './pages/Protected/profile/ProfileLayout'
 import Threads from './pages/Protected/profile/Threads'
 import Replies from './pages/Protected/profile/Replies'
 import Reposts from './pages/Protected/profile/Reposts'
-import SinglePost from "./pages/Protected/SInglePost"
+import SinglePost from "./pages/Protected/SinglePost"
 import { useSelector } from 'react-redux'
 import { useEffect, useMemo } from "react"
 import { useMyInfoQuery } from "./redux/service"
