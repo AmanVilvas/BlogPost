@@ -10,10 +10,22 @@ const cors = require('cors')
 const app = express()
 connectDB()
 
-const isProd = process.env.NODE_ENV === 'production'
-// Enhanced CORS configuration for better cookie handling
+const allowedOrigins = [
+    process.env.CLIENT_URL, 
+    'https://blog-post-pb8vkptm5-aman-sharmas-projects-d13f3c48.vercel.app', 
+    'https://blog-post-nu-brown.vercel.app',
+    'http://localhost:3000', 
+    'http://localhost:5173'
+].filter(Boolean);
+
 app.use(cors({
-    origin: isProd ? [process.env.CLIENT_URL, 'https://blog-post-pb8vkptm5-aman-sharmas-projects-d13f3c48.vercel.app'] : ['http://localhost:3000', 'http://localhost:5173'],
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
