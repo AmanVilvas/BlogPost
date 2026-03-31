@@ -9,28 +9,14 @@ const cors = require('cors')
 const app = express()
 connectDB()
 
-const allowedOrigins = [
-    process.env.CLIENT_URL, 
-    'https://blog-post-pb8vkptm5-aman-sharmas-projects-d13f3c48.vercel.app', 
-    'https://blog-post-nu-brown.vercel.app',
-    'http://localhost:3000', 
-    'http://localhost:5173'
-].filter(Boolean);
-
 app.use(cors({
-    origin: function(origin, callback) {
-        if (!origin) return callback(null, true);
-
-        if (allowedOrigins.includes(origin)) {
-            return callback(null, true);
-        } else {
-            return callback(new Error("Not allowed by CORS"));
-        }
+    origin: function (origin, callback) {
+        callback(null, true)
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-}));
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}))
 
 app.use(express.json())
 app.use(cookieParser())
