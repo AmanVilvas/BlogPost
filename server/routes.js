@@ -6,9 +6,12 @@ const { addComment, deleteComment } = require('./controllers/comment.controllers
 
 
 
-const router = express.Router()
-
-    router.post('/signin', signin)
+const router = express.Router();
+router.use((req, res, next) => {
+    console.log(`[${req.method}] ${req.url} BODY:`, req.body);
+    next();
+});
+router.post('/signin', signin)
     router.post('/login', login)
     router.post('/google-login', googleLogin)
 
