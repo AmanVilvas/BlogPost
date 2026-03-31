@@ -2,6 +2,10 @@ const mongoose = require('mongoose')
 
 const connectDB = async () => {
     try {
+        if (!process.env.MONGO_URI) {
+            console.error('MONGO_URI is not defined')
+            return
+        }
         await mongoose.connect(process.env.MONGO_URI)
         console.log('db connected...');
 
@@ -11,8 +15,8 @@ const connectDB = async () => {
         })
     } catch (err) {
         console.error('MongoDB connection failed:', err.message)
-        process.exit(1) // exit process if DB fails to connect
+        
     }
 }
 
-module.exports = connectDB
+module.exports = connectDB
