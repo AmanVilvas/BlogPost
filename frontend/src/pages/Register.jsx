@@ -1,8 +1,9 @@
-import { Alert, Button, Stack, TextField, Typography, useMediaQuery } from "@mui/material"
+import { Alert, Box, Button, Stack, TextField, Typography, useMediaQuery } from "@mui/material"
 import { useEffect, useState  } from "react"
 import { useSelector } from 'react-redux'
-import { useSigninMutation, useLoginMutation } from "../redux/service"
+import { useSigninMutation, useLoginMutation, useGoogleLoginMutation } from "../redux/service"
 import { useNavigate } from "react-router-dom"
+import { GoogleLogin } from '@react-oauth/google'
 
 
 const Register = ()=>{
@@ -12,6 +13,7 @@ const Register = ()=>{
    
     const [ signinUser, signinUserData] = useSigninMutation()
     const [ loginUser, loginUserData] = useLoginMutation()
+    const [ googleLoginUser ] = useGoogleLoginMutation()
 
    
     const {darkMode} = useSelector(state=>state.service)
@@ -59,6 +61,32 @@ const Register = ()=>{
             setErrorMsg(err?.data?.msg || 'Login failed')
         }
     }
+
+    const handleGoogleSuccess = async (credentialResponse) => {
+        try {
+            const data = {
+                credential: credentialResponse.credential,
+                ...(!login && userName ? { userName } : {})
+            };
+            
+            const res = await googleLoginUser(data).unwrap();
+            
+            if (res.requireUsername) {
+                setErrorMsg('Please enter a username above and click Google Sign In again to register.');
+                setLogin(false); // Switch to register mode so they can type a username
+            } else {
+                setSuccessMsg(res.msg || 'Logged in successfully with Google!');
+                setErrorMsg('');
+                setRedirecting(true);
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1500);
+            }
+        } catch (err) {
+            console.error("Google login error:", err);
+            setErrorMsg(err?.data?.msg || 'Google Login failed');
+        }
+    };
     
     useEffect(()=>{
         if(signinUserData.isSuccess){
@@ -178,6 +206,15 @@ const Register = ()=>{
             login ? "Sign up" : "Login"
                 }</span>
         </Typography>
+
+        <Box alignSelf="center" mt={2}>
+            <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => {
+                    setErrorMsg('Google Login Failed');
+                }}
+            />
+        </Box>
 
             </Stack>
 

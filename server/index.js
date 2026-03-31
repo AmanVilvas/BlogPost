@@ -13,7 +13,7 @@ connectDB()
 const isProd = process.env.NODE_ENV === 'production'
 // Enhanced CORS configuration for better cookie handling
 app.use(cors({
-    origin: isProd ? [process.env.CLIENT_URL, 'https://blog-post-nu-brown.vercel.app'] : ['http://localhost:3000', 'http://localhost:5173'],
+    origin: isProd ? [process.env.CLIENT_URL, 'https://blog-post-pb8vkptm5-aman-sharmas-projects-d13f3c48.vercel.app'] : ['http://localhost:3000', 'http://localhost:5173'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']

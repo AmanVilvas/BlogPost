@@ -12,6 +12,15 @@ export const serviceApi = createApi({
   tagTypes: ["Post", "User", "Me"],
 
   endpoints: (builder) => ({
+    googleLogin: builder.mutation({
+      query: (data) => ({
+        url: "google-login",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Me"],
+    }),
+
     signin: builder.mutation({
       query: (data) => ({
         url: "signin",
@@ -206,6 +215,7 @@ export const serviceApi = createApi({
 
  
 export const {
+  useGoogleLoginMutation,
   useSigninMutation,
   useLoginMutation,
   useMyInfoQuery,
