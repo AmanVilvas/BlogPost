@@ -66,7 +66,7 @@ export const serviceApi = createApi({
 
     userDetails: builder.query({
       query: (id) => ({
-        url: `user/${id}`, // <-- changed from `url/${id}`
+        url: `user/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "User", id }],

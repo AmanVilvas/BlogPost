@@ -1,6 +1,5 @@
 const express = require('express')
 const dotenv = require('dotenv')
-// Load environment variables before other imports
 dotenv.config()
 const connectDB = require('./config/db')
 const router = require('./routes')
@@ -32,13 +31,12 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
-app.options("*", cors());
+
 app.use(express.json())
 app.use(cookieParser())
 
-// Simple health check route so you don't see "Cannot GET /"
 app.get('/', (req, res) => {
-    res.send('Your backend API is running successfully!')
+    res.send('backend API runningggggggggggg')
 })
 
 app.use("/api", router)

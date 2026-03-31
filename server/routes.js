@@ -17,7 +17,6 @@ router.post('/signin', signin)
 
     router.get('/user/:id', auth, userDetails)
     
-    //to check follower of some user
     router.put('/user/follow/:id', auth, followUser)
     router.put('/update', auth, updateProfile)
     router.get('/users/search/:query', auth, searchUser)
@@ -27,10 +26,8 @@ router.post('/signin', signin)
     router.post('/post', auth, addPost)
     router.get('/post', auth, allPosts)
     router.delete('/post/:id', auth, deletePost)
-    // like a post -- separate path to avoid clash with DELETE /post/:id
     router.put('/post/like/:id', auth, likePost)
     router.put('/repost/:id', auth, repost)
-    // get a single post -- GET /post/:id (Express differentiates GET from DELETE)
     router.get('/post/:id', auth, singlePost)
     router.post('/comment/:id', auth, addComment)
     router.delete('/comment/:postId/:id', auth, deleteComment)
