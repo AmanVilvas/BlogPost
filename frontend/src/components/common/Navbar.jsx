@@ -6,10 +6,17 @@ import { CgProfile } from "react-icons/cg"
 import { NavLink } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { addPostModel } from '../../redux/slice'
+import { useGetNotificationsQuery } from '../../redux/service'
 
 function Navbar() {
     const dispatch = useDispatch()
     const { darkMode, myInfo } = useSelector((state) => state.service)
+
+    const { data: notifData } = useGetNotificationsQuery(undefined, {
+        pollingInterval: 5000,
+        skip: !myInfo
+    })
+    const hasUnread = notifData?.notifications?.some(n => !n.read)
 
     const handleAddPost = () => dispatch(addPostModel(true))
 
@@ -57,7 +64,7 @@ function Navbar() {
                 <FaEdit size={iconSize} />
             </span>
 
-            <NavLink to={'/activity'}>
+            <NavLink to={'/activity'} className={hasUnread ? 'unread-shake' : ''}>
                 {({ isActive }) => (
                     <span style={iconStyle(isActive)}>
                         <FaRegHeart size={iconSize} />

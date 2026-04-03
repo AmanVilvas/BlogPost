@@ -200,15 +200,21 @@ export const serviceApi = createApi({
       invalidatesTags: (result, err, { postId }) => [{ type: "Post", id: postId }],
     }),
 
-    // likePost: builder.mutation({
-    //     query:(id) =>({
-    //       url:`post/like/${id}`,
-    //       method: 'PUT'  
-    //     }),
-    //     invalidatesTags:(result, error, {id}) =>[{
-    //       type: 'Post', id
-    //     }]
-    // }),
+    getNotifications: builder.query({
+      query: () => ({
+        url: 'notifications',
+        method: 'GET'
+      }),
+      providesTags: ["Me"]
+    }),
+
+    markNotificationsRead: builder.mutation({
+      query: () => ({
+        url: 'notifications/read',
+        method: 'PUT'
+      }),
+      invalidatesTags: ["Me"]
+    }),
 
      
 
@@ -237,6 +243,8 @@ export const {
   useRepostMutation,
   useAddCommentMutation,
   useDeleteCommentMutation,
+  useGetNotificationsQuery,
+  useMarkNotificationsReadMutation,
 } = serviceApi;
 // 2:30
 

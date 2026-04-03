@@ -85,3 +85,20 @@ a {
     background: var(--border);
     border-radius: 4px;
 }
+
+/* ======= NOTIFICATION ANIMATION ======= */
+@keyframes pendulumShake {
+    0%, 20% { transform: rotate(0deg); }
+    22% { transform: rotate(15deg); color: #e0245e; }
+    24% { transform: rotate(-10deg); color: #e0245e; }
+    26% { transform: rotate(5deg); color: #e0245e; }
+    28% { transform: rotate(-5deg); color: #e0245e; }
+    30%, 100% { transform: rotate(0deg); }
+}
+
+.unread-shake svg {
+    display: inline-block;
+    transform-origin: top center;
+    animation: pendulumShake 4s ease-in-out infinite;
+    color: #e0245e !important;
+}

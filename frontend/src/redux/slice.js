@@ -63,26 +63,22 @@ export const serviceSlice = createSlice({
             state.user = action.payload
         },
         addToAllPost: (state, action) => {
-        const newPosts =
-        action.payload?.post ||   // { post: [] }
-        action.payload?.data ||    // { data: [] }
-        action.payload ||          // [] directly
-        [];
+            const newPosts =
+                action.payload?.post ||
+                action.payload?.data ||
+                action.payload ||
+                [];
 
-        if (!Array.isArray(newPosts)) return;
+            if (!Array.isArray(newPosts)) return;
 
-        if (state.allPosts.length < 3) {
-    state.allPosts = newPosts;
-    return;
-  }
+            const map = new Map();
+            state.allPosts.forEach((p) => map.set(p._id, p));
+            newPosts.forEach((p) => map.set(p._id, p));
 
-  const map = new Map();
-
-  state.allPosts.forEach((p) => map.set(p._id, p));
-  newPosts.forEach((p) => map.set(p._id, p));
-
-  state.allPosts = Array.from(map.values());
-},
+            state.allPosts = Array.from(map.values()).sort(
+                (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            );
+        },
 
         addSingle: (state, action) => {
   const newPost = action.payload?.newPost;

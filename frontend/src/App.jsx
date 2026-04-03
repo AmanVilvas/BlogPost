@@ -1,4 +1,4 @@
-// import Loader from "./components/common/Loader"
+import Loader from "./components/common/Loader"
 import {BrowserRouter, Routes, Route} from "react-router-dom"
 import Error from "./pages/Error"
 import Home from "./pages/Protected/Home"
@@ -13,10 +13,10 @@ import Threads from './pages/Protected/profile/Threads'
 import Replies from './pages/Protected/profile/Replies'
 import Reposts from './pages/Protected/profile/Reposts'
 import SinglePost from "./pages/Protected/SinglePost"
+import Notifications from "./pages/Protected/Notifications"
 import { useSelector } from 'react-redux'
 import { useEffect, useMemo } from "react"
 import { useMyInfoQuery } from "./redux/service"
-
 
   const App = ()=>{
 
@@ -60,27 +60,25 @@ import { useMyInfoQuery } from "./redux/service"
 
     <Routes>
       {
-       
-        !error && !isLoading ? <Route exact path='/' element={<ProtectedLayout />}>
-      
-      <Route path="/" element={<Home />} />
-      <Route path="/post/:id" element={<SinglePost />} />
-      <Route path="/search" element={<Search />} />
-      <Route path="/Liked" element={<h1>Liked</h1>} />
-      <Route path="/Edit" element={<h1>Edit</h1>} />
-      <Route path="/profile" element={<ProfileLayout />} >
-        <Route exact path = "threads/:id" element={<Threads />} />
-        <Route exact path = "replies/:id" element={<Replies />} />
-        <Route exact path = "reposts/:id" element={<Reposts />} />
-      </Route> 
-      
-      </Route>   
-        :  
-      <Route path="/" element={<Register />} />
+        isLoading ? (
+          <Route path="*" element={<Loader />} />
+        ) : !error && data ? (
+          <Route exact path='/' element={<ProtectedLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/post/:id" element={<SinglePost />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/activity" element={<Notifications />} />
+            <Route path="/Edit" element={<h1>Edit</h1>} />
+            <Route path="/profile" element={<ProfileLayout />} >
+              <Route exact path="threads/:id" element={<Threads />} />
+              <Route exact path="replies/:id" element={<Replies />} />
+              <Route exact path="reposts/:id" element={<Reposts />} />
+            </Route> 
+          </Route>   
+        ) : (
+          <Route path="*" element={<Register />} />
+        )
       }
-      
-      <Route path="*" element={<Error />} /> 
-
     </Routes>
 
   </BrowserRouter>
