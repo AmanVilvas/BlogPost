@@ -22,7 +22,7 @@ exports.signin = async (req, res) => {
                 msg: 'email exists already'
             })
         }
-        const hashedPassword = await bcrypt.hash(password, 12)
+        const hashedPassword = await bcrypt.hash(password, 10)
 
         if (!hashedPassword) {
             return res.status(400).json({ msg: 'problem with bcrypt' })

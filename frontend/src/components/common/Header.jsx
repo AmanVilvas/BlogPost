@@ -51,75 +51,52 @@ function Header() {
         <>
        { _700 ? <Stack flexDirection={"row"}
         position={"sticky"}
-        justifyContent={"space-around"}
-        height={52}
+        justifyContent={"space-between"}
+        height={56}
         alignItems={"center"}
         top={0}
-        py={1}
+        px={3}
         sx={{
           bgcolor: 'background.default',
-          color: 'text.primary',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          zIndex: 10,
         }}
         >
-            {
-              darkMode ? <img
-              src='public\\logo-bgremoved.png'
-              alt='logo'
-              style={{ height: 45, width: 'auto', objectFit: 'contain' }}
-            /> : <img
-            //change white bg here
-            src='public\\logo-bgremoved.png'
-            alt='logo'
-            style={{ height: 45, width: 'auto', objectFit: 'contain' }}
-          />
-            }
+            <img
+              src='/logo-bgremoved.png'
+              alt='Threads logo'
+              style={{ height: 36, width: 'auto', objectFit: 'contain' }}
+            />
 
-            { _700 ? <Stack
-            justifyContent={'center'} 
-            width={'500px'}
-            sx={{
-              bgcolor: 'background.paper',
-              color: 'text.primary',
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 2,
-            }}
-            zIndex={2}
-            height={'70px'}
-            >
+            <Stack justifyContent={'center'} width={'480px'}>
                 <Navbar />
             </Stack>
-            : " "}
                 
             <Stack flexDirection={'row'} alignItems={'center'} gap={1}>
-                <GiHamburgerMenu size={28} className='menuIcon' color='grey' onClick={handleOpenMenu}
+                <GiHamburgerMenu size={24} className='menuIcon' color={darkMode ? '#ccc' : '#555'} onClick={handleOpenMenu}
                  style={{ cursor: 'pointer' }} />
             </Stack>
  {/* 3:34 */}
         </Stack>    :  (
             <>
-            <Stack position={'fixed'} top={-25}justifyContent={'center'} width={'100%'}
-            height={62} p={1}
+            <Stack position={'fixed'} top={0} justifyContent={'space-between'} flexDirection={'row'} width={'100%'}
+            alignItems={'center'}
+            height={52} px={2}
             sx={{
               bgcolor: 'background.default',
               borderBottom: '1px solid',
               borderColor: 'divider',
             }}
-            zIndex={2}
+            zIndex={10}
             >
-                <Grid container alignItems={'center'} 
-                height={36} p={1} justifyContent={'space-evenly'} >
-                
-                <Grid size={6} >
                 <img
-                  src="public\\logo-bgremoved.png"
+                  src="/logo-bgremoved.png"
                   alt="logo"
-                  style={{ height: 35, width: 'auto', objectFit: 'contain' }}
+                  style={{ height: 30, width: 'auto', objectFit: 'contain' }}
                 />
-                </Grid>
-               <IoMenu size={36} className='image-icon' color='grey' onClick={handleOpenMenu} 
+               <IoMenu size={28} className='image-icon' color={darkMode ? '#ccc' : '#555'} onClick={handleOpenMenu} 
                 style={{ cursor: 'pointer' }}/>
-                </Grid>
             </Stack>
             </>
         )}

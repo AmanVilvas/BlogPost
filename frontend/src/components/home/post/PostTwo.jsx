@@ -1,105 +1,153 @@
 import React from 'react'
-import { Stack, Typography, useMediaQuery } from '@mui/material'
-import { AiOutlineLike } from "react-icons/ai";
-import { FaRegCommentDots } from "react-icons/fa6";
-import { AiOutlineRetweet } from "react-icons/ai";
-import { PiShareFat } from "react-icons/pi";
-import { Link } from 'react-router-dom';
+import { Stack, Typography, Box, useMediaQuery } from '@mui/material'
+import { AiOutlineLike, AiFillLike } from "react-icons/ai"
+import { FaRegCommentDots } from "react-icons/fa6"
+import { AiOutlineRetweet } from "react-icons/ai"
+import { PiShareFat } from "react-icons/pi"
+import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-// useLikePostMutation and useRepostMutation wired up below
 import { useLikePostMutation, useRepostMutation } from '../../../redux/service'
 
-
 function PostTwo({ e }) {
-
-
-    const {darkMode, myInfo} = useSelector(state=>state.service)
-
-    // API mutations
+    const { darkMode, myInfo } = useSelector(state => state.service)
     const [likePost] = useLikePostMutation()
     const [repost] = useRepostMutation()
-
     const _700 = useMediaQuery("(min-width:700px)")
-    const _300 = useMediaQuery("(min-width:300px)")
-    const _400 = useMediaQuery("(min-width:400px)")
-    const _500 = useMediaQuery("(min-width:500px)")
 
-    // Check if currently logged-in user has liked this post
-    const isLiked = e?.likes?.some(l => (l._id || l) === myInfo?._id)
-    // Check if currently logged-in user has reposted this post
-    const isReposted = myInfo?.reposts?.some(r => (r._id || r) === e?._id)
+    const isLikedInitial = e?.likes?.some(l => (l._id || l) === myInfo?._id)
+    const isRepostedInitial = myInfo?.reposts?.some(r => (r._id || r) === e?._id)
+
+    const [localLiked, setLocalLiked] = React.useState(isLikedInitial)
+    const [localLikeCount, setLocalLikeCount] = React.useState(e?.likes?.length ?? 0)
+    const [localReposted, setLocalReposted] = React.useState(isRepostedInitial)
+
+    // Sync from server state if it changes
+    React.useEffect(() => {
+        setLocalLiked(isLikedInitial)
+        setLocalLikeCount(e?.likes?.length ?? 0)
+    }, [isLikedInitial, e?.likes?.length])
+
+    React.useEffect(() => {
+        setLocalReposted(isRepostedInitial)
+    }, [isRepostedInitial])
 
     const handleLike = () => {
-        if (e?._id) likePost(e._id)
+        if (!e?._id) return
+        setLocalLiked(prev => !prev)
+        setLocalLikeCount(prev => localLiked ? prev - 1 : prev + 1)
+        likePost(e._id)
     }
 
     const handleRepost = () => {
-        if (e?._id) repost(e._id)
+        if (!e?._id) return
+        setLocalReposted(prev => !prev)
+        repost(e._id)
     }
+
+    const iconSize = _700 ? 22 : 20
+    const mutedColor = darkMode ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)'
+
     return (
-        <div>
-            <Stack flexDirection={'column'} justifyContent={'space-between'}>
-                <Stack flexDirection={'column'} gap={1}>
-                    <Stack flexDirection={'column'}></Stack>
-                    {/* Real username from post admin */}
-                <Typography variant='h6'
-                        fontWeight={'bold'}
-                        fontSize={_300 ? '1rem' : '0.8rem'}
-                    >{e?.admin?.userName}</Typography>
+        <Stack flexDirection={'column'} gap={0.5} flex={1} minWidth={0}>
 
-                    {/* Clickable link to single post page */}
-                    <Link to={`/post/${e?._id}`} className='link' >
-                        <Typography variant='h5'
-                            fontSize={_700 ? '1.4em' : _400 ? '1.2rem' : _300 ? '1rem' : '.8rem'} color={darkMode ? 'white' : 'black'}
-                        >{e?.text}</Typography>
-                    </Link>
+            {/* Username */}
+            <Typography
+                fontWeight={600}
+                fontSize={_700 ? '0.95rem' : '0.88rem'}
+                sx={{ color: darkMode ? '#fff' : '#0f0f0f', lineHeight: 1.3 }}
+                noWrap
+            >
+                {e?.admin?.userName}
+            </Typography>
+
+            {/* Post text */}
+            <Link to={`/post/${e?._id}`} style={{ textDecoration: 'none' }}>
+                <Typography
+                    fontSize={_700 ? '0.95rem' : '0.88rem'}
+                    sx={{
+                        color: darkMode ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.85)',
+                        lineHeight: 1.5,
+                        wordBreak: 'break-word',
+                        whiteSpace: 'pre-wrap',
+                    }}
+                >
+                    {e?.text}
+                </Typography>
+            </Link>
+
+            {/* Post image */}
+            {e?.media && (
+                <Box
+                    sx={{
+                        mt: 0.5,
+                        borderRadius: '12px',
+                        overflow: 'hidden',
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        maxWidth: _700 ? 440 : '100%',
+                    }}
+                >
+                    <img
+                        src={e.media}
+                        alt="post media"
+                        loading="lazy"
+                        style={{
+                            width: '100%',
+                            maxHeight: _700 ? 300 : 220,
+                            objectFit: 'cover',
+                            display: 'block',
+                        }}
+                    />
+                </Box>
+            )}
+
+            {/* Action icons */}
+            <Stack flexDirection={'row'} gap={2} mt={0.5} alignItems={'center'}>
+                <Stack
+                    direction="row"
+                    alignItems="center"
+                    gap={0.5}
+                    sx={{ cursor: 'pointer', '&:hover': { color: 'crimson' }, color: localLiked ? 'crimson' : mutedColor, transition: 'color .2s' }}
+                    onClick={handleLike}
+                >
+                    {localLiked
+                        ? <AiFillLike size={iconSize} />
+                        : <AiOutlineLike size={iconSize} />}
+                    <Typography fontSize={'0.78rem'} color="inherit">{localLikeCount}</Typography>
                 </Stack>
 
-                {/* Show media only if post has an image */}
-                {e?.media && (
-                    <img src={e.media} alt="post media" loading='lazy'
-                        width={'auto'} height={_700 ? '280px' : _500 ? '250px' : _400 ? '200px' : '150px'} />
-                )}
-
-                <Stack flexDirection={'column'} gap={1}>
-                    <Stack flexDirection={'row'}
-                        gap={2}
-                        m={1}>
-                        {/* Like button --- highlights if already liked */}
-                        <AiOutlineLike
-                            size={_700 ? 28 : _300 ? 25 : 22}
-                            onClick={handleLike}
-                            style={{ cursor:'pointer', color: isLiked ? 'crimson' : 'inherit' }}
-                        />
-                        <Link to={`/post/${e?._id}`}>
-                            <FaRegCommentDots size={_700 ? 28 : _300 ? 25 : 22} style={{ cursor:'pointer' }} />
-                        </Link>
-                        {/* Repost button --- highlights if already reposted */}
-                        <AiOutlineRetweet
-                            size={_700 ? 28 : _300 ? 25 : 22}
-                            onClick={handleRepost}
-                            style={{ cursor:'pointer', color: isReposted ? 'green' : 'inherit' }}
-                        />
-                        <PiShareFat size={_700 ? 28 : _300 ? 25 : 22} />
-
+                <Link to={`/post/${e?._id}`} style={{ textDecoration: 'none' }}>
+                    <Stack
+                        direction="row"
+                        alignItems="center"
+                        gap={0.5}
+                        sx={{ cursor: 'pointer', color: mutedColor, '&:hover': { color: darkMode ? '#fff' : '#000' }, transition: 'color .2s' }}
+                    >
+                        <FaRegCommentDots size={iconSize} />
+                        <Typography fontSize={'0.78rem'} color="inherit">{e?.comments?.length ?? 0}</Typography>
                     </Stack>
-                    {/* Real like/comment counts from DB */}
-                    <Stack flexDirection={'row'}
-                        gap={1}
-                        position={'relative'}
-                        top={-3}
-                        left={4}>
-                        <Typography variant='caption' fontSize={_700 ? '0.9rem' : '.7rem'} color={darkMode ? 'white' : 'gray'}>
-                            {e?.likes?.length ?? 0} Likes .
-                        </Typography>
-                        <Typography variant='caption' fontSize={_700 ? '0.9rem' : '.7rem'} color={darkMode ? 'white' : 'gray'}>
-                            {e?.comments?.length ?? 0} comment{e?.comments?.length !== 1 ? 's' : ''}
-                        </Typography>
-                    </Stack>
+                </Link>
+
+                <Stack
+                    direction="row"
+                    alignItems="center"
+                    gap={0.5}
+                    sx={{ cursor: 'pointer', color: localReposted ? '#22c55e' : mutedColor, '&:hover': { color: '#22c55e' }, transition: 'color .2s' }}
+                    onClick={handleRepost}
+                >
+                    <AiOutlineRetweet size={iconSize} />
                 </Stack>
 
+                <Stack
+                    direction="row"
+                    alignItems="center"
+                    gap={0.5}
+                    sx={{ cursor: 'pointer', color: mutedColor, '&:hover': { color: darkMode ? '#fff' : '#000' }, transition: 'color .2s' }}
+                >
+                    <PiShareFat size={iconSize} />
+                </Stack>
             </Stack>
-        </div>
+        </Stack>
     )
 }
 

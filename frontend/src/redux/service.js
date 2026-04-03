@@ -175,7 +175,12 @@ export const serviceApi = createApi({
         url: `repost/${id}`,
         method: "PUT",
       }),
-      invalidatesTags: ["User", "Post"],
+      invalidatesTags: (result, err, id) => [
+          { type: "Post", id: "LIST" },
+          { type: "Post", id },
+          "User",
+          "Me"
+      ],
     }),
 
     addComment: builder.mutation({

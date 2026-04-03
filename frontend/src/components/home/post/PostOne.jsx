@@ -1,85 +1,72 @@
 import React from 'react'
-import { Stack, Badge, Avatar, Stepper, AvatarGroup, useMediaQuery } from '@mui/material' 
+import { Stack, Avatar, useMediaQuery } from '@mui/material'
 import { Link } from 'react-router-dom'
-function PostOne({e}) {
+
+function PostOne({ e }) {
     const _700 = useMediaQuery('(min-width:700px)')
-  const _300 = useMediaQuery("(min-width:300px)")
-        const _400 = useMediaQuery("(min-width:400px)")
-        const _500 = useMediaQuery("(min-width:500px)")
 
     return (
-        <div>
-
-        <Stack 
-        flexDirection={'column'}
-        alignItems={'center'}
-        justifyContent={'space-between'}
-        >
-        <Link to={`/profile/threads/${e?.admin?._id}`}>
-            <Badge overlap='circular' anchorOrigin={{vertical :'bottom', horizontal:'right'}} 
-            badgeContent={
-                <Avatar
-                alt='+'
-                src=''
-                sx={{
-                    width: _700 ? 20 : 14,
-                    height: _700 ? 20 : 14,
-                    bgcolor: 'green',
-                    position: _700 ? 'relative' : 'initial',
-                    right: _700 ? 4 : 0,
-                    bottom: _700 ? 4 : 0
-                }}
-                > + </Avatar>
-            }     
-                >
-            <Avatar alt={e?.admin?.userName} src={e?.admin?.profilePic} sx={{width: _700 ? 40 : 32 ,height: _700 ? 40 : 32 }}/>
-                </Badge>
-        </Link>
-            <Stack
+        <Stack
             flexDirection={'column'}
             alignItems={'center'}
-            gap={2}
-            height={'100%'}
-            >
-                <Stepper
-                orientation={"vertical"}
-                activeStep={0}
+            gap={1}
+            sx={{ minWidth: _700 ? 44 : 36, mt: 0.5 }}
+        >
+            {/* Profile picture - no badge, no + icon */}
+            <Link to={`/profile/threads/${e?.admin?._id}`}>
+                <Avatar
+                    alt={e?.admin?.userName}
+                    src={e?.admin?.profilePic}
+                    sx={{
+                        width: _700 ? 36 : 28,
+                        height: _700 ? 36 : 28,
+                        border: '2px solid',
+                        borderColor: 'divider',
+                    }}
+                />
+            </Link>
+
+            {/* Clean vertical thread line - no Stepper, no blue color */}
+            <Box
                 sx={{
-                    border: '0.1rem solid blue',
-                    width:'0px',
-                    height: _700 ? '330px' : _500 ? '290px' : _400 ? '240px' : _300 ? '200px' : '150px'
+                    width: '1.5px',
+                    flex: 1,
+                    minHeight: 40,
+                    bgcolor: 'divider',
+                    borderRadius: 4,
+                    opacity: 0.5,
                 }}
-                ></Stepper>
-                <AvatarGroup total={4} sx={{
-                    '& .MuiAvatar-root':{
-                        width: _700 ? 24 : 16,
-                        height: _700 ? 24 : 16,
-                        fontSize: _700 ? 12 : 8,
-                    },
-                }}>
-                    {/* console.log(comments[0].admin.profilePic); */}
-                    {/* console.log(comments[0]); */}
-                    
-                    <Avatar
-                        src={e?.comments?.[0]?.admin?.profilePic}
-                        alt={e?.comments?.[0]?.admin?.userName}
+            />
+
+            {/* Small commenter avatars at the bottom - only if comments exist */}
+            {e?.comments?.length > 0 && (
+                <Stack
+                    direction="row"
+                    sx={{
+                        '& .MuiAvatar-root': {
+                            width: _700 ? 20 : 16,
+                            height: _700 ? 20 : 16,
+                            fontSize: 8,
+                            border: '1.5px solid',
+                            borderColor: 'background.default',
+                            marginLeft: '-6px',
+                        },
+                    }}
+                >
+                    {e.comments.slice(0, 2).map((c, i) => (
+                        <Avatar
+                            key={i}
+                            src={c?.admin?.profilePic}
+                            alt={c?.admin?.userName}
                         />
-                    {
-                        e?.comments?.length > 1 ? (
-                            <Avatar
-                                src={e?.comments?.[1]?.admin?.profilePic}
-                                alt={e?.comments?.[1]?.admin?.userName}
-                            />
-                        ) : null
-                    }
-                </AvatarGroup>
-            </Stack>
-
-
+                    ))}
+                </Stack>
+            )}
         </Stack>
-
-        </div >
     )
 }
+
+// Need Box from MUI
+import { Box } from '@mui/material'
 
 export default PostOne

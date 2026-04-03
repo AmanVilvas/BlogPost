@@ -75,8 +75,9 @@ exports.allPosts = async (req, res) => {
                 // Exclude stale repost-wrapper docs (no text AND no media)
         const post = await Post.find({
             $or: [
-                { text: { $exists: true, $ne: null } },
-                { media: { $exists: true, $ne: null } }
+                { text: { $exists: true, $ne: null, $ne: "" } },
+                { media: { $exists: true, $ne: null, $ne: "" } },
+                { repostOf: { $exists: true, $ne: null } }
             ]
         })
             .sort({ createdAt: -1 })
@@ -85,6 +86,14 @@ exports.allPosts = async (req, res) => {
             .populate({ path: "admin", select: "-password" })
             .populate({ path: "likes", select: "-password" })
             .populate({ path: "comments", populate: { path: "admin", model: "User" } })
+            .populate({
+                path: 'repostOf',
+                populate: [
+                    { path: 'admin', select: '-password' },
+                    { path: 'likes', select: '-password' },
+                    { path: 'comments', populate: { path: 'admin' } }
+                ]
+            })
 
 
         if (post.length === 0) {
@@ -237,9 +246,14 @@ exports.repost = async (req, res) =>{
 
         if(req.user.reposts.includes(newId)){
             await User.findByIdAndUpdate(userExist, { $pull: { reposts: post._id } }, { new: true })
+            await Post.findOneAndDelete({ admin: req.user._id, repostOf: post._id })
             return res.status(200).json({ msg: "Repost removed", reposted: false })
         } else {
             await User.findByIdAndUpdate(userExist, { $push: { reposts: post._id } }, { new: true });
+            
+            const newRepost = new Post({ admin: req.user._id, repostOf: post._id })
+            await newRepost.save()
+
             if (req.user._id.toString() !== post.admin.toString()) {
                 const newNotif = new Notification({ sender: req.user._id, receiver: post.admin, type: 'repost', post: post._id });
                 await newNotif.save();
