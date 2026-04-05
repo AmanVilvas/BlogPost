@@ -15,14 +15,15 @@ function ProtectedLayout() {
     return (
         <Stack 
         flexDirection={'column'}
-        maxWidth={_700 ?'800px' : '90%'}
-        minWidth={'100%'}
+        maxWidth={_700 ? '800px' : '100%'}
+        width={'100%'}
         mx={'auto'}
         overflow={'hidden'}
         sx={{
             bgcolor: 'background.default',
             color: 'text.primary',
-            minHeight: '100vh'
+            minHeight: '100vh',
+            pb: !_700 ? '60px' : 0
         }}
         >
         <Header />

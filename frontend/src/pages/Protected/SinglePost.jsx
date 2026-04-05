@@ -56,7 +56,7 @@ function SinglePost() {
                         value={comment}
                         placeholder='Comment here...'
                         id='comment'
-                        sx={{ width: '50%', mx: 'auto', my: 1, p: 1 }}
+                        sx={{ width: { xs: '90%', sm: '70%', md: '50%' }, mx: 'auto', my: 1, p: 1 }}
                         onChange={(e) => setComment(e.target.value)}
                     />
                     <Button variant='contained' onClick={handleComment} disabled={isCommenting}>

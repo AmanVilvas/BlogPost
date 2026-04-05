@@ -80,7 +80,7 @@ function Header() {
  {/* 3:34 */}
         </Stack>    :  (
             <>
-            <Stack position={'fixed'} top={0} justifyContent={'space-between'} flexDirection={'row'} width={'100%'}
+            <Stack position={'sticky'} top={0} justifyContent={'space-between'} flexDirection={'row'} width={'100%'}
             alignItems={'center'}
             height={52} px={2}
             sx={{
@@ -97,6 +97,24 @@ function Header() {
                 />
                <IoMenu size={28} className='image-icon' color={darkMode ? '#ccc' : '#555'} onClick={handleOpenMenu} 
                 style={{ cursor: 'pointer' }}/>
+            </Stack>
+            
+            <Stack 
+                position={'fixed'} 
+                bottom={0} 
+                justifyContent={'center'} 
+                flexDirection={'row'} 
+                width={'100%'}
+                alignItems={'center'}
+                height={52} 
+                sx={{
+                  bgcolor: 'background.default',
+                  borderTop: '1px solid',
+                  borderColor: 'divider',
+                }}
+                zIndex={10}
+            >
+                <Navbar />
             </Stack>
             </>
         )}
