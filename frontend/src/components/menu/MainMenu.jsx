@@ -1,5 +1,5 @@
 import { Menu, MenuItem } from '@mui/material'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom'
 import { addMyInfo, toggleColorMode, toggleMainMenu } from '../../redux/slice';
@@ -7,7 +7,7 @@ import { useLogoutMeMutation } from '../../redux/service';
 
 function MainMenu({ anchorEl, open, onClose }) {
 
-  const [logoutMe, logoutMeData] = useLogoutMeMutation()
+  const [logoutMe] = useLogoutMeMutation()
   const { darkMode, myInfo } = useSelector((state) => state.service)
   const dispatch = useDispatch()
 
@@ -22,16 +22,14 @@ function MainMenu({ anchorEl, open, onClose }) {
 
   const handleLogout = async () => {
     handleClose()
-    await logoutMe()
-  }
-
-  useEffect(() => {
-    if (logoutMeData.isSuccess) {
-      // Clear local user state — payload is null so reducer must safely handle it
-      dispatch(addMyInfo(null))
-      window.location.reload()
+    try {
+      await logoutMe().unwrap()
+    } catch (err) {
+      // even if the server call fails, force clear client-side state
     }
-  }, [logoutMeData.isSuccess])
+    dispatch(addMyInfo(null))
+    window.location.href = '/'
+  }
 
   return (
     <div>
