@@ -28,9 +28,20 @@ import { useMyInfoQuery } from "./redux/service"
       palette: {
         mode: darkMode ? 'dark' : 'light',
         background: {
-          default: darkMode ? '#000000' : '#ffffff',
-          paper: darkMode ? '#0b0b0b' : '#ffffff',
+          default: darkMode ? '#101010' : '#ffffff',
+          paper: darkMode ? '#181818' : '#ffffff',
         },
+        text: {
+          primary: darkMode ? '#f3f5f7' : '#000000',
+          secondary: darkMode ? '#777777' : '#999999',
+        },
+        divider: darkMode ? 'rgba(243, 245, 247, 0.15)' : 'rgba(0, 0, 0, 0.08)',
+      },
+      shape: {
+        borderRadius: 16,
+      },
+      typography: {
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
       },
     })
   }, [darkMode])

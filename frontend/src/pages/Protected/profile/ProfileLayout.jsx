@@ -1,19 +1,16 @@
 import React from 'react'
-import { Stack, Typography, Chip, Avatar, Button, useMediaQuery } from '@mui/material'
-import { FaInstagram } from "react-icons/fa6";
-import { Link, Outlet, useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { EditProfileModel } from '../../../redux/slice';
-import { useUserDetailsQuery, useFollowUserMutation } from '../../../redux/service';
+import { Stack, Typography, Chip, Avatar, Button, useMediaQuery, Box } from '@mui/material'
+import { FaInstagram } from "react-icons/fa6"
+import { NavLink, Outlet, useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { EditProfileModel } from '../../../redux/slice'
+import { useUserDetailsQuery, useFollowUserMutation } from '../../../redux/service'
 
 function ProfileLayout() {
   const { id } = useParams()
-  const _300 = useMediaQuery('(min-width:300px)')
-  const _660 = useMediaQuery('(min-width:660px)')
   const _700 = useMediaQuery('(min-width:700px)')
   const dispatch = useDispatch()
   const { darkMode, myInfo } = useSelector((state) => state.service)
-  const containerWidth = _700 ? '800px' : _660 ? '600px' : '90%'
   const { data: userDetails, isLoading } = useUserDetailsQuery(id, { skip: !id })
   const user = userDetails?.user
 
@@ -37,106 +34,133 @@ function ProfileLayout() {
 
   if (isLoading) return null
 
+  const getTabStyle = (isActive) => ({
+    flex: 1,
+    textAlign: 'center',
+    paddingBottom: '12px',
+    paddingTop: '8px',
+    textDecoration: 'none',
+    fontWeight: 600,
+    fontSize: '0.95rem',
+    color: isActive ? (darkMode ? '#ffffff' : '#000000') : (darkMode ? '#777777' : '#999999'),
+    borderBottom: isActive
+      ? `2px solid ${darkMode ? '#ffffff' : '#000000'}`
+      : '2px solid transparent',
+    transition: 'all 0.18s ease',
+    letterSpacing: '-0.01em',
+  })
+
   return (
-    <Stack flexDirection={'column'} alignItems={'center'}>
-      <Stack
-        flexDirection={'column'}
-        width={containerWidth}
-        mx={'auto'}
-        p={2}
-        m={2}
-        gap={2}
-      >
-        <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'}>
-          <Stack flexDirection={'column'} gap={1}>
-            <Typography variant='h2' fontWeight={'bold'} fontSize={_660 ? '2rem' : '1.4rem'}>
+    <Box sx={{ width: '100%', pt: 2 }}>
+      {/* Profile Header Information */}
+      <Box sx={{ px: _700 ? 3 : 2, pb: 2 }}>
+        <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={2}>
+          <Stack direction="column" gap={0.6}>
+            <Typography variant="h4" fontWeight={800} letterSpacing="-0.03em" sx={{ fontSize: _700 ? '1.75rem' : '1.4rem' }}>
               {user?.userName || 'User'}
             </Typography>
-            <Stack flexDirection={'row'} alignItems={'center'} gap={1}>
-              <Typography variant='body2' color={'text.secondary'} fontSize={_300 ? '.95rem' : '.85rem'}>
+            <Stack direction="row" alignItems="center" gap={1}>
+              <Typography variant="body2" color="text.secondary" fontSize="0.9rem">
                 @{user?.userName?.toLowerCase().replace(/\s+/g, '') || 'user'}
               </Typography>
-              {isFollowing && (
-                <Chip
-                  label='Following'
-                  size="small"
-                  sx={{ fontSize: _300 ? '.75rem' : '.65rem', height: 22 }}
-                />
-              )}
+              <Chip
+                label="blogpost.net"
+                size="small"
+                sx={{
+                  height: 20,
+                  fontSize: '0.72rem',
+                  fontWeight: 500,
+                  bgcolor: darkMode ? '#1e1e1e' : '#f0f0f0',
+                  color: 'text.secondary',
+                  borderRadius: '6px',
+                }}
+              />
             </Stack>
           </Stack>
 
           <Avatar
             src={user?.profilePic || ''}
             alt={user?.userName}
-            sx={{ width: _700 ? 80 : 64, height: _700 ? 80 : 64 }}
+            sx={{
+              width: _700 ? 84 : 70,
+              height: _700 ? 84 : 70,
+              border: '1px solid',
+              borderColor: 'divider',
+            }}
           />
         </Stack>
 
-        <Typography variant='body1' color={'text.primary'}>
-          {user?.bio || 'No bio yet.'}
-        </Typography>
+        {/* Bio */}
+        {user?.bio && (
+          <Typography variant="body1" sx={{ color: 'text.primary', mb: 2, fontSize: '0.95rem', lineHeight: 1.5 }}>
+            {user.bio}
+          </Typography>
+        )}
 
-        <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'}>
-          <Typography variant='subtitle2' color='text.secondary'>
+        {/* Follower Stats & Instagram Icon */}
+        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2.5}>
+          <Typography variant="body2" color="text.secondary" fontSize="0.88rem">
             {user?.followers?.length ?? 0} follower{user?.followers?.length !== 1 ? 's' : ''}
           </Typography>
-          <FaInstagram size={_300 ? 28 : 22} style={{ cursor: 'pointer' }} />
+          <Box
+            sx={{
+              cursor: 'pointer',
+              color: 'text.secondary',
+              transition: 'color 0.15s ease',
+              '&:hover': { color: darkMode ? '#fff' : '#000' },
+            }}
+          >
+            <FaInstagram size={22} />
+          </Box>
         </Stack>
 
+        {/* Action Button: Edit Profile or Follow */}
         {isMyProfile ? (
           <Button
-            size='medium'
-            sx={{
-              color: darkMode ? 'white' : 'black',
-              width: '100%',
-              textAlign: 'center',
-              border: '1px solid #d0d0d0',
-              borderRadius: '12px',
-              mt: 1
-            }}
+            className="threads-outline-btn"
+            fullWidth
             onClick={handleOpenEditProfile}
+            sx={{ py: 1, borderRadius: '12px !important' }}
           >
             Edit profile
           </Button>
         ) : (
           <Button
-            size='medium'
-            sx={{
-              width: '100%',
-              textAlign: 'center',
-              border: '1px solid #d0d0d0',
-              borderRadius: '12px',
-              mt: 1,
-              bgcolor: isFollowing ? 'transparent' : (darkMode ? 'white' : 'black'),
-              color: isFollowing ? (darkMode ? 'white' : 'black') : (darkMode ? 'black' : 'white'),
-              ':hover': { opacity: 0.85 }
-            }}
+            className={isFollowing ? "threads-outline-btn" : "threads-pill-btn"}
+            fullWidth
             onClick={handleFollow}
+            sx={{ py: 1, borderRadius: '12px !important' }}
           >
-            {isFollowing ? 'Unfollow' : 'Follow'}
+            {isFollowing ? 'Following' : 'Follow'}
           </Button>
         )}
-      </Stack>
+      </Box>
 
+      {/* Tabs Row: Threads, Replies, Reposts */}
       <Stack
-        flexDirection={'row'}
-        justifyContent={'space-evenly'}
-        my={3}
-        pb={2}
-        borderBottom={'2px solid #e0e0e0'}
-        fontSize={_660 ? '1.1rem' : _300 ? '1rem' : '0.95rem'}
-        width={containerWidth}
-        mx={'auto'}
-        color={'grey'}
+        direction="row"
+        sx={{
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          mt: 2,
+        }}
       >
-        <Link to={`/profile/threads/${id}`} style={{ textDecoration: 'none', color: 'inherit' }}>Threads</Link>
-        <Link to={`/profile/replies/${id}`} style={{ textDecoration: 'none', color: 'inherit' }}>Replies</Link>
-        <Link to={`/profile/reposts/${id}`} style={{ textDecoration: 'none', color: 'inherit' }}>Reposts</Link>
+        <NavLink to={`/profile/threads/${id}`} style={({ isActive }) => getTabStyle(isActive)}>
+          Threads
+        </NavLink>
+        <NavLink to={`/profile/replies/${id}`} style={({ isActive }) => getTabStyle(isActive)}>
+          Replies
+        </NavLink>
+        <NavLink to={`/profile/reposts/${id}`} style={({ isActive }) => getTabStyle(isActive)}>
+          Reposts
+        </NavLink>
       </Stack>
 
-      <Outlet />
-    </Stack>
+      {/* Tab Content */}
+      <Box sx={{ mt: 1 }}>
+        <Outlet />
+      </Box>
+    </Box>
   )
 }
 

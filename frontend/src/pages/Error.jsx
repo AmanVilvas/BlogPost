@@ -1,51 +1,44 @@
-import { Stack, Typography, Button } from '@mui/material'
+import { Stack, Typography, Button, Box } from '@mui/material'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import BlogPostLogo from '../components/common/BlogPostLogo'
 
 function Error() {
-    const navaigate = useNavigate()
+    const navigate = useNavigate()
+
     return (
-        <div>
-            <Stack
-                width={"100%"}
-                height={"100vh"}
-                flexDirection={"row"}
-                alignItems={"center"}
-                justifyContent={"center"}
-                sx={{
-                    background: 'url("/error.webp")',
-                    backgroundRepeat: "no-repeat",
-                    backgroundPositionX: "center",
-                    backgroundPositionY: "bottom"
-                }}
+        <Stack
+            width="100%"
+            height="100vh"
+            alignItems="center"
+            justifyContent="center"
+            sx={{
+                bgcolor: 'background.default',
+                color: 'text.primary',
+                px: 3,
+                textAlign: 'center',
+            }}
+        >
+            <Box mb={3}>
+                <BlogPostLogo height={56} />
+            </Box>
+
+            <Typography variant="h4" fontWeight={800} letterSpacing="-0.03em" mb={1}>
+                Sorry, this page isn't available.
+            </Typography>
+
+            <Typography variant="body1" color="text.secondary" maxWidth={420} mb={4} sx={{ lineHeight: 1.5 }}>
+                The link you followed may be broken, or the page may have been removed.
+            </Typography>
+
+            <Button
+                className="threads-pill-btn"
+                onClick={() => navigate('/')}
+                sx={{ px: 4, py: 1.2, fontSize: '0.95rem !important' }}
             >
-                <Stack
-                    paddingBottom={'350px'}
-                    gap={3}
-
-                >
-                    <Stack >
-                        <Typography variant='h2'>
-                            <b>Oh No!</b>
-                        </Typography>
-                        <Typography
-                            variant='p'>
-                            This page doesnt exists...
-                        </Typography>
-                    </Stack>
-
-                    <Button size="medium"
-                        sx={{
-                            bgcolor: "blue", color: "white", p: 2, borderRadius: 6, ":hover":{
-                                bgcolor: "black"
-                                
-                            }
-                        }}
-                        onClick={()=>navaigate(-1)}
-                        >Go back</Button>
-                </Stack>
-            </Stack>
-        </div>
+                Back to BlogPost
+            </Button>
+        </Stack>
     )
 }
 

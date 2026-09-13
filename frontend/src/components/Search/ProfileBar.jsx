@@ -1,4 +1,5 @@
-import { useMediaQuery, Avatar, Button, Stack, Typography } from '@mui/material'
+import React from 'react'
+import { useMediaQuery, Avatar, Button, Stack, Typography, Box } from '@mui/material'
 import { useSelector } from 'react-redux'
 import { useFollowUserMutation } from '../../redux/service'
 import { Link } from 'react-router-dom'
@@ -21,57 +22,74 @@ function ProfileBar({ user }) {
   }
 
   return (
-    <div>
-      <Stack
-        flexDirection={'row'}
-        justifyContent={'space-between'}
-        px={1} py={2} mx={'auto'}
-        boxShadow={'5px 5px 5px gray'}
-        borderRadius={'10px'}
-        width={_700 ? '80%' : '90%'}
-      >
-        <Stack flexDirection={'row'} gap={2}>
-          <Link to={`/profile/threads/${user?._id}`}>
-            <Avatar src={user?.profilePic || ''} alt={user?.userName} />
-          </Link>
-          <Stack flexDirection={'column'}>
-            <Typography variant='h6' fontWeight={'bold'} fontSize={_700 ? '1rem' : '.8rem'}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        py: 2,
+        px: 1,
+        borderBottom: '1px solid',
+        borderColor: 'divider',
+        transition: 'background-color 0.15s ease',
+        '&:hover': {
+          bgcolor: darkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.015)',
+        },
+      }}
+    >
+      {/* Left: Avatar & Info */}
+      <Stack flexDirection={'row'} gap={2} alignItems={'center'} flex={1} minWidth={0} mr={2}>
+        <Link to={`/profile/threads/${user?._id}`} style={{ textDecoration: 'none' }}>
+          <Avatar
+            src={user?.profilePic || ''}
+            alt={user?.userName}
+            sx={{
+              width: 48,
+              height: 48,
+              border: '1px solid',
+              borderColor: 'divider',
+              transition: 'opacity 0.15s ease',
+              '&:hover': { opacity: 0.85 },
+            }}
+          />
+        </Link>
+        <Stack flexDirection={'column'} flex={1} minWidth={0}>
+          <Link to={`/profile/threads/${user?._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Typography
+              fontWeight={700}
+              fontSize={'0.95rem'}
+              letterSpacing={'-0.015em'}
+              noWrap
+              sx={{ '&:hover': { textDecoration: 'underline' } }}
+            >
               {user?.userName}
             </Typography>
-            <Typography variant='caption' fontSize={_700 ? '1rem' : '.8rem'} color={darkMode ? 'white' : 'grey'}>
-              {user?.bio || 'No bio'}
-            </Typography>
-            <Typography variant='caption' fontSize={_700 ? '1rem' : '.8rem'}>
-              {user?.followers?.length ?? 0} follower{user?.followers?.length !== 1 ? 's' : ''}
-            </Typography>
-          </Stack>
+          </Link>
+          <Typography variant="body2" color="text.secondary" fontSize={'0.85rem'} noWrap>
+            {user?.bio || `@${user?.userName?.toLowerCase().replace(/\s+/g, '')}`}
+          </Typography>
+          <Typography variant="caption" color="text.secondary" fontSize={'0.78rem'} sx={{ mt: 0.2 }}>
+            {user?.followers?.length ?? 0} follower{user?.followers?.length !== 1 ? 's' : ''}
+          </Typography>
         </Stack>
-
-        {!isMe && (
-          <Button
-            size='medium'
-            onClick={handleFollow}
-            sx={{
-              border: darkMode ? '1px solid white' : '1px solid grey',
-              color: darkMode ? (isFollowing ? 'black' : 'white') : (isFollowing ? 'white' : 'white'),
-              borderRadius: '10px',
-              p: 2,
-              height: 40,
-              backgroundColor: isFollowing
-                ? (darkMode ? 'gray' : 'gray')
-                : (darkMode ? 'white' : 'grey'),
-              marginRight: '15px',
-              "&:hover": {
-                backgroundColor: darkMode ? 'blue' : 'white',
-                color: darkMode ? 'white' : 'black'
-              }
-            }}
-          >
-            {isFollowing ? 'Unfollow' : 'Follow'}
-          </Button>
-        )}
       </Stack>
-    </div>
+
+      {/* Right: Authentic Threads Pill Follow Button */}
+      {!isMe && (
+        <Button
+          className={isFollowing ? "threads-outline-btn" : "threads-pill-btn"}
+          onClick={handleFollow}
+          sx={{
+            minWidth: '94px',
+            fontSize: '0.85rem !important',
+            py: '5px !important',
+          }}
+        >
+          {isFollowing ? 'Following' : 'Follow'}
+        </Button>
+      )}
+    </Box>
   )
 }
 

@@ -1,63 +1,75 @@
 import React from 'react'
-import { Stack, Avatar, useMediaQuery } from '@mui/material'
+import { Stack, Avatar, Box, useMediaQuery } from '@mui/material'
 import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 function PostOne({ e }) {
     const _700 = useMediaQuery('(min-width:700px)')
+    const { darkMode } = useSelector(state => state.service)
+
+    const avatarSize = _700 ? 38 : 34
 
     return (
         <Stack
             flexDirection={'column'}
             alignItems={'center'}
-            gap={1}
-            sx={{ minWidth: _700 ? 44 : 36, mt: 0.5 }}
+            sx={{ minWidth: avatarSize, pt: 0.2 }}
         >
-            {/* Profile picture - no badge, no + icon */}
-            <Link to={`/profile/threads/${e?.admin?._id}`}>
+            {/* Author Avatar */}
+            <Link to={`/profile/threads/${e?.admin?._id}`} style={{ textDecoration: 'none' }}>
                 <Avatar
                     alt={e?.admin?.userName}
-                    src={e?.admin?.profilePic}
+                    src={e?.admin?.profilePic || ''}
                     sx={{
-                        width: _700 ? 36 : 28,
-                        height: _700 ? 36 : 28,
-                        border: '2px solid',
+                        width: avatarSize,
+                        height: avatarSize,
+                        border: '1px solid',
                         borderColor: 'divider',
+                        transition: 'opacity 0.15s ease',
+                        '&:hover': {
+                            opacity: 0.85,
+                        },
                     }}
                 />
             </Link>
 
-            {/* Clean vertical thread line - no Stepper, no blue color */}
+            {/* Continuous Vertical Thread Line */}
             <Box
                 sx={{
-                    width: '1.5px',
+                    width: '2px',
                     flex: 1,
-                    minHeight: 40,
-                    bgcolor: 'divider',
-                    borderRadius: 4,
-                    opacity: 0.5,
+                    minHeight: 24,
+                    my: 1,
+                    bgcolor: darkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.12)',
+                    borderRadius: 2,
                 }}
             />
 
-            {/* Small commenter avatars at the bottom - only if comments exist */}
+            {/* Stacked Commenter Avatars */}
             {e?.comments?.length > 0 && (
                 <Stack
                     direction="row"
+                    alignItems="center"
                     sx={{
+                        position: 'relative',
+                        height: 20,
                         '& .MuiAvatar-root': {
-                            width: _700 ? 20 : 16,
-                            height: _700 ? 20 : 16,
-                            fontSize: 8,
+                            width: 18,
+                            height: 18,
                             border: '1.5px solid',
                             borderColor: 'background.default',
                             marginLeft: '-6px',
+                            '&:first-of-type': {
+                                marginLeft: 0,
+                            },
                         },
                     }}
                 >
                     {e.comments.slice(0, 2).map((c, i) => (
                         <Avatar
-                            key={i}
+                            key={c?._id || i}
                             src={c?.admin?.profilePic}
-                            alt={c?.admin?.userName}
+                            alt={c?.admin?.userName || 'User'}
                         />
                     ))}
                 </Stack>
@@ -65,8 +77,5 @@ function PostOne({ e }) {
         </Stack>
     )
 }
-
-// Need Box from MUI
-import { Box } from '@mui/material'
 
 export default PostOne

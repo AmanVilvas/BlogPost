@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Stack, Button, Typography } from '@mui/material'
+import { Stack, Button, Typography, Box } from '@mui/material'
 import Input from '../../components/home/Input'
 import Post from '../../components/home/Post'
 import { useAllPostsQuery } from '../../redux/service'
@@ -10,14 +10,13 @@ function Home() {
     const [page, setPage] = useState(1)
     const [showMore, setShowMore] = useState(true)
     const { data, isLoading, isError } = useAllPostsQuery(page)
-    const { allPosts } = useSelector((state) => state.service)
+    const { allPosts, darkMode } = useSelector((state) => state.service)
 
     const handleClick = () => {
         setPage((prev) => prev + 1)
     }
 
     useEffect(() => {
-        // Guard: data?.post may be undefined on first render or error
         if (data?.post != null) {
             if (data.post.length < 3) setShowMore(false)
         }
@@ -26,39 +25,45 @@ function Home() {
     if (isLoading && allPosts.length === 0) return <Loader />
 
     return (
-        <div>
+        <Box sx={{ width: '100%' }}>
             <Input />
-            <Stack flexDirection="column" gap={2} mb={10}>
+
+            <Stack flexDirection="column" sx={{ width: '100%' }}>
                 {allPosts.length > 0 ? (
                     allPosts.map((e) => <Post key={e._id} e={e} />)
                 ) : isError ? (
-                    <Typography variant="caption" textAlign="center" color="error">
-                        Failed to load posts. Please refresh.
+                    <Typography variant="body2" textAlign="center" color="error" py={6}>
+                        Failed to load threads. Please refresh.
                     </Typography>
                 ) : (
-                    <Typography variant="caption" textAlign="center" color="text.secondary">
-                        No posts yet!
-                    </Typography>
+                    <Box textAlign="center" py={8}>
+                        <Typography variant="h6" fontWeight={700} mb={1}>
+                            Welcome to BlogPost
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            Follow accounts or start the very first thread!
+                        </Typography>
+                    </Box>
                 )}
             </Stack>
 
             {showMore ? (
-                <Stack alignItems='center'>
+                <Stack alignItems='center' my={3}>
                     <Button
-                        size='large'
-                        sx={{ my: 2, textDecoration: 'underline' }}
+                        className="threads-outline-btn"
                         onClick={handleClick}
                         disabled={isLoading}
+                        sx={{ px: 3, py: 1 }}
                     >
-                        {isLoading ? 'Loading...' : 'Load More'}
+                        {isLoading ? 'Loading...' : 'Load more'}
                     </Button>
                 </Stack>
             ) : allPosts?.length > 0 && (
-                <Typography variant='caption' textAlign='center' display='block' my={2} color='text.secondary'>
-                    You've reached the end!
+                <Typography variant='caption' textAlign='center' display='block' my={4} color='text.secondary'>
+                    You're all caught up!
                 </Typography>
             )}
-        </div>
+        </Box>
     )
 }
 

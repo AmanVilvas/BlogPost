@@ -1,14 +1,22 @@
 import React, { useState } from 'react'
-import { useMediaQuery, Avatar, Stack, Typography } from '@mui/material'
-import { IoIosMore } from 'react-icons/io'
-import { Menu, MenuItem } from '@mui/material'
+import { useMediaQuery, Avatar, Stack, Typography, Box, Menu, MenuItem } from '@mui/material'
+import { BsThreeDots } from 'react-icons/bs'
 import { MdDeleteOutline } from 'react-icons/md'
 import { useSelector } from 'react-redux'
-// deleteComment wired up below
+import { Link } from 'react-router-dom'
 import { useDeleteCommentMutation } from '../../../redux/service'
 
-// comment -- the actual comment object from the backend (with .admin, .text, .createdAt)
-// postId -- needed to tell the server which post this comment belongs to
+function timeAgo(dateStr) {
+    if (!dateStr) return ''
+    const now = Date.now()
+    const then = new Date(dateStr).getTime()
+    const diff = Math.floor((now - then) / 1000)
+    if (diff < 60) return 'just now'
+    if (diff < 3600) return `${Math.floor(diff / 60)}m`
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h`
+    return `${Math.floor(diff / 86400)}d`
+}
+
 function Comments({ comment, postId }) {
     const _700 = useMediaQuery('(min-width:700px)')
     const [menuAnchorEl, setMenuAnchorEl] = useState(null)
@@ -33,57 +41,118 @@ function Comments({ comment, postId }) {
         }
     }
 
-    // Only show delete option if this comment belongs to the logged-in user
     const isMyComment = myInfo?._id === comment?.admin?._id
 
-    // Format timestamp
-    const timeAgo = comment?.createdAt
-        ? new Date(comment.createdAt).toLocaleDateString()
-        : ''
-
     return (
-        <div>
-        <Stack flexDirection={'row'}
-        justifyContent={'space-between'}
-        px={2} pb={4}
-        borderBottom={darkMode ? '1px solid white' : '1px solid gray'} 
-        mx={'auto'} width={'90%'}
+        <Box
+            sx={{
+                py: 2,
+                px: _700 ? 3 : 2,
+                borderBottom: '1px solid',
+                borderColor: 'divider',
+                transition: 'background-color 0.15s ease',
+                '&:hover': {
+                    bgcolor: darkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.015)',
+                },
+            }}
         >
-            <Stack flexDirection={'row'} gap={_700 ? 2 : 1}>
-            {/* Real commenter avatar */}
-            <Avatar src={comment?.admin?.profilePic} alt={comment?.admin?.userName} />
-            <Stack flexDirection={'column'}>
-                {/* Real commenter username */}
-                <Typography variant='h5'fontWeight={'bold'} fontSize={'.9rem'} >{comment?.admin?.userName}</Typography>
-                {/* Real comment text */}
-                <Typography variant='subtitle2'>{comment?.text}</Typography>
-            </Stack>
-            </Stack>
-            <Stack flexDirection={'row'} gap={1} alignItems={'center'} color={darkMode ? 'white' : 'grey'}>
-                <p>{timeAgo}</p>
-                {/* Only show the 3-dots menu if it's the user's own comment */}
-                {isMyComment && (
-                    <IoIosMore
-                      size={_700 ? 28 : 20}
-                      onClick={handleOpenMenu}
-                      style={{ cursor: 'pointer' }}
+            <Stack flexDirection={'row'} gap={1.8} alignItems={'flex-start'}>
+                {/* Commenter Avatar */}
+                <Link to={`/profile/threads/${comment?.admin?._id}`} style={{ textDecoration: 'none' }}>
+                    <Avatar
+                        src={comment?.admin?.profilePic || ''}
+                        alt={comment?.admin?.userName}
+                        sx={{
+                            width: _700 ? 36 : 32,
+                            height: _700 ? 36 : 32,
+                            border: '1px solid',
+                            borderColor: 'divider',
+                        }}
                     />
-                )}
+                </Link>
+
+                {/* Comment Content */}
+                <Stack flex={1} minWidth={0} gap={0.4}>
+                    <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'}>
+                        <Link to={`/profile/threads/${comment?.admin?._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <Typography
+                                fontWeight={700}
+                                fontSize={'0.92rem'}
+                                sx={{
+                                    letterSpacing: '-0.015em',
+                                    '&:hover': { textDecoration: 'underline' },
+                                }}
+                            >
+                                {comment?.admin?.userName}
+                            </Typography>
+                        </Link>
+
+                        <Stack flexDirection={'row'} gap={1} alignItems={'center'}>
+                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
+                                {timeAgo(comment?.createdAt)}
+                            </Typography>
+
+                            {isMyComment && (
+                                <Box
+                                    onClick={handleOpenMenu}
+                                    sx={{
+                                        cursor: 'pointer',
+                                        color: 'text.secondary',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        width: 26,
+                                        height: 26,
+                                        borderRadius: '50%',
+                                        '&:hover': {
+                                            color: darkMode ? '#fff' : '#000',
+                                            bgcolor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+                                        },
+                                    }}
+                                >
+                                    <BsThreeDots size={15} />
+                                </Box>
+                            )}
+                        </Stack>
+                    </Stack>
+
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: 'text.primary',
+                            lineHeight: 1.45,
+                            wordBreak: 'break-word',
+                            whiteSpace: 'pre-wrap',
+                            fontSize: '0.9rem',
+                        }}
+                    >
+                        {comment?.text}
+                    </Typography>
+                </Stack>
             </Stack>
-        </Stack>
-        <Menu
-          anchorEl={menuAnchorEl}
-          open={Boolean(menuAnchorEl)}
-          onClose={handleClose}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        >
-          <MenuItem onClick={handleDeleteComment} sx={{ color: 'error.main' }}>
-            <MdDeleteOutline size={18} style={{ marginRight: 8 }} />
-            Delete
-          </MenuItem>
-        </Menu>
-        </div>
+
+            <Menu
+                anchorEl={menuAnchorEl}
+                open={Boolean(menuAnchorEl)}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                PaperProps={{
+                    sx: {
+                        bgcolor: darkMode ? '#1e1e1e' : '#ffffff',
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        borderRadius: '14px',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+                    },
+                }}
+            >
+                <MenuItem onClick={handleDeleteComment} sx={{ color: '#ff3040', fontSize: '0.9rem', fontWeight: 600 }}>
+                    <MdDeleteOutline size={18} style={{ marginRight: 8 }} />
+                    Delete reply
+                </MenuItem>
+            </Menu>
+        </Box>
     )
 }
 

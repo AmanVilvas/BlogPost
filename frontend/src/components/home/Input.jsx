@@ -19,41 +19,66 @@ function Input() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                px: 2,
-                py: 1.5,
-                width: '600px',
-                mx: 'auto',
-                borderBottom: '1px solid',
+                px: 2.5,
+                py: 2,
+                mb: 1.5,
+                width: '100%',
+                bgcolor: darkMode ? '#141414' : '#ffffff',
+                border: '1px solid',
                 borderColor: 'divider',
+                borderRadius: '16px',
                 cursor: 'pointer',
-                '&:hover .post-btn': { color: darkMode ? '#fff' : '#000' },
+                transition: 'all 0.18s ease',
+                '&:hover': {
+                    bgcolor: darkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)',
+                    borderColor: darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)',
+                    '& .threads-post-hint': {
+                        color: darkMode ? '#fff' : '#000',
+                    },
+                },
             }}
         >
-            <Stack flexDirection={'row'} alignItems={'center'} gap={1.5}>
+            <Stack flexDirection={'row'} alignItems={'center'} gap={1.5} flex={1}>
                 <Avatar
                     src={myInfo?.profilePic || ''}
                     alt={myInfo?.userName}
-                    sx={{ width: 38, height: 38 }}
+                    sx={{
+                        width: 38,
+                        height: 38,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                    }}
                 />
                 <Typography
-                    fontSize={'0.95rem'}
-                    sx={{ color: darkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', userSelect: 'none' }}
+                    fontSize={'0.92rem'}
+                    sx={{
+                        color: 'text.secondary',
+                        userSelect: 'none',
+                        letterSpacing: '-0.01em',
+                    }}
                 >
-                    Start your thread…
+                    What's new?
                 </Typography>
             </Stack>
-            <Typography
-                className="post-btn"
-                fontSize={'0.9rem'}
-                fontWeight={600}
+
+            <Box
+                className="threads-post-hint"
                 sx={{
-                    color: darkMode ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)',
-                    transition: 'color 0.2s',
+                    px: 2,
+                    py: 0.6,
+                    borderRadius: '9999px',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                    color: 'text.secondary',
+                    bgcolor: darkMode ? '#1e1e1e' : '#f5f5f5',
+                    transition: 'all 0.18s ease',
                     userSelect: 'none',
                 }}
             >
                 Post
-            </Typography>
+            </Box>
         </Box>
     )
 }

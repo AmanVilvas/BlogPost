@@ -25,7 +25,7 @@ function Post({ e }) {
     const dispatch = useDispatch()
     const _700 = useMediaQuery('(min-width:700px)')
 
-    const isRepostWrapper = !!e.repostOf
+    const isRepostWrapper = !!e?.repostOf
     const actualPost = isRepostWrapper ? e.repostOf : e
     const reposterName = isRepostWrapper ? e.admin?.userName : null
 
@@ -36,71 +36,97 @@ function Post({ e }) {
         dispatch(toggleMyMenu(event.currentTarget))
     }
 
-    const mutedColor = darkMode ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)'
-
     return (
         <Box
+            className="threads-card"
             sx={{
+                width: '100%',
+                px: _700 ? 3 : 2,
+                py: 2,
                 borderBottom: '1px solid',
                 borderColor: 'divider',
-                px: _700 ? 2 : 1.5,
-                py: 1.5,
-                mx: 'auto',
-                width: _700 ? '600px' : '100%',
-                maxWidth: '100%',
-                '&:hover': {
-                    bgcolor: darkMode ? 'rgba(255,255,255,0.025)' : 'rgba(0,0,0,0.02)',
-                },
-                transition: 'background-color 0.2s ease',
-                cursor: 'default',
+                position: 'relative',
             }}
         >
             {isRepostWrapper && (
-                <Stack flexDirection={'row'} alignItems={'center'} gap={1} mb={1} ml={_700 ? 5 : 4}>
-                    <AiOutlineRetweet size={16} color={mutedColor} />
-                    <Box component="span" sx={{ fontSize: '0.85rem', color: mutedColor, fontWeight: 500 }}>
+                <Stack flexDirection={'row'} alignItems={'center'} gap={1} mb={1} ml={_700 ? 6 : 5}>
+                    <AiOutlineRetweet size={15} color={darkMode ? '#888' : '#777'} />
+                    <Box
+                        component="span"
+                        sx={{
+                            fontSize: '0.82rem',
+                            color: 'text.secondary',
+                            fontWeight: 600,
+                            letterSpacing: '-0.01em',
+                        }}
+                    >
                         {reposterName} reposted
                     </Box>
                 </Stack>
             )}
-            <Stack flexDirection={'row'} gap={1.5} alignItems={'flex-start'}>
 
-                {/* Left column: avatar + thread line + reply avatars */}
+            <Stack flexDirection={'row'} gap={1.8} alignItems={'stretch'}>
+                {/* Left column: Avatar + Thread Connector Line */}
                 <PostOne e={actualPost} />
 
-                {/* Right column: content */}
-                <Stack flex={1} minWidth={0} gap={0.25}>
-                    {/* Header row: username + time + dots */}
-                    <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'} mb={0.25}>
-                        <Stack direction="row" alignItems="center" gap={0.75}>
-                            {/* username shown in PostTwo */}
-                        </Stack>
-                        <Stack flexDirection={'row'} alignItems={'center'} gap={1}>
+                {/* Right column: Content & Actions */}
+                <Stack flex={1} minWidth={0} gap={0.5}>
+                    {/* Header: Username + Time + Options */}
+                    <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                        <Box sx={{ minWidth: 0 }}>
                             <Box
                                 component="span"
-                                sx={{ fontSize: '0.78rem', color: mutedColor }}
+                                sx={{
+                                    fontWeight: 700,
+                                    fontSize: '0.94rem',
+                                    color: 'text.primary',
+                                    cursor: 'pointer',
+                                    letterSpacing: '-0.015em',
+                                    '&:hover': {
+                                        textDecoration: 'underline',
+                                    },
+                                }}
+                            >
+                                {actualPost?.admin?.userName}
+                            </Box>
+                        </Box>
+
+                        <Stack flexDirection={'row'} alignItems={'center'} gap={1.2}>
+                            <Box
+                                component="span"
+                                sx={{
+                                    fontSize: '0.82rem',
+                                    color: 'text.secondary',
+                                    fontWeight: 400,
+                                }}
                             >
                                 {timeAgo(actualPost?.createdAt)}
                             </Box>
+
                             <Box
                                 onClick={isAdmin ? handleOpenMenu : undefined}
                                 sx={{
                                     cursor: isAdmin ? 'pointer' : 'default',
-                                    color: mutedColor,
+                                    color: 'text.secondary',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    p: '2px',
+                                    justifyContent: 'center',
+                                    width: 28,
+                                    height: 28,
                                     borderRadius: '50%',
-                                    '&:hover': isAdmin ? { color: darkMode ? '#fff' : '#000', bgcolor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' } : {},
-                                    transition: 'all 0.2s',
+                                    transition: 'all 0.15s ease',
+                                    '&:hover': isAdmin ? {
+                                        color: darkMode ? '#fff' : '#000',
+                                        bgcolor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+                                    } : {},
                                 }}
                             >
-                                <BsThreeDots size={18} />
+                                <BsThreeDots size={16} />
                             </Box>
                         </Stack>
                     </Stack>
 
-                    {/* Post content: username, text, media, actions */}
+                    {/* Post Content & Interactive Controls */}
                     <PostTwo e={actualPost} />
                 </Stack>
             </Stack>

@@ -1,17 +1,25 @@
 import React from 'react'
-import { CircularProgress, Stack } from "@mui/material"
-
+import { CircularProgress, Stack, Box } from "@mui/material"
+import { useSelector } from 'react-redux'
 
 function Loader() {
+    const { darkMode } = useSelector(state => state.service || {})
+
     return (
-        <Stack flexDirection={"row"}
-        minHeight={"50vh"}
-        width={"100%"}
-        height={"100%"}
-        justifyContent={"center"}
-        alignItems={"center"}
-        my={5}>
-            <CircularProgress />
+        <Stack
+            minHeight={"50vh"}
+            width={"100%"}
+            justifyContent={"center"}
+            alignItems={"center"}
+            my={4}
+        >
+            <CircularProgress
+                size={32}
+                thickness={4}
+                sx={{
+                    color: darkMode ? '#ffffff' : '#000000',
+                }}
+            />
         </Stack>
     )
 }
