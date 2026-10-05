@@ -18,7 +18,7 @@ function ProfileLayout() {
   const { data: userDetails, isLoading, isError } = useUserDetailsQuery(id, { skip: !id })
   const user = userDetails?.user
 
-  const [followUser] = useFollowUserMutation()
+  const [followUser, { isLoading: isFollowingRequest }] = useFollowUserMutation()
 
   const isMyProfile = String(myInfo?._id) === String(id)
   const isFollowing = user?.followers?.some(f => String(f._id || f) === String(myInfo?._id))
@@ -84,16 +84,29 @@ function ProfileLayout() {
             </Stack>
           </Stack>
 
-          <Avatar
-            src={user?.profilePic || ''}
-            alt={user?.userName}
-            sx={{
-              width: _700 ? 84 : 70,
-              height: _700 ? 84 : 70,
-              border: '1px solid',
-              borderColor: 'divider',
-            }}
-          />
+          <Stack alignItems="center" gap={1}>
+            <Avatar
+              src={user?.profilePic || ''}
+              alt={user?.userName}
+              sx={{
+                width: _700 ? 84 : 70,
+                height: _700 ? 84 : 70,
+                border: '1px solid',
+                borderColor: 'divider',
+              }}
+            />
+            {!isMyProfile && (
+              <Button
+                className={isFollowing ? 'threads-outline-btn' : 'threads-pill-btn'}
+                onClick={handleFollow}
+                disabled={isFollowingRequest}
+                aria-label={`${isFollowing ? 'Unfollow' : 'Follow'} ${user?.userName}`}
+                sx={{ minWidth: 104, py: 0.7, px: 2 }}
+              >
+                {isFollowingRequest ? 'Updating…' : isFollowing ? 'Following' : 'Follow'}
+              </Button>
+            )}
+          </Stack>
         </Stack>
 
         {/* Bio */}
@@ -130,16 +143,7 @@ function ProfileLayout() {
           >
             Edit profile
           </Button>
-        ) : (
-          <Button
-            className={isFollowing ? "threads-outline-btn" : "threads-pill-btn"}
-            fullWidth
-            onClick={handleFollow}
-            sx={{ py: 1, borderRadius: '12px !important' }}
-          >
-            {isFollowing ? 'Following' : 'Follow'}
-          </Button>
-        )}
+        ) : null}
       </Box>
 
       {/* Profile content tabs */}
