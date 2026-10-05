@@ -88,6 +88,11 @@ export const serviceApi = createApi({
       }),
     }),
 
+    suggestedUsers: builder.query({
+      query: () => ({ url: "users/suggestions", method: "GET" }),
+      providesTags: ["User"],
+    }),
+
     updateProfile: builder.mutation({
       query: (data) => ({
         url: "update",
@@ -233,6 +238,7 @@ export const {
   useLogoutMeMutation,
   useUserDetailsQuery,
   useSearchUsersQuery,
+  useSuggestedUsersQuery,
   useUpdateProfileMutation,
   useAddPostMutation,
   useAllPostsQuery,

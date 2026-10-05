@@ -7,8 +7,6 @@ const cookieParser = require('cookie-parser')
 const cors = require('cors')
 
 const app = express()
-connectDB()
-
 app.use(cors({
     origin: function (origin, callback) {
         callback(null, true)
@@ -28,10 +26,16 @@ app.get('/', (req, res) => {
 app.use("/api", router)
 
 const port = process.env.PORT || 5000;
-app.listen(port, ()=>{
-    console.log(`server is alive at ${port}`);
-    
-})
+connectDB()
+    .then(() => {
+        app.listen(port, () => {
+            console.log(`server is alive at ${port}`)
+        })
+    })
+    .catch((err) => {
+        console.error(err.message)
+        process.exitCode = 1
+    })
 
 
 

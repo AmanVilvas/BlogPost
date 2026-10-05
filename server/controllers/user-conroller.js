@@ -414,6 +414,18 @@ exports.searchUser = async(req,res) =>{
         })
     }
 }
+
+exports.suggestedUsers = async (req, res) => {
+    try {
+        const users = await User.find({})
+            .select('userName profilePic bio createdAt')
+            .sort({ createdAt: -1 })
+            .limit(12)
+        res.status(200).json({ msg: 'BlogPost members fetched', users })
+    } catch (err) {
+        res.status(400).json({ msg: 'Could not load BlogPost members', err: err.message })
+    }
+}
 exports.logout = async(req,res) =>{
     try{
         const isProd = process.env.NODE_ENV === 'production'

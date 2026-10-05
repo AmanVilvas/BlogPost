@@ -1,17 +1,37 @@
 import React, { useEffect, useState } from 'react'
 import { Stack, Button, Typography, Box, Avatar } from '@mui/material'
-import { FiArrowUpRight, FiHash, FiPlus, FiStar } from 'react-icons/fi'
+import { FiArrowUpRight, FiPlus, FiStar } from 'react-icons/fi'
 import Input from '../../components/home/Input'
 import Post from '../../components/home/Post'
-import { useAllPostsQuery } from '../../redux/service'
+import { useAllPostsQuery, useSuggestedUsersQuery, useFollowUserMutation } from '../../redux/service'
 import { useSelector } from 'react-redux'
 import Loader from '../../components/common/Loader'
+import { useLocation } from 'react-router-dom'
+import { useGuestAccess } from '../../components/common/GuestAccess'
 
 function Home() {
     const [page, setPage] = useState(1)
     const [showMore, setShowMore] = useState(true)
     const { data, isLoading, isError } = useAllPostsQuery(page)
-    const { allPosts } = useSelector((state) => state.service)
+    const { allPosts, myInfo } = useSelector((state) => state.service)
+    const guest = useLocation().pathname.startsWith('/guest')
+    const { requestAccount } = useGuestAccess()
+    const { data: memberData } = useSuggestedUsersQuery()
+    const [followUser] = useFollowUserMutation()
+    const [followedIds, setFollowedIds] = useState([])
+    const members = (memberData?.users || [])
+        .filter((member) => member._id !== myInfo?._id && !followedIds.includes(member._id))
+        .slice(0, 3)
+
+    const handleFollow = async (id) => {
+        if (guest || !myInfo) return requestAccount('follow people in the BlogPost community')
+        try {
+            await followUser(id).unwrap()
+            setFollowedIds((ids) => [...ids, id])
+        } catch (err) {
+            console.error('Follow failed:', err)
+        }
+    }
 
     const handleClick = () => {
         setPage((prev) => prev + 1)
@@ -30,9 +50,9 @@ function Home() {
           <Box className="feed-column">
             <Box className="feed-heading">
                 <div className="feed-heading-copy">
-                    <span className="eyebrow"><FiStar /> YOUR DAILY DOSE</span>
-                    <Typography variant="h1">The feed<span>.</span></Typography>
-                    <Typography className="feed-subtitle">Little moments, big ideas, and everything in between.</Typography>
+                    <span className="eyebrow"><FiStar /> A PLACE OF YOUR OWN</span>
+                    <Typography variant="h1">Your corner<span>.</span></Typography>
+                    <Typography className="feed-subtitle">Your people, your ideas, your little corner of the internet.</Typography>
                 </div>
                 <div className="feed-count"><span className="live-dot" /> LIVE</div>
             </Box>
@@ -76,21 +96,12 @@ function Home() {
             )}
           </Box>
           <Box component="aside" className="feed-sidebar">
-            <div className="sidebar-card trend-card">
-                <div className="sidebar-title"><div><span className="eyebrow">WHAT'S HAPPENING</span><h2>Trending now</h2></div><FiArrowUpRight /></div>
-                {[['01', 'slow mornings', '2.4k posts'], ['02', 'camera roll', '1.8k posts'], ['03', 'little wins', '946 posts']].map(([number, tag, count]) => <div className="trend-row" key={tag}><span className="trend-number">{number}</span><div><strong><FiHash />{tag}</strong><small>{count}</small></div><FiArrowUpRight className="trend-arrow" /></div>)}
-                <button className="see-all">See what else is happening <FiArrowUpRight /></button>
-            </div>
             <div className="sidebar-card people-card">
-                <div className="sidebar-title"><div><span className="eyebrow">GOOD PEOPLE, GOOD POSTS</span><h2>People to know</h2></div><FiStar /></div>
-                {[
-                    ['Maya Chen', '@mayamakes', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces'],
-                    ['Theo Rivera', '@theo.outside', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces'],
-                    ['Nina Park', '@ninainbloom', 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop&crop=faces'],
-                ].map(([name, handle, photo]) => <div className="person-row" key={handle}><Avatar src={photo} alt={name} sx={{ width: 42, height: 42 }} /><div className="person-copy"><strong>{name}</strong><small>{handle}</small></div><button className="follow-chip"><FiPlus /> Follow</button></div>)}
-                <button className="see-all">Meet more people <FiArrowUpRight /></button>
+                <div className="sidebar-title"><div><span className="eyebrow">YOUR BLOGPOST COMMUNITY</span><h2>People you might like</h2></div><FiStar /></div>
+                {members.length ? members.map((member) => <div className="person-row" key={member._id}><Avatar src={member.profilePic} alt={member.userName} sx={{ width: 42, height: 42 }} /><div className="person-copy"><strong>{member.userName}</strong><small>{member.bio || 'A member of BlogPost'}</small></div><button className="follow-chip" onClick={() => handleFollow(member._id)}><FiPlus /> Follow</button></div>) : <Typography variant="body2" color="text.secondary" sx={{ py: 2, lineHeight: 1.6 }}>{memberData?.users?.length ? 'You know everyone here for now.' : 'As more people join BlogPost, you’ll find them here.'}</Typography>}
+                {members.length > 0 && <p className="community-note">Real people sharing their own little corners.</p>}
             </div>
-            <p className="sidebar-footer">A little corner of the internet, made for you. <span>✳</span></p>
+            <p className="sidebar-footer">Made for your people and the things you want to share. <span>✳</span></p>
           </Box>
         </Box>
     )

@@ -317,7 +317,7 @@ const Register = () => {
                         shape="pill"
                         onSuccess={handleGoogleSuccess}
                         onError={() => {
-                            setErrorMsg('Google Login Failed')
+                            setErrorMsg('Google sign-in is not configured for this site address yet. You can use email sign-up, or ask the site owner to add this site under Authorized JavaScript origins in Google Cloud.')
                         }}
                     />
                 </Box>
