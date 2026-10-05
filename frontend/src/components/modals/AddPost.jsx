@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import {
     Dialog,
     DialogContent,
@@ -8,39 +8,69 @@ import {
     Box,
     Avatar,
     Typography,
-    IconButton
 } from '@mui/material'
 import { IoClose, IoImagesOutline } from 'react-icons/io5'
 import { useDispatch, useSelector } from 'react-redux'
-import { addPostModel } from '../../redux/slice'
-import { useAddPostMutation } from '../../redux/service'
+import { addPostModel, EditPostModel, addPostID } from '../../redux/slice'
+import { useAddPostMutation, useUpdatePostMutation, useSinglePostQuery } from '../../redux/service'
 
 function AddPost() {
-    const { openAddPostModel, myInfo, darkMode } = useSelector((state) => state.service)
+    const { openAddPostModel, openEditPostModel, postID, myInfo, darkMode } = useSelector((state) => state.service)
     const _700 = useMediaQuery('(min-width:700px)')
 
     const [text, setText] = useState('')
     const [media, setMedia] = useState(null)
+    const [mediaPreview, setMediaPreview] = useState('')
+    const [existingMedia, setExistingMedia] = useState('')
+    const [removeMedia, setRemoveMedia] = useState(false)
     const mediaRef = useRef()
 
     const [addPost, { isLoading }] = useAddPostMutation()
+    const [updatePost, { isLoading: isUpdating }] = useUpdatePostMutation()
+    const { data: editData, isLoading: isLoadingEdit } = useSinglePostQuery(postID, { skip: !openEditPostModel || !postID })
     const dispatch = useDispatch()
+    const isEditing = openEditPostModel
+    const isOpen = openAddPostModel || isEditing
+
+    useEffect(() => {
+        if (!isEditing || !editData?.post) return
+        setText(editData.post.text || '')
+        setExistingMedia(editData.post.media || '')
+        setMedia(null)
+        setRemoveMedia(false)
+    }, [isEditing, editData])
+
+    useEffect(() => {
+        if (!media) {
+            setMediaPreview('')
+            return undefined
+        }
+        const previewUrl = URL.createObjectURL(media)
+        setMediaPreview(previewUrl)
+        return () => URL.revokeObjectURL(previewUrl)
+    }, [media])
 
     const handleClose = () => {
         setText('')
         setMedia(null)
+        setExistingMedia('')
+        setRemoveMedia(false)
         dispatch(addPostModel(false))
+        dispatch(EditPostModel(false))
+        dispatch(addPostID(null))
     }
 
     const handlePost = async () => {
-        if (!text.trim() && !media) return
+        if (!text.trim() && !media && !existingMedia) return
 
         const formData = new FormData()
-        if (text) formData.append('text', text)
+        formData.append('text', text)
         if (media) formData.append('media', media)
+        if (isEditing && removeMedia && !media) formData.append('removeMedia', 'true')
 
         try {
-            await addPost(formData).unwrap()
+            if (isEditing) await updatePost({ id: postID, formData }).unwrap()
+            else await addPost(formData).unwrap()
             handleClose()
         } catch (err) {
             console.error('Post failed:', err)
@@ -48,13 +78,17 @@ function AddPost() {
     }
 
     const handleRemoveMedia = () => {
-        setMedia(null)
+        if (media) setMedia(null)
+        else if (existingMedia) {
+            setExistingMedia('')
+            setRemoveMedia(true)
+        }
         if (mediaRef.current) mediaRef.current.value = ''
     }
 
     return (
         <Dialog
-            open={openAddPostModel}
+            open={isOpen}
             onClose={handleClose}
             fullScreen={!_700}
             fullWidth
@@ -98,7 +132,7 @@ function AddPost() {
                 </Typography>
 
                 <Typography fontWeight={700} fontSize="1rem" letterSpacing="-0.02em">
-                    New post
+                    {isEditing ? 'Edit post' : 'New post'}
                 </Typography>
 
                 <Box sx={{ width: 48 }} />
@@ -129,7 +163,7 @@ function AddPost() {
                     {/* Right: Username + Textarea + Media Attachment */}
                     <Stack flex={1} minWidth={0} gap={1}>
                         <Typography fontWeight={700} fontSize="0.95rem">
-                            {myInfo?.userName}
+                        {isLoadingEdit ? 'Loading post…' : myInfo?.userName}
                         </Typography>
 
                         <Box
@@ -156,7 +190,7 @@ function AddPost() {
                         />
 
                         {/* Media Preview if Selected */}
-                        {media && (
+                        {(mediaPreview || existingMedia) && (
                             <Box
                                 sx={{
                                     position: 'relative',
@@ -169,7 +203,7 @@ function AddPost() {
                                 }}
                             >
                                 <img
-                                    src={URL.createObjectURL(media)}
+                                    src={mediaPreview || existingMedia}
                                     alt="Upload preview"
                                     style={{ width: '100%', maxHeight: 280, objectFit: 'cover', display: 'block' }}
                                 />
@@ -221,7 +255,7 @@ function AddPost() {
                                 accept="image/*"
                                 className="file-input"
                                 ref={mediaRef}
-                                onChange={(e) => setMedia(e.target.files[0])}
+                                onChange={(e) => { setMedia(e.target.files[0] || null); setRemoveMedia(false) }}
                             />
                         </Stack>
                     </Stack>
@@ -238,16 +272,16 @@ function AddPost() {
                     borderColor="divider"
                 >
                     <Typography variant="caption" color="text.secondary" fontSize="0.85rem">
-                        Anyone can reply & quote
+                        {isEditing ? 'Replace the photo or update your text' : 'Anyone can reply'}
                     </Typography>
 
                     <Button
                         className="threads-pill-btn"
                         onClick={handlePost}
-                        disabled={isLoading || (!text.trim() && !media)}
+                        disabled={isLoading || isUpdating || isLoadingEdit || (!text.trim() && !media && !existingMedia)}
                         sx={{ px: 3, py: 0.8 }}
                     >
-                        {isLoading ? 'Posting...' : 'Post'}
+                        {isLoading || isUpdating ? 'Saving...' : isEditing ? 'Save changes' : 'Post'}
                     </Button>
                 </Stack>
             </DialogContent>

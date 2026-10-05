@@ -265,6 +265,52 @@ exports.repost = async (req, res) =>{
     }
 }
 
+exports.updatePost = async (req, res) => {
+    const { id } = req.params
+    try {
+        const post = await Post.findById(id)
+        if (!post) return res.status(404).json({ msg: 'Post not found' })
+        if (post.admin.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ msg: 'Only the author can edit this post' })
+        }
+        const previousPublicId = post.public_id
+
+        const form = formidable({ multiples: false })
+        form.parse(req, async (err, fields, files) => {
+            if (err) return res.status(400).json({ msg: 'Could not read post updates' })
+            let newUpload
+            try {
+                const text = Array.isArray(fields.text) ? fields.text[0] : fields.text
+                const removeMedia = (Array.isArray(fields.removeMedia) ? fields.removeMedia[0] : fields.removeMedia) === 'true'
+                const mediaFile = Array.isArray(files.media) ? files.media[0] : files.media
+
+                if (text !== undefined) post.text = text
+                if (mediaFile) {
+                    newUpload = await cloudinary.uploader.upload(mediaFile.filepath || mediaFile.path, { folder: 'BlogPost/Posts' })
+                    post.media = newUpload.secure_url
+                    post.public_id = newUpload.public_id
+                } else if (removeMedia) {
+                    post.media = undefined
+                    post.public_id = undefined
+                }
+
+                await post.save()
+                if (previousPublicId && (mediaFile || removeMedia)) {
+                    await cloudinary.uploader.destroy(previousPublicId).catch((deleteError) => {
+                        console.warn('Could not remove replaced post image:', deleteError.message)
+                    })
+                }
+                return res.status(200).json({ msg: 'Post updated', post })
+            } catch (uploadError) {
+                if (newUpload?.public_id) await cloudinary.uploader.destroy(newUpload.public_id).catch(() => {})
+                return res.status(500).json({ msg: 'Could not update post', err: uploadError.message })
+            }
+        })
+    } catch (err) {
+        return res.status(500).json({ msg: 'Could not update post', err: err.message })
+    }
+}
+
 exports.feedPosts = async (req, res) => {
     try {
         const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1)

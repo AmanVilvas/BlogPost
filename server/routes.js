@@ -1,16 +1,12 @@
 const express = require('express')
 const { signin, login, userDetails, followUser, updateProfile, searchUser, suggestedUsers, logout, myInfo, googleLogin } = require('./controllers/user-conroller')
 const  auth  = require('./middleware/auth')
-const { addPost, allPosts, feedPosts, deletePost, likePost, repost, singlePost } = require('./controllers/post-controller')
+const { addPost, allPosts, feedPosts, updatePost, deletePost, likePost, repost, singlePost } = require('./controllers/post-controller')
 const { addComment, deleteComment } = require('./controllers/comment.controllers')
 
 
 
 const router = express.Router();
-router.use((req, res, next) => {
-    console.log(`[${req.method}] ${req.url} BODY:`, req.body);
-    next();
-});
 router.post('/signin', signin)
     router.post('/login', login)
     router.post('/google-login', googleLogin)
@@ -28,6 +24,7 @@ router.post('/signin', signin)
     router.get('/post', allPosts)
     router.get('/post/feed/following', auth, feedPosts)
     router.get('/post/feed/discover', feedPosts)
+    router.put('/post/:id', auth, updatePost)
     router.delete('/post/:id', auth, deletePost)
     router.put('/post/like/:id', auth, likePost)
     router.put('/repost/:id', auth, repost)

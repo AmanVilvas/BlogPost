@@ -1,9 +1,9 @@
 import React from 'react'
 import { Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material'
 import { useSelector, useDispatch } from 'react-redux'
-import { toggleMyMenu, addPostID } from '../../redux/slice'
+import { toggleMyMenu, addPostID, EditPostModel } from '../../redux/slice'
 import { useDeletePostMutation } from '../../redux/service'
-import { MdDeleteOutline } from 'react-icons/md'
+import { MdDeleteOutline, MdEdit } from 'react-icons/md'
 
 function MyMenu() {
   const { anchorE2, postID, darkMode } = useSelector(state => state.service)
@@ -24,6 +24,11 @@ function MyMenu() {
     } finally {
       handleClose()
     }
+  }
+
+  const handleEditPost = () => {
+    dispatch(toggleMyMenu(null))
+    dispatch(EditPostModel(true))
   }
 
   return (
@@ -55,6 +60,10 @@ function MyMenu() {
         },
       }}
     >
+      <MenuItem onClick={handleEditPost}>
+        <ListItemIcon sx={{ color: 'inherit', minWidth: 30 }}><MdEdit size={18} /></ListItemIcon>
+        <ListItemText primary="Edit post" />
+      </MenuItem>
       <MenuItem onClick={handleDeletePost} sx={{ color: '#ff3040 !important' }}>
         <ListItemIcon sx={{ color: '#ff3040', minWidth: 30 }}>
           <MdDeleteOutline size={18} />

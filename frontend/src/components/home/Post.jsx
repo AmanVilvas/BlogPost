@@ -111,10 +111,10 @@ function Post({ e }) {
                                 {timeAgo(actualPost?.createdAt)}
                             </Box>
 
-                            <Box
-                                onClick={isAdmin ? handleOpenMenu : undefined}
+                            {isAdmin && <Box
+                                onClick={handleOpenMenu}
                                 sx={{
-                                    cursor: isAdmin ? 'pointer' : 'default',
+                                    cursor: 'pointer',
                                     color: 'text.secondary',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -123,14 +123,14 @@ function Post({ e }) {
                                     height: 28,
                                     borderRadius: '50%',
                                     transition: 'all 0.15s ease',
-                                    '&:hover': isAdmin ? {
+                                    '&:hover': {
                                         color: darkMode ? '#fff' : '#000',
                                         bgcolor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
-                                    } : {},
+                                    },
                                 }}
                             >
                                 <BsThreeDots size={16} />
-                            </Box>
+                            </Box>}
                         </Stack>
                     </Stack>
 

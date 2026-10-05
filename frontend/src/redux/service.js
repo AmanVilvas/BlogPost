@@ -134,6 +134,15 @@ export const serviceApi = createApi({
       },
     }),
 
+    updatePost: builder.mutation({
+      query: ({ id, formData }) => ({ url: `post/${id}`, method: "PUT", body: formData }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Post", id },
+        { type: "Post", id: "LIST" },
+        "User",
+      ],
+    }),
+
     feedPosts: builder.query({
       query: ({ feed, page = 1 }) => ({ url: `post/feed/${feed}?page=${page}`, method: "GET" }),
       providesTags: (result) => result?.post
@@ -248,6 +257,7 @@ export const {
   useSuggestedUsersQuery,
   useUpdateProfileMutation,
   useAddPostMutation,
+  useUpdatePostMutation,
   useAllPostsQuery,
   useFeedPostsQuery,
   useDeletePostMutation,

@@ -27,6 +27,7 @@ export const serviceSlice = createSlice({
     initialState: { 
         //state of the service or slice 
         openAddPostModel: false, 
+        openEditPostModel: false,
         openEditProfileModel: false, 
         openmenu: null, 
         anchorE1: null,
@@ -77,6 +78,9 @@ export const serviceSlice = createSlice({
             //actions-- passing args that we are giving to the state from global
         state.openAddPostModel = action.payload;
         
+        },
+        EditPostModel: (state, action) => {
+            state.openEditPostModel = action.payload
         },
         EditProfileModel: (state, action) =>{
             //actions-- passing args that we are giving to the state from global
@@ -161,6 +165,7 @@ export const {
     openAuthPrompt,
     closeAuthPrompt,
     addPostModel, 
+    EditPostModel,
     EditProfileModel, 
     toggleMainMenu, 
     toggleMyMenu, 
