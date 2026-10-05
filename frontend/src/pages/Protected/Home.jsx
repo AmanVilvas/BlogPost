@@ -163,7 +163,19 @@ function Home() {
           <Box component="aside" className="feed-sidebar">
             <div className="sidebar-card people-card">
                 <div className="sidebar-title"><div><span className="eyebrow">YOUR BLOGPOST COMMUNITY</span><h2>People you might like</h2></div><FiStar /></div>
-                {members.length ? members.map((member) => <div className="person-row" key={member._id}><Avatar src={member.profilePic} alt={member.userName} sx={{ width: 42, height: 42 }} /><div className="person-copy"><strong>{member.userName}</strong><small>{member.bio || 'A member of BlogPost'}</small></div><button className="follow-chip" onClick={() => handleFollow(member._id)}><FiPlus /> Follow</button></div>) : <Typography variant="body2" color="text.secondary" sx={{ py: 2, lineHeight: 1.6 }}>{memberData?.users?.length ? 'You know everyone here for now.' : 'As more people join BlogPost, you’ll find them here.'}</Typography>}
+                {members.length ? members.map((member) => {
+                    const profilePath = `${guest ? '/guest' : ''}/profile/threads/${member._id}`
+                    return <div className="person-row" key={member._id}>
+                        <Link to={profilePath} aria-label={`Open ${member.userName}'s profile`}>
+                            <Avatar src={member.profilePic} alt={member.userName} sx={{ width: 42, height: 42 }} />
+                        </Link>
+                        <div className="person-copy">
+                            <Link className="person-profile-link" to={profilePath}>{member.userName}</Link>
+                            <small>{member.bio || 'A member of BlogPost'}</small>
+                        </div>
+                        <button className="follow-chip" onClick={() => handleFollow(member._id)}><FiPlus /> Follow</button>
+                    </div>
+                }) : <Typography variant="body2" color="text.secondary" sx={{ py: 2, lineHeight: 1.6 }}>{memberData?.users?.length ? 'You know everyone here for now.' : 'As more people join BlogPost, you’ll find them here.'}</Typography>}
                 {members.length > 0 && <p className="community-note">Real people sharing their own little corners.</p>}
             </div>
             <p className="sidebar-footer">Made for your people and the things you want to share. <span>✳</span></p>
