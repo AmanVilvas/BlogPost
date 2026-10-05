@@ -38,4 +38,19 @@ const auth = async (req, res, next) => {
         })
     }
 }
+
+const optionalAuth = async (req, res, next) => {
+    try {
+        const token = req.cookies.token
+        if (token && process.env.JWT_SECRET) {
+            const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
+            req.user = await User.findById(decodedToken.token).select('-password') || undefined
+        }
+    } catch (err) {
+        // Discovery remains available to guests and visitors with expired sessions.
+    }
+    next()
+}
+
 module.exports = auth
+module.exports.optionalAuth = optionalAuth

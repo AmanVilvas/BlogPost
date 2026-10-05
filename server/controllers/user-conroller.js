@@ -409,6 +409,27 @@ exports.suggestedUsers = async (req, res) => {
         res.status(400).json({ msg: 'Could not load BlogPost members', err: err.message })
     }
 }
+
+exports.discoverUsers = async (req, res) => {
+    try {
+        const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1)
+        const limit = 12
+        const exclude = req.user?._id
+        const query = exclude
+            ? { _id: { $ne: exclude }, followers: { $ne: exclude } }
+            : {}
+        const users = await User.find(query)
+            .select('userName profilePic bio createdAt')
+            .sort({ createdAt: -1, _id: -1 })
+            .skip((page - 1) * limit)
+            .limit(limit + 1)
+        const hasMore = users.length > limit
+        if (hasMore) users.pop()
+        res.status(200).json({ msg: 'BlogPost members discovered', users, hasMore })
+    } catch (err) {
+        res.status(500).json({ msg: 'Could not discover BlogPost members', err: err.message })
+    }
+}
 exports.logout = async(req,res) =>{
     try{
         const isProd = process.env.NODE_ENV === 'production'

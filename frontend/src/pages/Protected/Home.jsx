@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Stack, Button, Typography, Box, Avatar } from '@mui/material'
-import { FiArrowUpRight, FiPlus, FiStar } from 'react-icons/fi'
+import { FiPlus, FiStar } from 'react-icons/fi'
 import Input from '../../components/home/Input'
 import Post from '../../components/home/Post'
-import { useAllPostsQuery, useFeedPostsQuery, useSuggestedUsersQuery, useFollowUserMutation } from '../../redux/service'
+import { useAllPostsQuery, useFeedPostsQuery, useSuggestedUsersQuery, useDiscoverUsersQuery, useFollowUserMutation } from '../../redux/service'
 import { useSelector } from 'react-redux'
 import Loader from '../../components/common/Loader'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useGuestAccess } from '../../components/common/GuestAccess'
 
 function Home() {
@@ -15,11 +15,13 @@ function Home() {
     const [showMore, setShowMore] = useState(true)
     const [feed, setFeed] = useState('for-you')
     const [otherFeedPosts, setOtherFeedPosts] = useState([])
+    const [discoveredUsers, setDiscoveredUsers] = useState([])
     const { currentData: forYouData, isLoading: forYouLoading, isFetching: forYouFetching, isError: forYouError } = useAllPostsQuery(page, { skip: feed !== 'for-you' })
     const { currentData: feedData, isLoading: feedLoading, isFetching: feedFetching, isError: feedError } = useFeedPostsQuery(
         { feed, page },
-        { skip: feed === 'for-you' || (feed === 'following' && guest) },
+        { skip: feed !== 'following' || guest },
     )
+    const { currentData: discoverData, isLoading: discoverLoading, isFetching: discoverFetching, isError: discoverError } = useDiscoverUsersQuery(page, { skip: feed !== 'discover' })
     const { allPosts, myInfo } = useSelector((state) => state.service)
     const { requestAccount } = useGuestAccess()
     const { data: memberData } = useSuggestedUsersQuery()
@@ -34,6 +36,7 @@ function Home() {
         try {
             await followUser(id).unwrap()
             setFollowedIds((ids) => [...ids, id])
+            setDiscoveredUsers((users) => users.filter((user) => user._id !== id))
         } catch (err) {
             console.error('Follow failed:', err)
         }
@@ -50,28 +53,40 @@ function Home() {
         setPage(1)
         setShowMore(true)
         setOtherFeedPosts([])
+        setDiscoveredUsers([])
     }
 
     useEffect(() => {
-        const result = feed === 'for-you' ? forYouData : feedData
-        if (!result?.post) return
-        setShowMore(result.post.length === 5)
-        if (feed !== 'for-you') {
-            setOtherFeedPosts((previous) => {
+        if (feed === 'discover' && discoverData?.users) {
+            setShowMore(Boolean(discoverData.hasMore))
+            setDiscoveredUsers((previous) => {
                 const next = page === 1 ? [] : previous
-                const postsById = new Map(next.map((post) => [post._id, post]))
-                result.post.forEach((post) => postsById.set(post._id, post))
-                return Array.from(postsById.values())
+                const usersById = new Map(next.map((user) => [user._id, user]))
+                discoverData.users.forEach((user) => usersById.set(user._id, user))
+                return Array.from(usersById.values())
             })
+            return
         }
-    }, [forYouData, feedData, feed, page])
+        const result = feed === 'for-you' ? forYouData : feedData
+        if (result?.post) {
+            setShowMore(result.post.length === 5)
+            if (feed === 'following') {
+                setOtherFeedPosts((previous) => {
+                    const next = page === 1 ? [] : previous
+                    const postsById = new Map(next.map((post) => [post._id, post]))
+                    result.post.forEach((post) => postsById.set(post._id, post))
+                    return Array.from(postsById.values())
+                })
+            }
+        }
+    }, [forYouData, feedData, discoverData, feed, page])
 
     const visiblePosts = feed === 'for-you' ? allPosts : otherFeedPosts
-    const isLoading = feed === 'for-you' ? forYouLoading : feedLoading
-    const isFetching = feed === 'for-you' ? forYouFetching : feedFetching
-    const isError = feed === 'for-you' ? forYouError : feedError
+    const isLoading = feed === 'for-you' ? forYouLoading : feed === 'following' ? feedLoading : discoverLoading
+    const isFetching = feed === 'for-you' ? forYouFetching : feed === 'following' ? feedFetching : discoverFetching
+    const isError = feed === 'for-you' ? forYouError : feed === 'following' ? feedError : discoverError
 
-    if (isLoading && visiblePosts.length === 0) return <Loader />
+    if (isLoading && (feed === 'discover' ? discoveredUsers.length === 0 : visiblePosts.length === 0)) return <Loader />
 
     return (
         <Box className="home-layout">
@@ -79,8 +94,8 @@ function Home() {
             <Box className="feed-heading">
                 <div className="feed-heading-copy">
                     <span className="eyebrow"><FiStar /> A PLACE OF YOUR OWN</span>
-                    <Typography variant="h1">Your corner<span>.</span></Typography>
-                    <Typography className="feed-subtitle">Your people, your ideas, your little corner of the internet.</Typography>
+                    <Typography variant="h1">{feed === 'discover' ? 'Find your people' : feed === 'following' ? 'Your following' : 'Your corner'}<span>.</span></Typography>
+                    <Typography className="feed-subtitle">{feed === 'discover' ? 'Meet people who are part of BlogPost.' : feed === 'following' ? 'Posts shared by people you follow.' : 'Your people, your ideas, your little corner of the internet.'}</Typography>
                 </div>
                 <div className="feed-count"><span className="live-dot" /> LIVE</div>
             </Box>
@@ -91,14 +106,25 @@ function Home() {
                     ['discover', 'Discover'],
                 ].map(([value, label]) => <button key={value} role="tab" aria-selected={feed === value} className={`feed-tab ${feed === value ? 'active' : ''}`} onClick={() => handleFeedChange(value)}>{label}</button>)}
             </div>
-            <Input />
+            {feed !== 'discover' && <Input />}
 
             <Stack className="feed-stream" flexDirection="column" sx={{ width: '100%' }}>
-                {visiblePosts.length > 0 ? (
+                {feed === 'discover' && discoveredUsers.length > 0 ? (
+                    <div className="discover-grid">
+                        {discoveredUsers.filter((user) => !followedIds.includes(user._id)).map((user) => <div className="discover-card" key={user._id}>
+                            <Link to={`${guest ? '/guest' : ''}/profile/threads/${user._id}`} className="discover-person">
+                                <Avatar src={user.profilePic || ''} alt={user.userName} sx={{ width: 58, height: 58 }} />
+                                <strong>{user.userName}</strong>
+                                <span>{user.bio || 'A member of BlogPost'}</span>
+                            </Link>
+                            <button className="follow-chip" onClick={() => handleFollow(user._id)}><FiPlus /> Follow</button>
+                        </div>)}
+                    </div>
+                ) : feed !== 'discover' && visiblePosts.length > 0 ? (
                     visiblePosts.map((e) => <Post key={e._id} e={e} />)
                 ) : isError ? (
                     <Typography variant="body2" textAlign="center" color="error" py={6}>
-                        Failed to load posts. Please refresh.
+                        {feed === 'discover' ? 'Could not load BlogPost members. Please refresh.' : 'Failed to load posts. Please refresh.'}
                     </Typography>
                 ) : feed === 'following' ? (
                     <Box textAlign="center" py={8}>
@@ -108,10 +134,10 @@ function Home() {
                 ) : (
                     <Box textAlign="center" py={8}>
                         <Typography variant="h6" fontWeight={700} mb={1}>
-                            Welcome to BlogPost
+                            {feed === 'discover' ? 'No members to discover yet' : 'Welcome to BlogPost'}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                            Follow creators or share the first post!
+                            {feed === 'discover' ? 'New people will show up here when they join.' : 'Follow creators or share the first post!'}
                         </Typography>
                     </Box>
                 )}

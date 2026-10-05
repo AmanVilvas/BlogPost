@@ -329,6 +329,8 @@ exports.feedPosts = async (req, res) => {
                 return res.status(200).json({ msg: 'Follow people to build your feed', post: [] })
             }
             match.admin = { $in: followedUserIds }
+            // The Following feed contains posts written by followed accounts only.
+            match.repostOf = null
         } else if (feed !== 'discover') {
             return res.status(404).json({ msg: 'Unknown feed' })
         }

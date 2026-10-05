@@ -1,6 +1,7 @@
 const express = require('express')
-const { signin, login, userDetails, followUser, updateProfile, searchUser, suggestedUsers, logout, myInfo, googleLogin } = require('./controllers/user-conroller')
-const  auth  = require('./middleware/auth')
+const { signin, login, userDetails, followUser, updateProfile, searchUser, suggestedUsers, discoverUsers, logout, myInfo, googleLogin } = require('./controllers/user-conroller')
+const auth = require('./middleware/auth')
+const optionalAuth = auth.optionalAuth
 const { addPost, allPosts, feedPosts, updatePost, deletePost, likePost, repost, singlePost } = require('./controllers/post-controller')
 const { addComment, deleteComment } = require('./controllers/comment.controllers')
 
@@ -16,6 +17,7 @@ router.post('/signin', signin)
     router.put('/user/follow/:id', auth, followUser)
     router.put('/update', auth, updateProfile)
     router.get('/users/search/:query', searchUser)
+    router.get('/users/discover', optionalAuth, discoverUsers)
     router.get('/users/suggestions', suggestedUsers)
     router.post('/logout', auth, logout)
     router.get('/me', auth, myInfo)

@@ -93,6 +93,11 @@ export const serviceApi = createApi({
       providesTags: ["User"],
     }),
 
+    discoverUsers: builder.query({
+      query: (page = 1) => ({ url: `users/discover?page=${page}`, method: "GET" }),
+      providesTags: ["User"],
+    }),
+
     updateProfile: builder.mutation({
       query: (data) => ({
         url: "update",
@@ -255,6 +260,7 @@ export const {
   useUserDetailsQuery,
   useSearchUsersQuery,
   useSuggestedUsersQuery,
+  useDiscoverUsersQuery,
   useUpdateProfileMutation,
   useAddPostMutation,
   useUpdatePostMutation,
