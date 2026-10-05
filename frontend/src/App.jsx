@@ -1,22 +1,21 @@
 import Loader from "./components/common/Loader"
 import {Routes, Route, useLocation} from "react-router-dom"
-import Error from "./pages/Error"
-import Home from "./pages/Protected/Home"
-import Search from "./pages/Protected/Search"
-import Register from "./pages/Register"
+import { lazy, Suspense, useEffect, useMemo } from "react"
 import './index.css'
 import ProtectedLayout from "./pages/Protected/ProtectedLayout"
 import { Box, CssBaseline } from "@mui/material"
 import { ThemeProvider, createTheme } from "@mui/material/styles"
-import ProfileLayout from './pages/Protected/profile/ProfileLayout'
-import Threads from './pages/Protected/profile/Threads'
-import Replies from './pages/Protected/profile/Replies'
-import Reposts from './pages/Protected/profile/Reposts'
-import SinglePost from "./pages/Protected/SinglePost"
-import Notifications from "./pages/Protected/Notifications"
+const Home = lazy(() => import('./pages/Protected/Home'))
+const Search = lazy(() => import('./pages/Protected/Search'))
+const Register = lazy(() => import('./pages/Register'))
+const ProfileLayout = lazy(() => import('./pages/Protected/profile/ProfileLayout'))
+const Threads = lazy(() => import('./pages/Protected/profile/Threads'))
+const Replies = lazy(() => import('./pages/Protected/profile/Replies'))
+const Reposts = lazy(() => import('./pages/Protected/profile/Reposts'))
+const SinglePost = lazy(() => import('./pages/Protected/SinglePost'))
+const Notifications = lazy(() => import('./pages/Protected/Notifications'))
 import { GuestAccessProvider } from "./components/common/GuestAccess"
 import { useSelector } from 'react-redux'
-import { useEffect, useMemo } from "react"
 import { useMyInfoQuery } from "./redux/service"
 
   const App = ()=>{
@@ -71,6 +70,7 @@ import { useMyInfoQuery } from "./redux/service"
         }}
       >
     <GuestAccessProvider>
+    <Suspense fallback={<Loader />}>
     <Routes>
       {
         !guestPath && isLoading ? (
@@ -105,6 +105,7 @@ import { useMyInfoQuery } from "./redux/service"
         )
       }
     </Routes>
+    </Suspense>
     </GuestAccessProvider>
 
         </Box>
