@@ -61,10 +61,25 @@ function ProfileLayout() {
       {/* Profile Header Information */}
       <Box sx={{ px: _700 ? 3 : 2, pb: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={2}>
-          <Stack direction="column" gap={0.6}>
-            <Typography variant="h4" fontWeight={800} letterSpacing="-0.03em" sx={{ fontSize: _700 ? '1.75rem' : '1.4rem' }}>
-              {user?.userName || 'User'}
-            </Typography>
+          <Stack direction="column" gap={0.8} alignItems="flex-start" minWidth={0}>
+            <Stack direction="row" alignItems="center" gap={1.5} flexWrap="wrap">
+              <Typography variant="h4" fontWeight={800} letterSpacing="-0.03em" sx={{ fontSize: _700 ? '1.75rem' : '1.4rem' }}>
+                {user?.userName || 'User'}
+              </Typography>
+              {isMyProfile ? (!guest && <Button
+                className="threads-outline-btn"
+                onClick={handleOpenEditProfile}
+                sx={{ minWidth: 112, py: 0.7, px: 2 }}
+              >Edit profile</Button>) : <Button
+                className={isFollowing ? 'threads-outline-btn' : 'threads-pill-btn'}
+                onClick={handleFollow}
+                disabled={isFollowingRequest}
+                aria-label={`${isFollowing ? 'Unfollow' : 'Follow'} ${user?.userName}`}
+                sx={{ minWidth: 104, py: 0.7, px: 2 }}
+              >
+                {isFollowingRequest ? 'Updating…' : isFollowing ? 'Following' : 'Follow'}
+              </Button>}
+            </Stack>
             <Stack direction="row" alignItems="center" gap={1}>
               <Typography variant="body2" color="text.secondary" fontSize="0.9rem">
                 @{user?.userName?.toLowerCase().replace(/\s+/g, '') || 'user'}
@@ -84,29 +99,16 @@ function ProfileLayout() {
             </Stack>
           </Stack>
 
-          <Stack alignItems="center" gap={1}>
-            <Avatar
-              src={user?.profilePic || ''}
-              alt={user?.userName}
-              sx={{
-                width: _700 ? 84 : 70,
-                height: _700 ? 84 : 70,
-                border: '1px solid',
-                borderColor: 'divider',
-              }}
-            />
-            {!isMyProfile && (
-              <Button
-                className={isFollowing ? 'threads-outline-btn' : 'threads-pill-btn'}
-                onClick={handleFollow}
-                disabled={isFollowingRequest}
-                aria-label={`${isFollowing ? 'Unfollow' : 'Follow'} ${user?.userName}`}
-                sx={{ minWidth: 104, py: 0.7, px: 2 }}
-              >
-                {isFollowingRequest ? 'Updating…' : isFollowing ? 'Following' : 'Follow'}
-              </Button>
-            )}
-          </Stack>
+          <Avatar
+            src={user?.profilePic || ''}
+            alt={user?.userName}
+            sx={{
+              width: _700 ? 84 : 70,
+              height: _700 ? 84 : 70,
+              border: '1px solid',
+              borderColor: 'divider',
+            }}
+          />
         </Stack>
 
         {/* Bio */}
@@ -133,17 +135,6 @@ function ProfileLayout() {
           </Box>
         </Stack>
 
-        {/* Action Button: Edit Profile or Follow */}
-        {isMyProfile && !guest ? (
-          <Button
-            className="threads-outline-btn"
-            fullWidth
-            onClick={handleOpenEditProfile}
-            sx={{ py: 1, borderRadius: '12px !important' }}
-          >
-            Edit profile
-          </Button>
-        ) : null}
       </Box>
 
       {/* Profile content tabs */}
