@@ -7,6 +7,11 @@ import store from './redux/store.js'
 
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { BrowserRouter } from 'react-router-dom'
+import { refreshForStaleDeployment } from './utils/deploymentRefresh.js'
+
+window.addEventListener('vite:preloadError', (event) => {
+  if (refreshForStaleDeployment()) event.preventDefault()
+})
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

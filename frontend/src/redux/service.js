@@ -1,12 +1,24 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { addMyInfo, addToAllPost, deleteThePost, addUser } from "./slice";
+import { refreshForStaleDeployment } from "../utils/deploymentRefresh";
+
+const request = fetchBaseQuery({
+  baseUrl: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  credentials: "include",
+})
+
+const baseQuery = async (args, api, extraOptions) => {
+  const result = await request(args, api, extraOptions)
+  const url = typeof args === 'string' ? args : args?.url || ''
+  if (result.error?.status === 404 && /(^|\/)following(?:\?|$)/.test(url)) {
+    refreshForStaleDeployment()
+  }
+  return result
+}
 
 export const serviceApi = createApi({
   reducerPath: "serviceApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
-    credentials: "include",
-  }),
+  baseQuery,
 
   keepUnusedDataFor: 60 * 60 * 24 * 7,
   tagTypes: ["Post", "User", "Me"],
