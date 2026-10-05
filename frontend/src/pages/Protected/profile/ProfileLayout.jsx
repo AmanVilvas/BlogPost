@@ -66,11 +66,11 @@ function ProfileLayout() {
               <Typography variant="h4" fontWeight={800} letterSpacing="-0.03em" sx={{ fontSize: _700 ? '1.75rem' : '1.4rem' }}>
                 {user?.userName || 'User'}
               </Typography>
-              {isMyProfile ? (!guest && <Button
+              {isMyProfile && !guest ? <Button
                 className="threads-outline-btn"
                 onClick={handleOpenEditProfile}
                 sx={{ minWidth: 112, py: 0.7, px: 2 }}
-              >Edit profile</Button>) : <Button
+              >Edit profile</Button> : <Button
                 className={isFollowing ? 'threads-outline-btn' : 'threads-pill-btn'}
                 onClick={handleFollow}
                 disabled={isFollowingRequest}
