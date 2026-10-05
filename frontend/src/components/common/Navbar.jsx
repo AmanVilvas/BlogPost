@@ -16,7 +16,7 @@ function Navbar({ guest = false }) {
     const _700 = useMediaQuery('(min-width:700px)')
 
     const { data: notifData } = useGetNotificationsQuery(undefined, {
-        pollingInterval: 5000,
+        pollingInterval: 60_000,
         skip: !myInfo || guest
     })
     const hasUnread = notifData?.notifications?.some(n => !n.read)

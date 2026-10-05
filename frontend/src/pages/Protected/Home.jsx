@@ -3,18 +3,24 @@ import { Stack, Button, Typography, Box, Avatar } from '@mui/material'
 import { FiArrowUpRight, FiPlus, FiStar } from 'react-icons/fi'
 import Input from '../../components/home/Input'
 import Post from '../../components/home/Post'
-import { useAllPostsQuery, useSuggestedUsersQuery, useFollowUserMutation } from '../../redux/service'
+import { useAllPostsQuery, useFeedPostsQuery, useSuggestedUsersQuery, useFollowUserMutation } from '../../redux/service'
 import { useSelector } from 'react-redux'
 import Loader from '../../components/common/Loader'
 import { useLocation } from 'react-router-dom'
 import { useGuestAccess } from '../../components/common/GuestAccess'
 
 function Home() {
+    const guest = useLocation().pathname.startsWith('/guest')
     const [page, setPage] = useState(1)
     const [showMore, setShowMore] = useState(true)
-    const { data, isLoading, isError } = useAllPostsQuery(page)
+    const [feed, setFeed] = useState('for-you')
+    const [otherFeedPosts, setOtherFeedPosts] = useState([])
+    const { currentData: forYouData, isLoading: forYouLoading, isFetching: forYouFetching, isError: forYouError } = useAllPostsQuery(page, { skip: feed !== 'for-you' })
+    const { currentData: feedData, isLoading: feedLoading, isFetching: feedFetching, isError: feedError } = useFeedPostsQuery(
+        { feed, page },
+        { skip: feed === 'for-you' || (feed === 'following' && guest) },
+    )
     const { allPosts, myInfo } = useSelector((state) => state.service)
-    const guest = useLocation().pathname.startsWith('/guest')
     const { requestAccount } = useGuestAccess()
     const { data: memberData } = useSuggestedUsersQuery()
     const [followUser] = useFollowUserMutation()
@@ -33,17 +39,39 @@ function Home() {
         }
     }
 
-    const handleClick = () => {
-        setPage((prev) => prev + 1)
+    const handleClick = () => setPage((prev) => prev + 1)
+
+    const handleFeedChange = (nextFeed) => {
+        if (nextFeed === 'following' && (guest || !myInfo)) {
+            requestAccount('see posts from people you follow')
+            return
+        }
+        setFeed(nextFeed)
+        setPage(1)
+        setShowMore(true)
+        setOtherFeedPosts([])
     }
 
     useEffect(() => {
-        if (data?.post != null) {
-            if (data.post.length < 3) setShowMore(false)
+        const result = feed === 'for-you' ? forYouData : feedData
+        if (!result?.post) return
+        setShowMore(result.post.length === 5)
+        if (feed !== 'for-you') {
+            setOtherFeedPosts((previous) => {
+                const next = page === 1 ? [] : previous
+                const postsById = new Map(next.map((post) => [post._id, post]))
+                result.post.forEach((post) => postsById.set(post._id, post))
+                return Array.from(postsById.values())
+            })
         }
-    }, [data])
+    }, [forYouData, feedData, feed, page])
 
-    if (isLoading && allPosts.length === 0) return <Loader />
+    const visiblePosts = feed === 'for-you' ? allPosts : otherFeedPosts
+    const isLoading = feed === 'for-you' ? forYouLoading : feedLoading
+    const isFetching = feed === 'for-you' ? forYouFetching : feedFetching
+    const isError = feed === 'for-you' ? forYouError : feedError
+
+    if (isLoading && visiblePosts.length === 0) return <Loader />
 
     return (
         <Box className="home-layout">
@@ -56,16 +84,27 @@ function Home() {
                 </div>
                 <div className="feed-count"><span className="live-dot" /> LIVE</div>
             </Box>
-            <div className="feed-tabs"><button className="feed-tab active">For you</button><button className="feed-tab">Following</button><button className="feed-tab">Discover</button></div>
+            <div className="feed-tabs" role="tablist" aria-label="Post feeds">
+                {[
+                    ['for-you', 'For you'],
+                    ['following', 'Following'],
+                    ['discover', 'Discover'],
+                ].map(([value, label]) => <button key={value} role="tab" aria-selected={feed === value} className={`feed-tab ${feed === value ? 'active' : ''}`} onClick={() => handleFeedChange(value)}>{label}</button>)}
+            </div>
             <Input />
 
             <Stack className="feed-stream" flexDirection="column" sx={{ width: '100%' }}>
-                {allPosts.length > 0 ? (
-                    allPosts.map((e) => <Post key={e._id} e={e} />)
+                {visiblePosts.length > 0 ? (
+                    visiblePosts.map((e) => <Post key={e._id} e={e} />)
                 ) : isError ? (
                     <Typography variant="body2" textAlign="center" color="error" py={6}>
                         Failed to load posts. Please refresh.
                     </Typography>
+                ) : feed === 'following' ? (
+                    <Box textAlign="center" py={8}>
+                        <Typography variant="h6" fontWeight={700} mb={1}>Your feed starts with people</Typography>
+                        <Typography variant="body2" color="text.secondary">Follow a few BlogPost members and their posts will appear here.</Typography>
+                    </Box>
                 ) : (
                     <Box textAlign="center" py={8}>
                         <Typography variant="h6" fontWeight={700} mb={1}>
@@ -83,13 +122,13 @@ function Home() {
                     <Button
                         className="threads-outline-btn"
                         onClick={handleClick}
-                        disabled={isLoading}
+                        disabled={isFetching}
                         sx={{ px: 3, py: 1 }}
                     >
-                        {isLoading ? 'Loading...' : 'Load more'}
+                        {isFetching ? 'Loading...' : 'Load more'}
                     </Button>
                 </Stack>
-            ) : allPosts?.length > 0 && (
+            ) : visiblePosts.length > 0 && (
                 <Typography variant='caption' textAlign='center' display='block' my={4} color='text.secondary'>
                     You're all caught up!
                 </Typography>

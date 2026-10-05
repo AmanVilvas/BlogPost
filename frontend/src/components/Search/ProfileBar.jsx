@@ -12,8 +12,8 @@ function ProfileBar({ user }) {
   const guest = useLocation().pathname.startsWith('/guest')
   const { requestAccount } = useGuestAccess()
 
-  const isFollowing = user?.followers?.some(f => (f._id || f) === myInfo?._id)
-  const isMe = user?._id === myInfo?._id
+  const isFollowing = user?.followers?.some(f => String(f._id || f) === String(myInfo?._id))
+  const isMe = String(user?._id) === String(myInfo?._id)
 
   const handleFollow = async () => {
     if (guest || !myInfo) return requestAccount('follow people')

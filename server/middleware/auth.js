@@ -23,9 +23,7 @@ const auth = async (req, res, next) => {
                 msg: "token is not verified"
             })
         }
-        const user = await User.findById(decodedToken.token)
-            .populate('followers')
-            .populate('reposts')
+        const user = await User.findById(decodedToken.token).select('-password')
 
         if (!user) {
             return res.status(401).json({

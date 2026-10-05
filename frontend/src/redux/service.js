@@ -134,6 +134,13 @@ export const serviceApi = createApi({
       },
     }),
 
+    feedPosts: builder.query({
+      query: ({ feed, page = 1 }) => ({ url: `post/feed/${feed}?page=${page}`, method: "GET" }),
+      providesTags: (result) => result?.post
+        ? [...result.post.map(({ _id }) => ({ type: "Post", id: _id })), { type: "Post", id: `FEED` }]
+        : [{ type: "Post", id: "FEED" }],
+    }),
+
     deletePost: builder.mutation({
       query: (id) => ({
         url: `post/${id}`,
@@ -242,6 +249,7 @@ export const {
   useUpdateProfileMutation,
   useAddPostMutation,
   useAllPostsQuery,
+  useFeedPostsQuery,
   useDeletePostMutation,
   useFollowUserMutation,
   useLikePostMutation,

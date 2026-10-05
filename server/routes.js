@@ -1,7 +1,7 @@
 const express = require('express')
 const { signin, login, userDetails, followUser, updateProfile, searchUser, suggestedUsers, logout, myInfo, googleLogin } = require('./controllers/user-conroller')
 const  auth  = require('./middleware/auth')
-const { addPost, allPosts, deletePost, likePost, repost, singlePost } = require('./controllers/post-controller')
+const { addPost, allPosts, feedPosts, deletePost, likePost, repost, singlePost } = require('./controllers/post-controller')
 const { addComment, deleteComment } = require('./controllers/comment.controllers')
 
 
@@ -26,6 +26,8 @@ router.post('/signin', signin)
 
     router.post('/post', auth, addPost)
     router.get('/post', allPosts)
+    router.get('/post/feed/following', auth, feedPosts)
+    router.get('/post/feed/discover', feedPosts)
     router.delete('/post/:id', auth, deletePost)
     router.put('/post/like/:id', auth, likePost)
     router.put('/repost/:id', auth, repost)

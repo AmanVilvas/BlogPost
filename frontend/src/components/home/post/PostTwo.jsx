@@ -15,8 +15,8 @@ function PostTwo({ e, guest = false }) {
     const { requestAccount } = useGuestAccess()
     const _700 = useMediaQuery("(min-width:700px)")
 
-    const isLikedInitial = e?.likes?.some(l => (l._id || l) === myInfo?._id)
-    const isRepostedInitial = myInfo?.reposts?.some(r => (r._id || r) === e?._id)
+    const isLikedInitial = e?.likes?.some(l => String(l._id || l) === String(myInfo?._id))
+    const isRepostedInitial = myInfo?.reposts?.some(r => String(r._id || r) === String(e?._id))
 
     const [localLiked, setLocalLiked] = useState(isLikedInitial)
     const [localLikeCount, setLocalLikeCount] = useState(e?.likes?.length ?? 0)

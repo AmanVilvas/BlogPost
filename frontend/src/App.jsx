@@ -1,5 +1,5 @@
 import Loader from "./components/common/Loader"
-import {BrowserRouter, Routes, Route} from "react-router-dom"
+import {Routes, Route, useLocation} from "react-router-dom"
 import Error from "./pages/Error"
 import Home from "./pages/Protected/Home"
 import Search from "./pages/Protected/Search"
@@ -21,7 +21,9 @@ import { useMyInfoQuery } from "./redux/service"
 
   const App = ()=>{
 
-  const { data, error, isLoading } = useMyInfoQuery()
+  const { pathname } = useLocation()
+  const guestPath = pathname.startsWith('/guest')
+  const { data, error, isLoading } = useMyInfoQuery(undefined, { skip: guestPath })
   const { darkMode } = useSelector(state => state.service)
 
   const theme = useMemo(() => {
@@ -68,14 +70,12 @@ import { useMyInfoQuery } from "./redux/service"
           transition: 'background-color 0.3s ease, color 0.3s ease'
         }}
       >
-    <BrowserRouter>
-
     <GuestAccessProvider>
     <Routes>
       {
-        isLoading ? (
+        !guestPath && isLoading ? (
           <Route path="*" element={<Loader />} />
-        ) : !error && data ? (
+        ) : !guestPath && !error && data ? (
           <Route path='/' element={<ProtectedLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/post/:id" element={<SinglePost />} />
@@ -106,8 +106,6 @@ import { useMyInfoQuery } from "./redux/service"
       }
     </Routes>
     </GuestAccessProvider>
-
-  </BrowserRouter>
 
         </Box>
       </ThemeProvider>

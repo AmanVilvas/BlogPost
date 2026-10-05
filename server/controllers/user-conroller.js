@@ -218,37 +218,20 @@ exports.userDetails = async ( req, res )=>{
         })
         }
 
-        const user = await  User.findById( id )
-        .select("-password")
-        .populate('followers')
-        .populate({
-            path: 'threads',
-            populate: [
-                { path: 'likes' }, 
-                { path: 'comments', populate: { path: 'admin' } }, 
-                { path: 'admin' },
-                { 
-                    path: 'repostOf', 
-                    populate: [
-                        { path: 'likes' }, 
-                        { path: 'comments', populate: { path: 'admin' } }, 
-                        { path: 'admin' }
-                    ]
-                }
-            ]
-        })
-        .populate({
-            path: 'replies', populate: {path: 'admin'}
-        })
-        .populate({
-            path: 'reposts',
-            // populate likes, comments and admin of each reposted post
-            populate: [
-                { path: 'likes' }, 
-                { path: 'comments', populate: { path: 'admin' } }, 
-                { path: 'admin' }
-            ]
-        })
+        const user = await User.findById(id)
+            .select('userName profilePic bio followers threads replies reposts createdAt')
+            .populate({ path: 'threads', select: 'admin text media likes comments repostOf createdAt', options: { sort: { createdAt: -1 }, limit: 20 }, populate: [
+                { path: 'admin', select: 'userName profilePic' },
+                { path: 'likes', select: '_id' },
+                { path: 'comments', select: 'admin text createdAt', options: { sort: { createdAt: -1 }, limit: 3 }, populate: { path: 'admin', select: 'userName profilePic' } },
+                { path: 'repostOf', select: 'admin text media createdAt', populate: { path: 'admin', select: 'userName profilePic' } },
+            ] })
+            .populate({ path: 'replies', select: 'admin text post createdAt', options: { sort: { createdAt: -1 }, limit: 20 }, populate: { path: 'admin', select: 'userName profilePic' } })
+            .populate({ path: 'reposts', select: 'admin text media likes comments repostOf createdAt', options: { sort: { createdAt: -1 }, limit: 20 }, populate: [
+                { path: 'admin', select: 'userName profilePic' },
+                { path: 'likes', select: '_id' },
+                { path: 'comments', select: 'admin text createdAt', options: { sort: { createdAt: -1 }, limit: 3 }, populate: { path: 'admin', select: 'userName profilePic' } },
+            ] })
         res.status(200).json({
             msg:"user details fetched successfully", user
         })
@@ -406,7 +389,7 @@ exports.searchUser = async(req,res) =>{
                 {userName: { $regex: query, $options:'i'}},
                 {email: { $regex: query, $options:'i'}}
             ]
-        })
+        }).select('userName profilePic bio followers createdAt').limit(20)
         res.status(200).json({msg: 'searched', users})
     }catch(err){
         return res.status(400).json({

@@ -83,15 +83,15 @@ exports.allPosts = async (req, res) => {
             .sort({ createdAt: -1 })
             .skip((pageNumber - 1) * 5)
             .limit(5)
-            .populate({ path: "admin", select: "-password" })
-            .populate({ path: "likes", select: "-password" })
-            .populate({ path: "comments", populate: { path: "admin", model: "User" } })
+            .populate({ path: "admin", select: "userName profilePic bio" })
+            .populate({ path: "likes", select: "userName profilePic" })
+            .populate({ path: "comments", select: "text createdAt admin", populate: { path: "admin", model: "User", select: "userName profilePic" } })
             .populate({
                 path: 'repostOf',
                 populate: [
-                    { path: 'admin', select: '-password' },
-                    { path: 'likes', select: '-password' },
-                    { path: 'comments', populate: { path: 'admin' } }
+                    { path: 'admin', select: 'userName profilePic bio' },
+                    { path: 'likes', select: 'userName profilePic' },
+                    { path: 'comments', select: 'text createdAt admin', populate: { path: 'admin', select: 'userName profilePic' } }
                 ]
             })
 
@@ -265,6 +265,57 @@ exports.repost = async (req, res) =>{
     }
 }
 
+exports.feedPosts = async (req, res) => {
+    try {
+        const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1)
+        const { feed } = req.params
+        const match = {
+            $or: [
+                { text: { $exists: true, $nin: [null, ""] } },
+                { media: { $exists: true, $nin: [null, ""] } },
+                { repostOf: { $exists: true, $ne: null } },
+            ],
+        }
+
+        if (feed === 'following') {
+            const followedUserIds = await User.find({ followers: req.user._id }).distinct('_id')
+            if (followedUserIds.length === 0) {
+                return res.status(200).json({ msg: 'Follow people to build your feed', post: [] })
+            }
+            match.admin = { $in: followedUserIds }
+        } else if (feed !== 'discover') {
+            return res.status(404).json({ msg: 'Unknown feed' })
+        }
+
+        const pipeline = [{ $match: match }]
+        if (feed === 'discover') {
+            pipeline.push(
+                { $addFields: { feedLikeCount: { $size: { $ifNull: ['$likes', []] } } } },
+                { $sort: { feedLikeCount: -1, createdAt: -1 } },
+            )
+        } else {
+            pipeline.push({ $sort: { createdAt: -1 } })
+        }
+        pipeline.push({ $skip: (page - 1) * 5 }, { $limit: 5 })
+
+        const rows = await Post.aggregate(pipeline)
+        const posts = await Post.populate(rows, [
+            { path: 'admin', select: 'userName profilePic bio' },
+            { path: 'likes', select: 'userName profilePic' },
+            { path: 'comments', select: 'admin text createdAt', options: { sort: { createdAt: -1 }, limit: 3 }, populate: { path: 'admin', select: 'userName profilePic' } },
+            { path: 'repostOf', populate: [
+                { path: 'admin', select: 'userName profilePic bio' },
+                { path: 'likes', select: 'userName profilePic' },
+                { path: 'comments', select: 'admin text createdAt', options: { sort: { createdAt: -1 }, limit: 3 }, populate: { path: 'admin', select: 'userName profilePic' } },
+            ] },
+        ])
+
+        return res.status(200).json({ msg: 'Feed loaded', post: posts })
+    } catch (err) {
+        return res.status(500).json({ msg: 'Could not load this feed', err: err.message })
+    }
+}
+
 exports.singlePost = async (req,res) => {
     try{
         const { id } = req.params
@@ -276,18 +327,20 @@ exports.singlePost = async (req,res) => {
 
         const post = await Post.findById( id ).populate({
             path: 'admin',
-            select: '-password'
-        }).populate({ path: 'likes', select: '-password'}).populate({
-            path: 'comments', 
+            select: 'userName profilePic bio'
+        }).populate({ path: 'likes', select: 'userName profilePic'}).populate({
+            path: 'comments',
+            select: 'admin text createdAt',
             populate: {
                 path: 'admin',
+                select: 'userName profilePic'
             }
         }).populate({
             path: 'repostOf',
             populate: [
-                { path: 'admin', select: '-password' },
-                { path: 'likes', select: '-password' },
-                { path: 'comments', populate: { path: 'admin' } }
+                { path: 'admin', select: 'userName profilePic bio' },
+                { path: 'likes', select: 'userName profilePic' },
+                { path: 'comments', select: 'admin text createdAt', populate: { path: 'admin', select: 'userName profilePic' } }
             ]
         })
         return res.status(200).json({

@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { EditProfileModel } from '../../../redux/slice'
 import { useUserDetailsQuery, useFollowUserMutation } from '../../../redux/service'
 import { useGuestAccess } from '../../../components/common/GuestAccess'
+import Loader from '../../../components/common/Loader'
 
 function ProfileLayout() {
   const { id } = useParams()
@@ -14,13 +15,13 @@ function ProfileLayout() {
   const { darkMode, myInfo } = useSelector((state) => state.service)
   const guest = useLocation().pathname.startsWith('/guest')
   const { requestAccount } = useGuestAccess()
-  const { data: userDetails, isLoading } = useUserDetailsQuery(id, { skip: !id })
+  const { data: userDetails, isLoading, isError } = useUserDetailsQuery(id, { skip: !id })
   const user = userDetails?.user
 
   const [followUser] = useFollowUserMutation()
 
-  const isMyProfile = myInfo?._id === id
-  const isFollowing = user?.followers?.some(f => (f._id || f) === myInfo?._id)
+  const isMyProfile = String(myInfo?._id) === String(id)
+  const isFollowing = user?.followers?.some(f => String(f._id || f) === String(myInfo?._id))
 
   const handleOpenEditProfile = () => {
     dispatch(EditProfileModel(true))
@@ -36,7 +37,8 @@ function ProfileLayout() {
     }
   }
 
-  if (isLoading) return null
+  if (isLoading) return <Loader />
+  if (isError || !user) return <Box textAlign="center" py={8}><Typography variant="h6" fontWeight={700} mb={1}>Profile unavailable</Typography><Typography color="text.secondary">This profile could not be loaded. Please try again.</Typography></Box>
 
   const getTabStyle = (isActive) => ({
     flex: 1,

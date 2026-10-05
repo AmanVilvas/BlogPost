@@ -6,7 +6,7 @@ import { BsThreeDots } from "react-icons/bs"
 import { AiOutlineRetweet } from "react-icons/ai"
 import { useDispatch, useSelector } from 'react-redux'
 import { addPostID, toggleMyMenu } from '../../redux/slice'
-import { useLocation } from 'react-router-dom'
+import { useLocation, Link } from 'react-router-dom'
 
 // Returns a short relative time string like "2h", "3d", "just now"
 function timeAgo(dateStr) {
@@ -80,6 +80,7 @@ function Post({ e }) {
                     {/* Header: Username + Time + Options */}
                     <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
                         <Box sx={{ minWidth: 0 }}>
+                            <Link to={`${guest ? '/guest' : ''}/profile/threads/${actualPost?.admin?._id}`} className="post-author-link">
                             <Box
                                 component="span"
                                 sx={{
@@ -95,6 +96,7 @@ function Post({ e }) {
                             >
                                 {actualPost?.admin?.userName}
                             </Box>
+                            </Link>
                         </Box>
 
                         <Stack flexDirection={'row'} alignItems={'center'} gap={1.2}>
