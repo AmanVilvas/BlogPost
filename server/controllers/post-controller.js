@@ -331,6 +331,21 @@ exports.feedPosts = async (req, res) => {
             match.admin = { $in: followedUserIds }
             // The Following feed contains posts written by followed accounts only.
             match.repostOf = null
+
+            const posts = await Post.find(match)
+                .sort({ createdAt: -1 })
+                .skip((page - 1) * 5)
+                .limit(5)
+                .populate({ path: 'admin', select: 'userName profilePic bio' })
+                .populate({ path: 'likes', select: 'userName profilePic' })
+                .populate({
+                    path: 'comments',
+                    select: 'admin text createdAt',
+                    options: { sort: { createdAt: -1 }, limit: 3 },
+                    populate: { path: 'admin', select: 'userName profilePic' },
+                })
+
+            return res.status(200).json({ msg: 'Following feed loaded', post: posts })
         } else if (feed !== 'discover') {
             return res.status(404).json({ msg: 'Unknown feed' })
         }
