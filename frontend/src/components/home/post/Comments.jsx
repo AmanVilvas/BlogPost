@@ -17,7 +17,7 @@ function timeAgo(dateStr) {
     return `${Math.floor(diff / 86400)}d`
 }
 
-function Comments({ comment, postId }) {
+function Comments({ comment, postId, guest = false }) {
     const _700 = useMediaQuery('(min-width:700px)')
     const [menuAnchorEl, setMenuAnchorEl] = useState(null)
     const { darkMode, myInfo } = useSelector(state => state.service)
@@ -58,7 +58,7 @@ function Comments({ comment, postId }) {
         >
             <Stack flexDirection={'row'} gap={1.8} alignItems={'flex-start'}>
                 {/* Commenter Avatar */}
-                <Link to={`/profile/threads/${comment?.admin?._id}`} style={{ textDecoration: 'none' }}>
+                <Link to={`${guest ? '/guest' : ''}/profile/threads/${comment?.admin?._id}`} style={{ textDecoration: 'none' }}>
                     <Avatar
                         src={comment?.admin?.profilePic || ''}
                         alt={comment?.admin?.userName}
@@ -74,7 +74,7 @@ function Comments({ comment, postId }) {
                 {/* Comment Content */}
                 <Stack flex={1} minWidth={0} gap={0.4}>
                     <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'}>
-                        <Link to={`/profile/threads/${comment?.admin?._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <Link to={`${guest ? '/guest' : ''}/profile/threads/${comment?.admin?._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                             <Typography
                                 fontWeight={700}
                                 fontSize={'0.92rem'}

@@ -1,16 +1,19 @@
 import React from 'react'
 import { Stack, Typography, Chip, Avatar, Button, useMediaQuery, Box } from '@mui/material'
 import { FaInstagram } from "react-icons/fa6"
-import { NavLink, Outlet, useParams } from 'react-router-dom'
+import { NavLink, Outlet, useParams, useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { EditProfileModel } from '../../../redux/slice'
 import { useUserDetailsQuery, useFollowUserMutation } from '../../../redux/service'
+import { useGuestAccess } from '../../../components/common/GuestAccess'
 
 function ProfileLayout() {
   const { id } = useParams()
   const _700 = useMediaQuery('(min-width:700px)')
   const dispatch = useDispatch()
   const { darkMode, myInfo } = useSelector((state) => state.service)
+  const guest = useLocation().pathname.startsWith('/guest')
+  const { requestAccount } = useGuestAccess()
   const { data: userDetails, isLoading } = useUserDetailsQuery(id, { skip: !id })
   const user = userDetails?.user
 
@@ -24,6 +27,7 @@ function ProfileLayout() {
   }
 
   const handleFollow = async () => {
+    if (guest || !myInfo) return requestAccount('follow people')
     if (!id) return
     try {
       await followUser(id).unwrap()
@@ -115,7 +119,7 @@ function ProfileLayout() {
         </Stack>
 
         {/* Action Button: Edit Profile or Follow */}
-        {isMyProfile ? (
+        {isMyProfile && !guest ? (
           <Button
             className="threads-outline-btn"
             fullWidth
@@ -136,7 +140,7 @@ function ProfileLayout() {
         )}
       </Box>
 
-      {/* Tabs Row: Threads, Replies, Reposts */}
+      {/* Profile content tabs */}
       <Stack
         direction="row"
         sx={{
@@ -145,13 +149,13 @@ function ProfileLayout() {
           mt: 2,
         }}
       >
-        <NavLink to={`/profile/threads/${id}`} style={({ isActive }) => getTabStyle(isActive)}>
-          Threads
+        <NavLink to={`${guest ? '/guest' : ''}/profile/threads/${id}`} style={({ isActive }) => getTabStyle(isActive)}>
+          Posts
         </NavLink>
-        <NavLink to={`/profile/replies/${id}`} style={({ isActive }) => getTabStyle(isActive)}>
+        <NavLink to={`${guest ? '/guest' : ''}/profile/replies/${id}`} style={({ isActive }) => getTabStyle(isActive)}>
           Replies
         </NavLink>
-        <NavLink to={`/profile/reposts/${id}`} style={({ isActive }) => getTabStyle(isActive)}>
+        <NavLink to={`${guest ? '/guest' : ''}/profile/reposts/${id}`} style={({ isActive }) => getTabStyle(isActive)}>
           Reposts
         </NavLink>
       </Stack>

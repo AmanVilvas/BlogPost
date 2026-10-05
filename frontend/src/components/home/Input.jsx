@@ -2,11 +2,15 @@ import React from 'react'
 import { Stack, Typography, Avatar, Box, useMediaQuery } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { addPostModel } from '../../redux/slice'
+import { useGuestAccess } from '../common/GuestAccess'
+import { useLocation } from 'react-router-dom'
 
 function Input() {
     const dispatch = useDispatch()
+    const { requestAccount } = useGuestAccess()
+    const guest = useLocation().pathname.startsWith('/guest')
     const { myInfo, darkMode } = useSelector(state => state.service)
-    const handleAddPost = () => dispatch(addPostModel(true))
+    const handleAddPost = () => guest ? requestAccount('create a post') : dispatch(addPostModel(true))
     const _700 = useMediaQuery('(min-width:700px)')
 
     if (!_700) return null

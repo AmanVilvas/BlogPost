@@ -98,7 +98,7 @@ function AddPost() {
                 </Typography>
 
                 <Typography fontWeight={700} fontSize="1rem" letterSpacing="-0.02em">
-                    New thread
+                    New post
                 </Typography>
 
                 <Box sx={{ width: 48 }} />
@@ -138,7 +138,7 @@ function AddPost() {
                             autoFocus
                             value={text}
                             onChange={(e) => setText(e.target.value)}
-                            placeholder="Start a thread..."
+                            placeholder="What would you like to share?"
                             sx={{
                                 width: '100%',
                                 border: 'none',

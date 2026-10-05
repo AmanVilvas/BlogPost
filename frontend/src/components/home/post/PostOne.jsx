@@ -3,7 +3,7 @@ import { Stack, Avatar, Box, useMediaQuery } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
-function PostOne({ e }) {
+function PostOne({ e, guest = false }) {
     const _700 = useMediaQuery('(min-width:700px)')
     const { darkMode } = useSelector(state => state.service)
 
@@ -16,7 +16,7 @@ function PostOne({ e }) {
             sx={{ minWidth: avatarSize, pt: 0.2 }}
         >
             {/* Author Avatar */}
-            <Link to={`/profile/threads/${e?.admin?._id}`} style={{ textDecoration: 'none' }}>
+            <Link to={`${guest ? '/guest' : ''}/profile/threads/${e?.admin?._id}`} style={{ textDecoration: 'none' }}>
                 <Avatar
                     alt={e?.admin?.userName}
                     src={e?.admin?.profilePic || ''}

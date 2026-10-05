@@ -6,7 +6,7 @@ import { addMyInfo, toggleColorMode, toggleMainMenu } from '../../redux/slice'
 import { useLogoutMeMutation } from '../../redux/service'
 import { IoSunnyOutline, IoMoonOutline, IoPersonOutline, IoLogOutOutline } from 'react-icons/io5'
 
-function MainMenu({ anchorEl, open, onClose }) {
+function MainMenu({ anchorEl, open, onClose, guest = false }) {
   const [logoutMe] = useLogoutMeMutation()
   const { darkMode, myInfo } = useSelector((state) => state.service)
   const dispatch = useDispatch()
@@ -70,7 +70,7 @@ function MainMenu({ anchorEl, open, onClose }) {
         <ListItemText primary={darkMode ? 'Appearance: Dark' : 'Appearance: Light'} />
       </MenuItem>
 
-      {myInfo && (
+      {myInfo && !guest && (
         <Link to={`/profile/threads/${myInfo._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
           <MenuItem onClick={onClose}>
             <ListItemIcon sx={{ color: 'inherit', minWidth: 32 }}>
@@ -83,12 +83,12 @@ function MainMenu({ anchorEl, open, onClose }) {
 
       <Divider sx={{ my: 0.5, borderColor: 'divider' }} />
 
-      <MenuItem onClick={handleLogout} sx={{ color: '#ff3040 !important' }}>
+      {!guest && <MenuItem onClick={handleLogout} sx={{ color: '#ff3040 !important' }}>
         <ListItemIcon sx={{ color: '#ff3040', minWidth: 32 }}>
           <IoLogOutOutline size={18} />
         </ListItemIcon>
         <ListItemText primary="Log out" />
-      </MenuItem>
+      </MenuItem>}
     </Menu>
   )
 }

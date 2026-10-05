@@ -1,10 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-const THEME_STORAGE_KEY = 'threads.theme'
+const THEME_STORAGE_KEY = 'blogpost.theme'
+const GUEST_STORAGE_KEY = 'blogpost.isGuest'
 
 function getInitialDarkMode() {
     try {
-        const saved = localStorage.getItem(THEME_STORAGE_KEY)
+        const saved = localStorage.getItem(THEME_STORAGE_KEY) || localStorage.getItem('threads.theme')
         if (saved === 'dark') return true
         if (saved === 'light') return false
     } catch (e) {
@@ -12,7 +13,15 @@ function getInitialDarkMode() {
     }
     return false
 }
-// 2;48
+
+function getInitialGuestMode() {
+    try {
+        return localStorage.getItem(GUEST_STORAGE_KEY) === 'true'
+    } catch (e) {
+        return false
+    }
+}
+
 export const serviceSlice = createSlice({
     name: 'service',
     initialState: { 
@@ -23,6 +32,12 @@ export const serviceSlice = createSlice({
         anchorE1: null,
         anchorE2: null, 
         darkMode: getInitialDarkMode(),
+        isGuest: getInitialGuestMode(),
+        authPrompt: {
+            open: false,
+            title: '',
+            message: '',
+        },
         myInfo: null ,
         user:{},
         allPosts:[],
@@ -31,6 +46,32 @@ export const serviceSlice = createSlice({
         searchedUsers: []
     },
     reducers: {
+        setGuestMode: (state, action) => {
+            state.isGuest = Boolean(action.payload)
+            try {
+                if (action.payload) {
+                    localStorage.setItem(GUEST_STORAGE_KEY, 'true')
+                } else {
+                    localStorage.removeItem(GUEST_STORAGE_KEY)
+                }
+            } catch (e) {
+                // ignore
+            }
+        },
+        openAuthPrompt: (state, action) => {
+            state.authPrompt = {
+                open: true,
+                title: action.payload?.title || 'Sign in to BlogPost',
+                message: action.payload?.message || 'Join BlogPost to like, comment, repost, and connect with creators.',
+            }
+        },
+        closeAuthPrompt: (state) => {
+            state.authPrompt = {
+                open: false,
+                title: '',
+                message: '',
+            }
+        },
         //to chnage the value inside a state 
         addPostModel: (state, action) =>{
             //actions-- passing args that we are giving to the state from global
@@ -48,7 +89,6 @@ export const serviceSlice = createSlice({
             state.anchorE2 = action.payload
         },
         toggleColorMode: (state) => {
-            // console.log('toggleColorMode reducer called, current state:', state.darkMode)
             state.darkMode = !state.darkMode
             try {
                 localStorage.setItem(THEME_STORAGE_KEY, state.darkMode ? 'dark' : 'light')
@@ -58,6 +98,12 @@ export const serviceSlice = createSlice({
         },
         addMyInfo: (state, action)=>{
             state.myInfo = action.payload?.me ?? null
+            if (state.myInfo) {
+                state.isGuest = false
+                try {
+                    localStorage.removeItem(GUEST_STORAGE_KEY)
+                } catch (e) {}
+            }
         },
         addUser:(state, action)=>{
             state.user = action.payload
@@ -110,7 +156,23 @@ export const serviceSlice = createSlice({
     } 
 })
 
-export const { addPostModel, EditProfileModel, toggleMainMenu, toggleMyMenu, toggleColorMode, addMyInfo, addUser, addToAllPost, addSingle, deleteThePost, addTOSearchUsers, addPostID } = serviceSlice.actions
+export const { 
+    setGuestMode,
+    openAuthPrompt,
+    closeAuthPrompt,
+    addPostModel, 
+    EditProfileModel, 
+    toggleMainMenu, 
+    toggleMyMenu, 
+    toggleColorMode, 
+    addMyInfo, 
+    addUser, 
+    addToAllPost, 
+    addSingle, 
+    deleteThePost, 
+    addTOSearchUsers, 
+    addPostID 
+} = serviceSlice.actions
 
 
 // 2:19

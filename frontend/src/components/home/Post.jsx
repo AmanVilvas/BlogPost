@@ -6,6 +6,7 @@ import { BsThreeDots } from "react-icons/bs"
 import { AiOutlineRetweet } from "react-icons/ai"
 import { useDispatch, useSelector } from 'react-redux'
 import { addPostID, toggleMyMenu } from '../../redux/slice'
+import { useLocation } from 'react-router-dom'
 
 // Returns a short relative time string like "2h", "3d", "just now"
 function timeAgo(dateStr) {
@@ -23,6 +24,7 @@ function timeAgo(dateStr) {
 function Post({ e }) {
     const { darkMode, myInfo } = useSelector(state => state.service)
     const dispatch = useDispatch()
+    const guest = useLocation().pathname.startsWith('/guest')
     const _700 = useMediaQuery('(min-width:700px)')
 
     const isRepostWrapper = !!e?.repostOf
@@ -41,11 +43,15 @@ function Post({ e }) {
             className="threads-card"
             sx={{
                 width: '100%',
-                px: _700 ? 3 : 2,
-                py: 2,
-                borderBottom: '1px solid',
-                borderColor: 'divider',
+                px: _700 ? 2.5 : 2,
+                py: 2.5,
                 position: 'relative',
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: _700 ? '20px' : 0,
+                mb: _700 ? 1.5 : 0,
+                bgcolor: 'background.paper',
+                boxShadow: _700 ? '0 8px 30px rgba(20, 20, 30, 0.035)' : 'none',
             }}
         >
             {isRepostWrapper && (
@@ -67,7 +73,7 @@ function Post({ e }) {
 
             <Stack flexDirection={'row'} gap={1.8} alignItems={'stretch'}>
                 {/* Left column: Avatar + Thread Connector Line */}
-                <PostOne e={actualPost} />
+                <PostOne e={actualPost} guest={guest} />
 
                 {/* Right column: Content & Actions */}
                 <Stack flex={1} minWidth={0} gap={0.5}>
@@ -127,7 +133,7 @@ function Post({ e }) {
                     </Stack>
 
                     {/* Post Content & Interactive Controls */}
-                    <PostTwo e={actualPost} />
+                    <PostTwo e={actualPost} guest={guest} />
                 </Stack>
             </Stack>
         </Box>

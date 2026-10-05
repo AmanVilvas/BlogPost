@@ -62,7 +62,7 @@ exports.signin = async (req, res) => {
         })
 
         res.status(200).json({
-            msg: `Hey ${result.userName}, welcome to Threads!`
+            msg: `Hey ${result.userName}, welcome to BlogPost!`
         })
 
     } catch (err) {
@@ -199,7 +199,7 @@ exports.googleLogin = async (req, res) => {
                 secure: isProd || req.secure || req.headers['x-forwarded-proto'] === 'https'
             });
 
-            return res.status(200).json({ msg: `Hey ${result.userName}, welcome to Threads!`, user: result });
+            return res.status(200).json({ msg: `Hey ${result.userName}, welcome to BlogPost!`, user: result });
         }
     } catch (err) {
         console.log("Google login error:", err);

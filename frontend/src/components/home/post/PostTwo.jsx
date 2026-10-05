@@ -6,11 +6,13 @@ import { IoPaperPlaneOutline } from "react-icons/io5"
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { useLikePostMutation, useRepostMutation } from '../../../redux/service'
+import { useGuestAccess } from '../../common/GuestAccess'
 
-function PostTwo({ e }) {
+function PostTwo({ e, guest = false }) {
     const { darkMode, myInfo } = useSelector(state => state.service)
     const [likePost] = useLikePostMutation()
     const [repost] = useRepostMutation()
+    const { requestAccount } = useGuestAccess()
     const _700 = useMediaQuery("(min-width:700px)")
 
     const isLikedInitial = e?.likes?.some(l => (l._id || l) === myInfo?._id)
@@ -33,6 +35,7 @@ function PostTwo({ e }) {
     const handleLike = (ev) => {
         ev.preventDefault()
         ev.stopPropagation()
+        if (guest || !myInfo) return requestAccount('like posts')
         if (!e?._id) return
         setLocalLiked(prev => !prev)
         setLocalLikeCount(prev => localLiked ? prev - 1 : prev + 1)
@@ -42,6 +45,7 @@ function PostTwo({ e }) {
     const handleRepost = (ev) => {
         ev.preventDefault()
         ev.stopPropagation()
+        if (guest || !myInfo) return requestAccount('repost posts')
         if (!e?._id) return
         setLocalReposted(prev => !prev)
         repost(e._id)
@@ -61,7 +65,7 @@ function PostTwo({ e }) {
     return (
         <Stack flexDirection={'column'} gap={0.8} flex={1} minWidth={0} sx={{ mt: 0.2 }}>
             {/* Post Text */}
-            <Link to={`/post/${e?._id}`} style={{ textDecoration: 'none' }}>
+            <Link to={`${guest ? '/guest' : ''}/post/${e?._id}`} style={{ textDecoration: 'none' }}>
                 <Typography
                     fontSize={_700 ? '0.94rem' : '0.88rem'}
                     sx={{
@@ -103,7 +107,7 @@ function PostTwo({ e }) {
                 </Box>
             )}
 
-            {/* Threads Interactive Actions: Heart, Comment, Repost, Share */}
+            {/* Post actions: like, reply, repost, share */}
             <Stack flexDirection={'row'} alignItems={'center'} gap={2} mt={0.5} sx={{ userSelect: 'none' }}>
                 {/* Like Button */}
                 <Box
@@ -131,7 +135,7 @@ function PostTwo({ e }) {
                 </Box>
 
                 {/* Comment Button */}
-                <Link to={`/post/${e?._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Link to={`${guest ? '/guest' : ''}/post/${e?._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                     <Box className="threads-action-btn" title="Reply">
                         <FaRegComment size={iconSize} />
                         {(e?.comments?.length ?? 0) > 0 && (

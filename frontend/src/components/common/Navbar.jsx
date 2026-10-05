@@ -7,19 +7,21 @@ import { NavLink } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { addPostModel } from '../../redux/slice'
 import { useGetNotificationsQuery } from '../../redux/service'
+import { useGuestAccess } from './GuestAccess'
 
-function Navbar() {
+function Navbar({ guest = false }) {
     const dispatch = useDispatch()
+    const { requestAccount } = useGuestAccess()
     const { darkMode, myInfo } = useSelector((state) => state.service)
     const _700 = useMediaQuery('(min-width:700px)')
 
     const { data: notifData } = useGetNotificationsQuery(undefined, {
         pollingInterval: 5000,
-        skip: !myInfo
+        skip: !myInfo || guest
     })
     const hasUnread = notifData?.notifications?.some(n => !n.read)
 
-    const handleAddPost = () => dispatch(addPostModel(true))
+    const handleAddPost = () => guest ? requestAccount('create a post') : dispatch(addPostModel(true))
 
     const activeColor = darkMode ? '#ffffff' : '#000000'
     const inactiveColor = darkMode ? '#686868' : '#999999'
@@ -54,7 +56,7 @@ function Navbar() {
             mx={'auto'}
         >
             {/* Home */}
-            <NavLink to={'/'} style={{ textDecoration: 'none' }}>
+            <NavLink to={guest ? '/guest' : '/'} style={{ textDecoration: 'none' }}>
                 {({ isActive }) => (
                     <Box sx={getPillStyle(isActive)} title="Home">
                         {isActive ? <GoHomeFill size={iconSize} /> : <GoHome size={iconSize} />}
@@ -63,7 +65,7 @@ function Navbar() {
             </NavLink>
 
             {/* Search */}
-            <NavLink to={'/search'} style={{ textDecoration: 'none' }}>
+            <NavLink to={guest ? '/guest/search' : '/search'} style={{ textDecoration: 'none' }}>
                 {({ isActive }) => (
                     <Box sx={getPillStyle(isActive)} title="Search">
                         <IoSearch size={iconSize} style={{ strokeWidth: isActive ? 2.5 : 1.5 }} />
@@ -75,13 +77,13 @@ function Navbar() {
             <Box
                 sx={getPillStyle(false)}
                 onClick={handleAddPost}
-                title="Create Thread"
+                title="Create post"
             >
                 <TbSquarePlus size={iconSize} />
             </Box>
 
             {/* Activity / Heart */}
-            <NavLink to={'/activity'} style={{ textDecoration: 'none' }} className={hasUnread ? 'unread-shake' : ''}>
+            <NavLink to={guest ? '/guest' : '/activity'} style={{ textDecoration: 'none' }} className={hasUnread ? 'unread-shake' : ''}>
                 {({ isActive }) => (
                     <Box sx={getPillStyle(isActive)} title="Activity">
                         {isActive || hasUnread ? (
@@ -94,7 +96,7 @@ function Navbar() {
             </NavLink>
 
             {/* Profile */}
-            <NavLink to={`/profile/threads/${myInfo?._id}`} style={{ textDecoration: 'none' }}>
+            <NavLink to={guest ? (myInfo?._id ? `/guest/profile/threads/${myInfo._id}` : '/guest') : `/profile/threads/${myInfo?._id}`} style={{ textDecoration: 'none' }}>
                 {({ isActive }) => (
                     <Box sx={getPillStyle(isActive)} title="Profile">
                         {myInfo?.profilePic ? (

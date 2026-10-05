@@ -2,17 +2,21 @@ import React from 'react'
 import { useMediaQuery, Avatar, Button, Stack, Typography, Box } from '@mui/material'
 import { useSelector } from 'react-redux'
 import { useFollowUserMutation } from '../../redux/service'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import { useGuestAccess } from '../common/GuestAccess'
 
 function ProfileBar({ user }) {
   const _700 = useMediaQuery("(min-width:700px)")
   const { darkMode, myInfo } = useSelector(state => state.service)
   const [followUser] = useFollowUserMutation()
+  const guest = useLocation().pathname.startsWith('/guest')
+  const { requestAccount } = useGuestAccess()
 
   const isFollowing = user?.followers?.some(f => (f._id || f) === myInfo?._id)
   const isMe = user?._id === myInfo?._id
 
   const handleFollow = async () => {
+    if (guest || !myInfo) return requestAccount('follow people')
     if (!user?._id) return
     try {
       await followUser(user._id).unwrap()
@@ -40,7 +44,7 @@ function ProfileBar({ user }) {
     >
       {/* Left: Avatar & Info */}
       <Stack flexDirection={'row'} gap={2} alignItems={'center'} flex={1} minWidth={0} mr={2}>
-        <Link to={`/profile/threads/${user?._id}`} style={{ textDecoration: 'none' }}>
+        <Link to={`${guest ? '/guest' : ''}/profile/threads/${user?._id}`} style={{ textDecoration: 'none' }}>
           <Avatar
             src={user?.profilePic || ''}
             alt={user?.userName}
@@ -55,7 +59,7 @@ function ProfileBar({ user }) {
           />
         </Link>
         <Stack flexDirection={'column'} flex={1} minWidth={0}>
-          <Link to={`/profile/threads/${user?._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <Link to={`${guest ? '/guest' : ''}/profile/threads/${user?._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
             <Typography
               fontWeight={700}
               fontSize={'0.95rem'}
@@ -75,7 +79,7 @@ function ProfileBar({ user }) {
         </Stack>
       </Stack>
 
-      {/* Right: Authentic Threads Pill Follow Button */}
+      {/* Follow action */}
       {!isMe && (
         <Button
           className={isFollowing ? "threads-outline-btn" : "threads-pill-btn"}

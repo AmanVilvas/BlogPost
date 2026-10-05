@@ -56,7 +56,7 @@ function Replies() {
                   fontWeight: 500,
                 }}
               >
-                View thread →
+                View post →
               </Link>
             </Stack>
           </Box>

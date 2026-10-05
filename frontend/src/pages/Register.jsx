@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux'
 import { useSigninMutation, useLoginMutation, useGoogleLoginMutation } from "../redux/service"
 import { GoogleLogin } from '@react-oauth/google'
 import BlogPostLogo from "../components/common/BlogPostLogo"
+import { Link } from 'react-router-dom'
 
 const Register = () => {
     const _700 = useMediaQuery("(min-width:700px)")
@@ -321,13 +322,17 @@ const Register = () => {
                     />
                 </Box>
 
+                <Button component={Link} to="/guest" variant="text" sx={{ mt: 2.5, color: 'text.secondary', fontWeight: 650, textTransform: 'none', borderRadius: 99, px: 2.5 }}>
+                    Continue as guest
+                </Button>
+
                 {/* Footer branding */}
                 <Typography
                     variant="caption"
                     color="text.secondary"
                     sx={{ mt: 5, fontSize: '0.75rem', opacity: 0.7 }}
                 >
-                    BlogPost from Threads · Designed for creators
+                    Your space to share, connect, and create.
                 </Typography>
             </Box>
         </Stack>

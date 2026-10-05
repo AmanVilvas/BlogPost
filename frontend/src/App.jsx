@@ -14,6 +14,7 @@ import Replies from './pages/Protected/profile/Replies'
 import Reposts from './pages/Protected/profile/Reposts'
 import SinglePost from "./pages/Protected/SinglePost"
 import Notifications from "./pages/Protected/Notifications"
+import { GuestAccessProvider } from "./components/common/GuestAccess"
 import { useSelector } from 'react-redux'
 import { useEffect, useMemo } from "react"
 import { useMyInfoQuery } from "./redux/service"
@@ -69,12 +70,13 @@ import { useMyInfoQuery } from "./redux/service"
       >
     <BrowserRouter>
 
+    <GuestAccessProvider>
     <Routes>
       {
         isLoading ? (
           <Route path="*" element={<Loader />} />
         ) : !error && data ? (
-          <Route exact path='/' element={<ProtectedLayout />}>
+          <Route path='/' element={<ProtectedLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/post/:id" element={<SinglePost />} />
             <Route path="/search" element={<Search />} />
@@ -87,10 +89,23 @@ import { useMyInfoQuery } from "./redux/service"
             </Route> 
           </Route>   
         ) : (
-          <Route path="*" element={<Register />} />
+          <>
+            <Route path="/guest" element={<ProtectedLayout guest />}>
+              <Route index element={<Home />} />
+              <Route path="post/:id" element={<SinglePost />} />
+              <Route path="search" element={<Search />} />
+              <Route path="profile" element={<ProfileLayout />}>
+                <Route path="threads/:id" element={<Threads />} />
+                <Route path="replies/:id" element={<Replies />} />
+                <Route path="reposts/:id" element={<Reposts />} />
+              </Route>
+            </Route>
+            <Route path="*" element={<Register />} />
+          </>
         )
       }
     </Routes>
+    </GuestAccessProvider>
 
   </BrowserRouter>
 

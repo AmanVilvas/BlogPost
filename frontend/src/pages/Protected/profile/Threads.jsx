@@ -18,7 +18,7 @@ function Threads() {
       ) : (
         <Box textAlign="center" py={8}>
           <Typography variant="body2" color="text.secondary">
-            No threads yet.
+            No posts yet.
           </Typography>
         </Box>
       )}

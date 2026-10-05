@@ -65,7 +65,7 @@ function Notifications() {
                         No activity yet
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        When someone likes your thread or follows you, it'll show up here.
+                        When someone likes your post or follows you, it’ll show up here.
                     </Typography>
                 </Box>
             ) : (
@@ -128,9 +128,9 @@ function Notifications() {
                                             {notif.sender?.userName}
                                         </Link>
                                         <Box component="span" sx={{ color: 'text.secondary', ml: 0.8 }}>
-                                            {notif.type === 'like' && 'liked your thread'}
-                                            {notif.type === 'repost' && 'reposted your thread'}
-                                            {notif.type === 'reply' && 'replied to your thread'}
+                                            {notif.type === 'like' && 'liked your post'}
+                                            {notif.type === 'repost' && 'reposted your post'}
+                                            {notif.type === 'reply' && 'replied to your post'}
                                             {notif.type === 'follow' && 'started following you'}
                                         </Box>
                                     </Typography>
@@ -168,7 +168,7 @@ function Notifications() {
                                                     fontSize: '0.85rem',
                                                 }}
                                             >
-                                                {notif.post.text || 'View attached thread →'}
+                                                {notif.post.text || 'View attached post →'}
                                             </Typography>
                                         </Box>
                                     </Link>

@@ -5,8 +5,9 @@ import Header from '../../components/common/Header'
 import AddPost from '../../components/modals/AddPost'
 import EditProfile from '../../components/modals/EditProfile'
 import MyMenu from '../../components/menu/MyMenu'
+import { GuestWelcome } from '../../components/common/GuestAccess'
 
-function ProtectedLayout() {
+function ProtectedLayout({ guest = false }) {
     const _700 = useMediaQuery("(min-width:700px)")
 
     return (
@@ -19,7 +20,7 @@ function ProtectedLayout() {
                 flexDirection: 'column',
             }}
         >
-            <Header />
+            <Header guest={guest} />
             <AddPost />
             <EditProfile />
             <MyMenu />
@@ -29,13 +30,14 @@ function ProtectedLayout() {
                 component="main"
                 sx={{
                     width: '100%',
-                    maxWidth: _700 ? '640px' : '100%',
+                    maxWidth: _700 ? '1180px' : '100%',
                     mx: 'auto',
                     flex: 1,
                     pb: !_700 ? '70px' : '40px',
-                    pt: _700 ? 2 : 1,
+                    pt: _700 ? 3 : 1,
                 }}
             >
+                {guest && <GuestWelcome />}
                 <Outlet />
             </Box>
         </Box>

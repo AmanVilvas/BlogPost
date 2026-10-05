@@ -59,7 +59,7 @@ function MyMenu() {
         <ListItemIcon sx={{ color: '#ff3040', minWidth: 30 }}>
           <MdDeleteOutline size={18} />
         </ListItemIcon>
-        <ListItemText primary="Delete thread" />
+        <ListItemText primary="Delete post" />
       </MenuItem>
     </Menu>
   )

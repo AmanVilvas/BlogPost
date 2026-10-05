@@ -9,7 +9,7 @@ import BlogPostLogo from './BlogPostLogo'
 import { useDispatch, useSelector } from 'react-redux'
 import { toggleMainMenu } from '../../redux/slice'
 
-function Header() {
+function Header({ guest = false }) {
     const dispatch = useDispatch()
     const menuAnchorEl = useSelector((state) => state.service.openmenu)
     const { darkMode } = useSelector((state) => state.service)
@@ -71,7 +71,7 @@ function Header() {
 
                     {/* Center: Centered Navbar */}
                     <Stack justifyContent={'center'} width={'480px'}>
-                        <Navbar />
+                        <Navbar guest={guest} />
                     </Stack>
 
                     {/* Right: Hamburger / Options */}
@@ -155,7 +155,7 @@ function Header() {
                             borderColor: 'divider',
                         }}
                     >
-                        <Navbar />
+                        <Navbar guest={guest} />
                     </Stack>
                 </>
             )}
@@ -165,6 +165,7 @@ function Header() {
                     anchorEl={menuAnchorEl}
                     open={Boolean(menuAnchorEl)}
                     onClose={handleCloseMenu}
+                    guest={guest}
                 />
             </ErrorBoundary>
         </>

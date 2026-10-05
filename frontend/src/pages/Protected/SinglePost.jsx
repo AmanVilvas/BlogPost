@@ -3,14 +3,17 @@ import { Button, Stack, Typography, Box, Avatar, useMediaQuery } from '@mui/mate
 import Post from '../../components/home/Post'
 import Comments from '../../components/home/post/Comments'
 import { useSelector } from 'react-redux'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useSinglePostQuery, useAddCommentMutation } from '../../redux/service'
 import Loader from '../../components/common/Loader'
 import { IoArrowBack } from 'react-icons/io5'
+import { useGuestAccess } from '../../components/common/GuestAccess'
 
 function SinglePost() {
     const { id } = useParams()
     const navigate = useNavigate()
+    const guest = useLocation().pathname.startsWith('/guest')
+    const { requestAccount } = useGuestAccess()
     const [comment, setComment] = useState('')
     const { darkMode, myInfo } = useSelector(state => state.service)
     const _700 = useMediaQuery('(min-width:700px)')
@@ -21,6 +24,7 @@ function SinglePost() {
     const [addComment, { isLoading: isCommenting }] = useAddCommentMutation()
 
     const handleComment = async () => {
+        if (guest || !myInfo) return requestAccount('comment on posts')
         if (!comment.trim() || !id) return
         try {
             await addComment({ id, text: comment }).unwrap()
@@ -42,10 +46,10 @@ function SinglePost() {
         return (
             <Box textAlign="center" py={8}>
                 <Typography variant="h6" fontWeight={700} mb={1}>
-                    Thread not found
+                    Post not found
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                    The thread may have been removed or the link is broken.
+                    This post may have been removed or the link is broken.
                 </Typography>
                 <Button className="threads-outline-btn" sx={{ mt: 3 }} onClick={() => navigate(-1)}>
                     Go back
@@ -85,7 +89,7 @@ function SinglePost() {
                     <IoArrowBack size={20} />
                 </Box>
                 <Typography variant="h6" fontWeight={700} fontSize="1.05rem" letterSpacing="-0.02em">
-                    Thread
+                    Post
                 </Typography>
             </Stack>
 
@@ -96,7 +100,7 @@ function SinglePost() {
             <Box sx={{ mt: 1 }}>
                 {post.comments?.length > 0 ? (
                     post.comments.map((c) => (
-                        <Comments key={c._id} comment={c} postId={post._id} />
+                        <Comments key={c._id} comment={c} postId={post._id} guest={guest} />
                     ))
                 ) : (
                     <Typography
@@ -135,7 +139,9 @@ function SinglePost() {
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder={`Reply to ${post.admin?.userName || 'thread'}...`}
+                        placeholder={guest ? 'Create an account to join the conversation' : `Reply to ${post.admin?.userName || 'post'}...`}
+                        readOnly={guest}
+                        onClick={guest ? () => requestAccount('comment on posts') : undefined}
                         sx={{
                             flex: 1,
                             border: 'none',
@@ -157,10 +163,10 @@ function SinglePost() {
                     <Button
                         className="threads-pill-btn"
                         onClick={handleComment}
-                        disabled={isCommenting || !comment.trim()}
+                        disabled={!guest && (isCommenting || !comment.trim())}
                         sx={{ minWidth: 68 }}
                     >
-                        {isCommenting ? '...' : 'Post'}
+                        {guest ? 'Join in' : isCommenting ? '...' : 'Post'}
                     </Button>
                 </Stack>
             </Box>

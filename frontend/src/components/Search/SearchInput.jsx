@@ -24,7 +24,7 @@ function SearchInput() {
         Search
       </Typography>
 
-      {/* Threads Search Pill Bar */}
+      {/* Search bar */}
       <Box
         sx={{
           display: 'flex',

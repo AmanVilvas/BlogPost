@@ -160,7 +160,7 @@ function EditProfile() {
                     />
                 </Stack>
 
-                {/* Form Fields: Threads Style Grouped Cards */}
+                {/* Form fields */}
                 <Stack
                     spacing={0}
                     sx={{
