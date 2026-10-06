@@ -24,6 +24,11 @@ router.post('/signin', signin)
 
     router.post('/post', auth, addPost)
     router.get('/post', allPosts)
+    // Keep already-open older clients working while they refresh to the feed URL.
+    router.get('/following', auth, (req, res) => {
+        req.params.feed = 'following'
+        return feedPosts(req, res)
+    })
     router.get('/post/feed/following', auth, feedPosts)
     router.get('/post/feed/discover', feedPosts)
     router.put('/post/:id', auth, updatePost)
