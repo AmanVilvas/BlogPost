@@ -29,7 +29,10 @@ router.post('/signin', signin)
         req.params.feed = 'following'
         return feedPosts(req, res)
     })
-    router.get('/post/feed/following', auth, feedPosts)
+    router.get('/post/feed/following', auth, (req, res) => {
+        req.params.feed = 'following'
+        return feedPosts(req, res)
+    })
     router.get('/post/feed/discover', feedPosts)
     router.put('/post/:id', auth, updatePost)
     router.delete('/post/:id', auth, deletePost)
