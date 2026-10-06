@@ -207,6 +207,21 @@ a {
     cursor: not-allowed !important;
 }
 
+.profile-follow-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #356dff !important;
+    color: #fff !important;
+    font-weight: 700 !important;
+    border: 1px solid #356dff !important;
+    border-radius: 9999px !important;
+    text-transform: none !important;
+    box-shadow: 0 4px 12px rgb(53 109 255 / 22%);
+}
+.profile-follow-btn:hover { background: #2459e8 !important; border-color: #2459e8 !important; }
+.profile-follow-btn.is-following { background: transparent !important; color: var(--text) !important; border-color: var(--border) !important; box-shadow: none; }
+
 /* Threads Outline Button (Following / Cancel) */
 .threads-outline-btn {
     background-color: transparent !important;

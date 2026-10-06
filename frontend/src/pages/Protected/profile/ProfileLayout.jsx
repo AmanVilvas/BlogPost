@@ -71,11 +71,11 @@ function ProfileLayout() {
                 onClick={handleOpenEditProfile}
                 sx={{ minWidth: 112, py: 0.7, px: 2 }}
               >Edit profile</Button> : <Button
-                className={isFollowing ? 'threads-outline-btn' : 'threads-pill-btn'}
+                className={isFollowing ? 'threads-outline-btn profile-follow-btn is-following' : 'profile-follow-btn'}
                 onClick={handleFollow}
                 disabled={isFollowingRequest}
                 aria-label={`${isFollowing ? 'Unfollow' : 'Follow'} ${user?.userName}`}
-                sx={{ minWidth: 104, py: 0.7, px: 2 }}
+                sx={{ minWidth: 104, minHeight: 38, py: 0.7, px: 2, flexShrink: 0 }}
               >
                 {isFollowingRequest ? 'Updating…' : isFollowing ? 'Following' : 'Follow'}
               </Button>}
